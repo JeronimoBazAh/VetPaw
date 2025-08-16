@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recorvet - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Definición de variables CSS para la paleta de colores morados */
+        :root {
+            --main-color: #5d3fd3; /* Un morado oscuro como color principal */
+            --main-color-light: #7b68ee;
+            --main-color-dark: #4b36a1;
+            --secondary-color: #f1f1f1; /* Gris claro para el fondo */
+            --text-color: #333;
+            --text-color-light: #fff;
+            --border-color: #ccc;
+            --header-bg: #fff;
+            --info-card-bg: #fff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Contenedor principal para la pantalla */
+        .dashboard-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Sección de bienvenida y saludo */
+        .dashboard-header {
+            text-align: left;
+            padding-bottom: 20px;
+        }
+
+        .dashboard-header h1 {
+            color: var(--main-color-dark);
+            margin: 0;
+            font-size: 36px;
+        }
+
+        .dashboard-header p {
+            color: #666;
+            margin: 5px 0 0;
+            font-size: 18px;
+        }
+
+        /* Grid de tarjetas de información */
+        .info-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background-color: var(--info-card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .info-card-icon {
+            font-size: 48px;
+            color: var(--main-color-light);
+            margin-bottom: 15px;
+        }
+
+        .info-card-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .info-card-label {
+            font-size: 16px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-card button {
+            margin-top: 15px;
+            background-color: var(--main-color);
+            color: var(--text-color-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .info-card button:hover {
+            background-color: var(--main-color-dark);
+        }
+
+        /* Sección de eventos o citas */
+        .events-section {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--info-card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+
+        .events-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .events-header h3 {
+            font-size: 20px;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .events-header a {
+            color: var(--main-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .event-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-time {
+            background-color: var(--main-color-light);
+            color: var(--text-color-light);
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 20px;
+            text-align: center;
+        }
+
+        .event-details {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .event-details strong {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .event-details span {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .event-details a {
+            color: var(--main-color);
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <h1>Hola, [Nombre del Usuario]</h1>
+        <p>Aquí tienes un resumen rápido de tu día.</p>
+    </div>
+
+    <div class="info-cards-grid">
+        <div class="info-card">
+            <i class="fas fa-calendar-check info-card-icon"></i>
+            <div class="info-card-value">12</div>
+            <div class="info-card-label">Citas del día</div>
+            <button>Ver Agenda</button>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-paw info-card-icon"></i>
+            <div class="info-card-value">5</div>
+            <div class="info-card-label">Pacientes en espera</div>
+            <button>Ver Fila</button>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-plus-circle info-card-icon"></i>
+            <div class="info-card-value">
+                <button class="btn-primary">Registrar Nuevo Paciente</button>
+            </div>
+            <div class="info-card-label">Atender a un nuevo cliente</div>
+        </div>
+        <div class="info-card">
+            <i class="fas fa-user-friends info-card-icon"></i>
+            <div class="info-card-value">7</div>
+            <div class="info-card-label">Pacientes nuevos hoy</div>
+            <button>Ver Registros</button>
+        </div>
+    </div>
+
+    <div class="events-section">
+        <div class="events-header">
+            <h3>Próximas Citas</h3>
+            <a href="#">Ver Todas</a>
+        </div>
+        <div class="event-list">
+            <ul>
+                <li class="event-item">
+                    <div class="event-time">10:00 AM</div>
+                    <div class="event-details">
+                        <strong>Firulais</strong>
+                        <span>Propietario: Juan Pérez</span>
+                        <span>Motivo: Revisión anual</span>
+                    </div>
+                </li>
+                <li class="event-item">
+                    <div class="event-time">10:30 AM</div>
+                    <div class="event-details">
+                        <strong>Misi</strong>
+                        <span>Propietario: Ana Gómez</span>
+                        <span>Motivo: Vacunación anual</span>
+                    </div>
+                </li>
+                <li class="event-item">
+                    <div class="event-time">11:00 AM</div>
+                    <div class="event-details">
+                        <strong>Roky</strong>
+                        <span>Propietario: Carlos Sanz</span>
+                        <span>Motivo: Control post-cirugía</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
