@@ -40,7 +40,7 @@ public class UsuarioRepository implements CrudRepository <User,Long> {
     }
 
 
-    public Optional<User> findAllByUsername(String user) {
+    public Optional<User> findAllByNombre(String nombre) {
         return null;
     }
 
