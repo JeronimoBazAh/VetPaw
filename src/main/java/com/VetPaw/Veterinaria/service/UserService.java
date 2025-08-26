@@ -44,5 +44,10 @@ public class UserService implements com.VetPaw.Veterinaria.service.Service<User>
     }
 
 
+    public Optional<User> findByDocumento(String documento){
+        return userRepository.findByDocumento(documento);
+    }
+
+
 
 }
