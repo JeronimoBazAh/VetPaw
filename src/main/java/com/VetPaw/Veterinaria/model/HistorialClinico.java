@@ -15,10 +15,10 @@ public class HistorialClinico {
 
 
     @ManyToOne
-    private Long IdMascota;
+    private Mascota mascota ;
 
     @ManyToOne
-    private Long IdVeterinario;
+    private Veterinario veterinario;
 
     private LocalDate fecha;
 
