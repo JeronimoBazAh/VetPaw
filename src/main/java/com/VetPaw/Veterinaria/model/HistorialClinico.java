@@ -7,21 +7,24 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-public class Mascota {
+public class HistorialClinico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String especie;
-    private String raza;
-    private String nombre;
-    private LocalDate fechaNacimiento;
 
 
     @ManyToOne
-    @JoinColumn(name = "propietario_id")
-    private Propietario propietario;
+    private Long IdMascota;
 
+    @ManyToOne
+    private Long IdVeterinario;
 
+    private LocalDate fecha;
 
+    private String diagnostico;
+
+    private String medicacion;
+
+    private String otro;
 }

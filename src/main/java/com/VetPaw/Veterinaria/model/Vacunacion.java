@@ -10,18 +10,23 @@ import java.time.LocalDate;
 
 @Entity
 @Data
-public class Veterinario {
+public class Vacunacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String documento;
-    private String nombre;
-    private String apellido;
-    private String celular;
-    private LocalDate fechaIngreso;
-    private LocalDate fechaSalida;
 
+    private Long Id;
 
+    private Long IdPropietario;
+
+    private Long IdMascota;
+
+    private Long IdVeterinario;
+
+    private String tipo;
+    private LocalDate fechaAplicacion;
+    private LocalDate fehcaProxima;
+    private String lote;
+    private String observacion;
 
 }
