@@ -1,7 +1,7 @@
 package com.VetPaw.Veterinaria.repository;
 
-import com.VetPaw.Veterinaria.model.Turno;
+import com.VetPaw.Veterinaria.model.HistorialClinico;
 import org.springframework.data.repository.CrudRepository;
 
-public interface turnoRepository extends CrudRepository<Turno,Long> {
+public interface turnoRepository extends CrudRepository<HistorialClinico,Long> {
 }
