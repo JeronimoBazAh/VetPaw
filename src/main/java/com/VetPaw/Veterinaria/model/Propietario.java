@@ -3,6 +3,8 @@ package com.VetPaw.Veterinaria.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 public class Propietario {
@@ -15,7 +17,6 @@ public class Propietario {
     private String celular;
 
 
-    @OneToMany
-    @JoinColumn(name="mascota_id")
-    private Long IDMascota;
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mascota> mascotas;
 }
