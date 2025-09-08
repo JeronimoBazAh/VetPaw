@@ -5,13 +5,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/auth")
-public class loginController {
+@RequestMapping("/auth")
+public class LoginController {
 
     @GetMapping("/login")
     public String login(){
 
 
-        return "login.html";
+        return "login";
+    }
+    @GetMapping("/")
+    public String home() {
+        return "login";
     }
 }

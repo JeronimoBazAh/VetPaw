@@ -24,6 +24,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    /**
+     * Spring Boot no ejecutará el filtro para estos endpoints
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/auth/") ||
+                path.startsWith("/public/") ||
+                path.equals("/login") ||
+                path.equals("/error");
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -31,22 +43,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = null;
         String jwt = null;
 
-
-        if(authHeader != null && authHeader.startsWith("Bearer ")){                                 //1. Peticion llega -> el filtro intercepta
-            jwt = authHeader.substring(7);                                                //2. Busca el token -> en el header "Authorization:Bearer TOKEN"
-            username = jwtUtil.extractUsername(jwt);                                                //3. Extrae el username del token jwt
-                                                                                                    //4. valida el token, verifica la firma, expiracion, etc
-        }                                                                                            //5. Autentica el usuario lo coloca en el security context
-        if(username != null && SecurityContextHolder.getContext().getAuthentication()== null){         //6.continua, la peticion sigue su curso
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if(jwtUtil.validateToken(jwt,userDetails)){
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-                authToken.setDetails((new WebAuthenticationDetailsSource().buildDetails(request)));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            jwt = authHeader.substring(7);
+            try {
+                username = jwtUtil.extractUsername(jwt);
+            } catch (Exception e) {
+                // Token malformado o expirado, continuar sin autenticación
+                filterChain.doFilter(request, response);
+                return;
             }
         }
-        filterChain.doFilter(request,response);
+
+        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if(jwtUtil.validateToken(jwt, userDetails)){
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+
+        filterChain.doFilter(request, response);
     }
 }
