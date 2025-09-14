@@ -1,6 +1,6 @@
 package com.VetPaw.Veterinaria.service;
 
-import com.VetPaw.Veterinaria.model.User;
+import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String nombre) throws UsernameNotFoundException {
-        User usuario = usuarioRepository.findByNombre(nombre).orElseThrow(() -> new UsernameNotFoundException(("Usuario no encontrado")));
+        Usuario usuario = usuarioRepository.findByNombre(nombre).orElseThrow(() -> new UsernameNotFoundException(("Usuario no encontrado")));
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getNombre())

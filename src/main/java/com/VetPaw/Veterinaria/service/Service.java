@@ -1,7 +1,5 @@
 package com.VetPaw.Veterinaria.service;
 
-import com.VetPaw.Veterinaria.model.User;
-
 import java.util.List;
 import java.util.Optional;
 

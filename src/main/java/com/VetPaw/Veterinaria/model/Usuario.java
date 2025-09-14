@@ -1,16 +1,13 @@
 package com.VetPaw.Veterinaria.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
 @Entity
-public class User {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +21,9 @@ public class User {
     private LocalDate fechaIngreso;
     private LocalDate fechaEgreso;
 
-
+ @PrePersist
+    public void pre(){
+     this.fechaIngreso = LocalDate.now();
+ }
 
 }

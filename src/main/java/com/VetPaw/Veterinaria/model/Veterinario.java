@@ -1,9 +1,6 @@
 package com.VetPaw.Veterinaria.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,6 +8,20 @@ import java.time.LocalDate;
 @Entity
 @Data
 public class Veterinario {
+
+    public Veterinario(Long id, String documento, String celular, LocalDate fechaSalida, String estado, LocalDate fechaIngreso, String nombre, String apellido) {
+        this.id = id;
+        this.documento = documento;
+        this.celular = celular;
+        this.fechaSalida = fechaSalida;
+        this.estado = estado;
+        this.fechaIngreso = fechaIngreso;
+        this.nombre = nombre;
+        this.apellido = apellido;
+    }
+
+    public Veterinario() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +32,21 @@ public class Veterinario {
     private String celular;
     private LocalDate fechaIngreso;
     private LocalDate fechaSalida;
+    private String estado;
 
+    @PrePersist
+    public void pre(){
+        this.fechaIngreso = LocalDate.now();
+    }
+
+
+    @PreUpdate
+    public void estado(){
+
+        if(this.estado == "INACTIVO" && this.fechaSalida == null){
+            this.fechaSalida = LocalDate.now();
+        }
+    }
 
 
 }
