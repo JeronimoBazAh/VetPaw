@@ -1,6 +1,6 @@
 package com.VetPaw.Veterinaria.service;
 
-import com.VetPaw.Veterinaria.model.User;
+import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService implements com.VetPaw.Veterinaria.service.Service<User> {
+public class UserService implements com.VetPaw.Veterinaria.service.Service<Usuario> {
 
     @Autowired
     private UserRepository userRepository;
@@ -21,19 +21,19 @@ public class UserService implements com.VetPaw.Veterinaria.service.Service<User>
 
     @Transactional
     @Override
-    public List<User> findAll() {
-        return (List<User>) userRepository.findAll();
+    public List<Usuario> findAll() {
+        return (List<Usuario>) userRepository.findAll();
     }
 
     @Transactional
     @Override
-    public User save(User x) {
+    public Usuario save(Usuario x) {
         return userRepository.save(x);
     }
 
     @Transactional
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<Usuario> findById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -44,7 +44,7 @@ public class UserService implements com.VetPaw.Veterinaria.service.Service<User>
     }
 
 
-    public Optional<User> findByDocumento(String documento){
+    public Optional<Usuario> findByDocumento(String documento){
         return userRepository.findByDocumento(documento);
     }
 
