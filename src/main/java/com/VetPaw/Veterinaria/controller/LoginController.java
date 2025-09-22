@@ -47,11 +47,9 @@ public class LoginController {
     @PostMapping("/register")
     public String form(@Valid @ModelAttribute("user") Usuario user, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status){
         if(result.hasErrors()){
-            model.addAttribute("tittle", "Validando formulario");
+            model.addAttribute("title", "Validando formulario");
             return "form";
         }
-
-
         service.save(user);
         return "redirect:/principal";
 

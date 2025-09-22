@@ -24,6 +24,7 @@ public class Usuario {
  @PrePersist
     public void pre(){
      this.fechaIngreso = LocalDate.now();
+     this.rol = "Usuario";
  }
 
 }
