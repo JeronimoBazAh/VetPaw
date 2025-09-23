@@ -51,8 +51,15 @@ public class LoginController {
             return "form";
         }
         service.save(user);
-        return "redirect:/principal";
+        return "redirect:/auth/postRegistro";
 
+    }
+
+    @GetMapping("/postRegistro")
+    public String post(){
+
+
+        return "postRegistro";
     }
 
 }
