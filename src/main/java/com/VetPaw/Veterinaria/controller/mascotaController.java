@@ -13,6 +13,6 @@ public class mascotaController {
 
 
 
-        return "algo.html";
+        return "vistaPrincipal.html";
     }
 }
