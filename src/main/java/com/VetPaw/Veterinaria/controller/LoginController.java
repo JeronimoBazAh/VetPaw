@@ -32,6 +32,15 @@ public class LoginController {
 
         return "login";
     }
+
+    @PostMapping
+    public String logueado(BindingResult result){
+        if(!result.hasErrors()){
+            return "gestionTurnos";
+        }
+
+        return "login";
+    }
     @GetMapping("/")
     public String home() {
         return "login";
