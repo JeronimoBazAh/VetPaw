@@ -1,29 +1,29 @@
 package com.VetPaw.Veterinaria.config;
 
-import com.VetPaw.Veterinaria.security.JwtAuthenticationFilter;
 import com.VetPaw.Veterinaria.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-/*
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -32,57 +32,32 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.
-                csrf(crsf -> crsf.disable())
+        return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/admin/**").hasRole(("ADMIN"))
+                        // Rutas públicas (sin autenticación)
+                        .requestMatchers("/auth/**", "/public/**", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        // Rutas protegidas por rol
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/veterinario/**").hasAnyRole("VETERINARIO", "ADMIN")
                         .requestMatchers("/recepcion/**").hasAnyRole("RECEPCIONISTA", "ADMIN")
+                        // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()
-        )
-
-
-                .sessionManagement(session ->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+                )
+                .formLogin(form -> form
+                        .loginPage("/auth/login")                    // Tu página de login personalizada
+                        .loginProcessingUrl("/auth/login")           // URL donde Spring procesa el login
+                        .defaultSuccessUrl("/gestionTurnos", true)       // Redirige aquí después del login exitoso
+                        .failureUrl("/auth/login?error=true")        // Redirige aquí si falla el login
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")                   // URL para cerrar sesión
+                        .logoutSuccessUrl("/auth/login?logout=true") // Redirige aquí después del logout
+                        .invalidateHttpSession(true)                 // Invalida la sesión
+                        .deleteCookies("JSESSIONID")                 // Elimina cookies
+                        .permitAll()
+                )
+                .build();
     }
-
-    @Bean
-    public AuthenticationManager authManager(AuthenticationConfiguration authConfig) throws Exception{
-        return authConfig.getAuthenticationManager();
-    }
-
- */
-
-
-        @Bean
-        public PasswordEncoder passwordEncoder(){
-            return new BCryptPasswordEncoder();
-        }
-
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-            // CONFIGURACIÓN TEMPORAL - PERMITE TODO
-            return http
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/auth/**").permitAll()
-
-                            .requestMatchers("/public/**").permitAll()
-                            .requestMatchers("/login").permitAll()
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/veterinario/**").hasAnyRole("VETERINARIO", "ADMIN")
-                            .requestMatchers("/recepcion/**").hasAnyRole("RECEPCIONISTA","ADMIN")
-                            .anyRequest().authenticated()
-
-                    )
-                    .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                    .build();
-        }
-    }
-
+}
 
