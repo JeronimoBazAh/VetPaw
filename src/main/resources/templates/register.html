@@ -173,8 +173,8 @@
         <div class="form-row">
             <div class="input-group">
                 <label for="nombre">Nombre</label>
-                <input th:field="*{username}"  type="text" id="nombre" name="nombre" placeholder="Juan" required>
-                <div th:if=""></div>
+                <input th:field="*{nombre}"  type="text" id="nombre" name="nombre" placeholder="Juan" required>
+
             </div>
             <div class="input-group">
                 <label for="apellido">Apellido</label>
@@ -211,7 +211,7 @@
 
     <div class="login-link">
         <p>¿Ya tienes una cuenta?</p>
-        <a href="/auth/login">Iniciar Sesión</a>
+        <a th:href="@{/auth/login}">Iniciar Sesión</a>
     </div>
 </div>
 
