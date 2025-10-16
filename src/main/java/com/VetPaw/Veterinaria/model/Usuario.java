@@ -17,7 +17,7 @@ public class Usuario {
     private String nombre;
     private String apellido;
     private String celular;
-    private String passw;
+    private String password;
     private String rol;
     private LocalDate fechaIngreso;
     private LocalDate fechaEgreso;

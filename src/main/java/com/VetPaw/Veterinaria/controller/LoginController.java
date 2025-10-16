@@ -45,8 +45,9 @@ public class LoginController {
     }
 
     @GetMapping("/register")
-    public String register(){
-
+    public String register(Model model){
+        Usuario user = new Usuario();
+        model.addAttribute("user",user);
 
         return "register";
     }
