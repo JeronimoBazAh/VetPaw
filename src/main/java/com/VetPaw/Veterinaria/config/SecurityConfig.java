@@ -45,6 +45,8 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")                    // Tu página de login personalizada
+                        .usernameParameter("documento")
+                        .passwordParameter("password")
                         .loginProcessingUrl("/auth/login")           // URL donde Spring procesa el login
                         .defaultSuccessUrl("/gestionTurnos", true)       // Redirige aquí después del login exitoso
                         .failureUrl("/auth/login?error=true")        // Redirige aquí si falla el login
