@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Turno - VetPaw</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f7fa;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .header-left p {
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .btn-back {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 10px 20px;
+        border: 2px solid white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background: white;
+        color: #667eea;
+    }
+
+    .form-content {
+        padding: 40px;
+    }
+
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e1e8ed;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #525f7f;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .required {
+        color: #e74c3c;
+    }
+
+    input, select, textarea {
+        padding: 12px 15px;
+        border: 2px solid #e1e8ed;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.3s;
+        background: white;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .input-icon {
+        position: relative;
+    }
+
+    .input-icon input, .input-icon select {
+        padding-left: 40px;
+    }
+
+    .input-icon::before {
+        content: attr(data-icon);
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .help-text {
+        font-size: 12px;
+        color: #8898aa;
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        padding-top: 30px;
+        border-top: 2px solid #e1e8ed;
+    }
+
+    .btn {
+        padding: 12px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-secondary {
+        background: #e1e8ed;
+        color: #525f7f;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+    }
+
+    .alert-info {
+        background: #e3f2fd;
+        color: #1976d2;
+        border-left: 4px solid #1976d2;
+    }
+
+    .alert-warning {
+        background: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+        display: none;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+        display: none;
+    }
+
+    .selected-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #525f7f;
+        display: none;
+    }
+
+    .selected-info.show {
+        display: block;
+    }
+
+    .selected-info strong {
+        color: #2c3e50;
+    }
+
+    .availability-check {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #856404;
+        display: none;
+    }
+
+    .availability-check.available {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+
+    .availability-check.unavailable {
+        background: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+    }
+
+    .loading {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-left">
+      <h1>📅 Registrar Nuevo Turno</h1>
+      <p>Complete los datos de la cita veterinaria</p>
+    </div>
+    <a href="gestion-turnos.html" class="btn-back">
+      <span>⬅️</span>
+      Volver
+    </a>
+  </div>
+
+  <div class="form-content">
+    <div class="alert alert-info">
+      <span style="font-size: 20px;">ℹ️</span>
+      <div>
+        Los campos marcados con <span class="required">*</span> son obligatorios.
+        El sistema verificará automáticamente la disponibilidad del profesional.
+      </div>
+    </div>
+
+    <div class="alert alert-success" id="alertSuccess">
+      <span style="font-size: 20px;">✅</span>
+      <div id="successMessage">Turno registrado exitosamente</div>
+    </div>
+
+    <div class="alert alert-error" id="alertError">
+      <span style="font-size: 20px;">❌</span>
+      <div id="errorMessage">Error al registrar el turno</div>
+    </div>
+
+    <form id="formTurno" onsubmit="handleSubmit(event)">
+      <div class="form-section">
+        <div class="section-title">
+          <span>🐾</span>
+          Datos del Paciente
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Mascota <span class="required">*</span></label>
+            <div class="input-icon" data-icon="🔍">
+              <select id="idMascota" name="idMascota" required onchange="showPetInfo(this)">
+                <option value="">Buscar y seleccionar mascota...</option>
+                <option value="1" data-nombre="Max" data-especie="Perro" data-raza="Golden Retriever" data-peso="32" data-propietario="María González" data-celular="(351) 456-7890">Max - Golden Retriever (María González)</option>
+                <option value="2" data-nombre="Luna" data-especie="Gato" data-raza="Siamés" data-peso="4.5" data-propietario="Juan Rodríguez" data-celular="(351) 789-4561">Luna - Siamés (Juan Rodríguez)</option>
+                <option value="3" data-nombre="Rocky" data-especie="Perro" data-raza="Bulldog Francés" data-peso="12" data-propietario="Ana Martínez" data-celular="(351) 234-5678">Rocky - Bulldog Francés (Ana Martínez)</option>
+                <option value="4" data-nombre="Mimi" data-especie="Gato" data-raza="Persa" data-peso="3.8" data-propietario="Laura Sánchez" data-celular="(351) 890-1234">Mimi - Persa (Laura Sánchez)</option>
+                <option value="5" data-nombre="Toby" data-especie="Perro" data-raza="Beagle" data-peso="15" data-propietario="Carlos Gómez" data-celular="(351) 345-6789">Toby - Beagle (Carlos Gómez)</option>
+              </select>
+            </div>
+            <span class="help-text">Seleccione la mascota que necesita atención</span>
+
+            <div class="selected-info" id="petInfo">
+              <strong>📋 Información de la Mascota:</strong><br>
+              <span id="petDetails"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">
+          <span>👨‍⚕️</span>
+          Profesional y Fecha
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Veterinario <span class="required">*</span></label>
+            <div class="input-icon" data-icon="👨‍⚕️">
+              <select id="idVeterinario" name="idVeterinario" required onchange="checkAvailability()">
+                <option value="">Seleccionar veterinario...</option>
+                <option value="1">Dr. Martín Fernández</option>
+                <option value="2">Dra. Carolina López</option>
+                <option value="3">Dr. Roberto García</option>
+                <option value="4">Dra. Valeria Torres</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Recepcionista <span class="required">*</span></label>
+            <div class="input-icon" data-icon="👤">
+              <select id="idRecepcionista" name="idRecepcionista" required>
+                <option value="">Seleccionar recepcionista...</option>
+                <option value="1" selected>Sofía Ramírez</option>
+                <option value="2">Lucas Morales</option>
+                <option value="3">Gabriela Castro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha del Turno <span class="required">*</span></label>
+            <div class="input-icon" data-icon="📅">
+              <input type="date" id="fecha" name="fecha" required onchange="checkAvailability()" min="">
+            </div>
+            <span class="help-text">Fecha de la cita</span>
+          </div>
+
+          <div class="form-group">
+            <label>Hora <span class="required">*</span></label>
+            <div class="input-icon" data-icon="🕐">
+              <input type="time" id="hora" name="hora" required onchange="checkAvailability()" min="08:00" max="19:00">
+            </div>
+            <span class="help-text">Horario de atención: 8:00 - 19:00</span>
+          </div>
+        </div>
+
+        <div class="availability-check" id="availabilityStatus">
+          <span class="loading"></span> Verificando disponibilidad...
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Fecha de Solicitud <span class="required">*</span></label>
+            <div class="input-icon" data-icon="📆">
+              <input type="datetime-local" id="fechaSolicitud" name="fechaSolicitud" required readonly>
+            </div>
+            <span class="help-text">Fecha y hora en que se solicita el turno (automática)</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Estado Inicial</label>
+            <select id="estado" name="estado">
+              <option value="PROGRAMADO" selected>Programado</option>
+              <option value="CONFIRMADO">Confirmado</option>
+              <option value="EN_CURSO">En Curso</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">
+          <span>📝</span>
+          Motivo de Consulta
+        </div>
+
+        <div class="form-group full-width">
+          <label>Motivo <span class="required">*</span></label>
+          <textarea id="motivo" name="motivo" placeholder="Describa el motivo de la consulta veterinaria..." required></textarea>
+          <span class="help-text">Detalle los síntomas o razón de la visita</span>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <span style="font-size: 20px;">⚠️</span>
+        <div>
+          <strong>Verificación de Disponibilidad:</strong><br>
+          El sistema validará que no existan turnos solapados para el veterinario seleccionado en la fecha y hora indicadas.
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+          <span>✖️</span>
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" id="btnSubmit">
+          <span>💾</span>
+          Crear Turno
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Auto-completar fecha de solicitud con fecha/hora actual
+  document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      const datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
+      document.getElementById('fechaSolicitud').value = datetimeLocal;
+
+      // Establecer fecha mínima para el turno (hoy)
+      document.getElementById('fecha').min = `${year}-${month}-${day}`;
+  });
+
+  // Mostrar información de la mascota seleccionada
+  function showPetInfo(select) {
+      const info = document.getElementById('petInfo');
+      const details = document.getElementById('petDetails');
+
+      if (select.value) {
+          const option = select.options[select.selectedIndex];
+          const nombre = option.dataset.nombre;
+          const especie = option.dataset.especie;
+          const raza = option.dataset.raza;
+          const peso = option.dataset.peso;
+          const propietario = option.dataset.propietario;
+          const celular = option.dataset.celular;
+
+          details.innerHTML = `
+              Especie: ${especie} | Raza: ${raza} | Peso: ${peso} kg<br>
+              Propietario: ${propietario} | Celular: ${celular}
+          `;
+          info.classList.add('show');
+      } else {
+          info.classList.remove('show');
+      }
+  }
+
+  // Verificar disponibilidad (simulado)
+  let timeoutId;
+  function checkAvailability() {
+      const veterinario = document.getElementById('idVeterinario').value;
+      const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
+      const statusDiv = document.getElementById('availabilityStatus');
+
+      if (!veterinario || !fecha || !hora) {
+          statusDiv.style.display = 'none';
+          return;
+      }
+
+      // Mostrar loading
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'availability-check';
+      statusDiv.innerHTML = '<span class="loading"></span> Verificando disponibilidad...';
+
+      // Simular llamada a API con debounce
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+          // Simulación: disponible si no es hora en punto (00 minutos)
+          const disponible = hora.split(':')[1] !== '00';
+
+          if (disponible) {
+              statusDiv.className = 'availability-check available';
+              statusDiv.innerHTML = '✅ Horario disponible para el profesional seleccionado';
+          } else {
+              statusDiv.className = 'availability-check unavailable';
+              statusDiv.innerHTML = '❌ Horario no disponible. El profesional ya tiene un turno programado a esta hora. Por favor, seleccione otro horario.';
+          }
+      }, 800);
+  }
+
+  // Manejar envío del formulario
+  function handleSubmit(event) {
+      event.preventDefault();
+
+      const btnSubmit = document.getElementById('btnSubmit');
+      const alertSuccess = document.getElementById('alertSuccess');
+      const alertError = document.getElementById('alertError');
+
+      // Deshabilitar botón
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<span class="loading"></span> Guardando...';
+
+      // Recopilar datos del formulario
+      const formData = {
+          idMascota: document.getElementById('idMascota').value,
+          idVeterinario: document.getElementById('idVeterinario').value,
+          idRecepcionista: document.getElementById('idRecepcionista').value,
+          fecha: document.getElementById('fecha').value,
+          hora: document.getElementById('hora').value,
+          fechaSolicitud: document.getElementById('fechaSolicitud').value,
+          estado: document.getElementById('estado').value,
+          motivo: document.getElementById('motivo').value
+      };
+
+      console.log('Datos del turno:', formData);
+
+      // Simular llamada a API
+      setTimeout(() => {
+          // Simulación de éxito
+          const exito = true;
+
+          if (exito) {
+              alertSuccess.style.display = 'flex';
+              document.getElementById('successMessage').textContent =
+                  `Turno registrado exitosamente para el ${formData.fecha} a las ${formData.hora}`;
+
+              // Limpiar formulario después de 2 segundos
+              setTimeout(() => {
+                  resetForm();
+                  alertSuccess.style.display = 'none';
+              }, 3000);
+          } else {
+              alertError.style.display = 'flex';
+              document.getElementById('errorMessage').textContent =
+                  'Error al registrar el turno. Por favor, intente nuevamente.';
+
+              setTimeout(() => {
+                  alertError.style.display = 'none';
+              }, 5000);
+          }
+
+          // Rehabilitar botón
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<span>💾</span> Crear Turno';
+      }, 1500);
+
+      /*
+      AQUÍ IRÍA LA LLAMADA REAL A TU API:
+
+      fetch('/api/turnos', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+          alertSuccess.style.display = 'flex';
+          setTimeout(() => resetForm(), 2000);
+      })
+      .catch(error => {
+          alertError.style.display = 'flex';
+          console.error('Error:', error);
+      })
+      .finally(() => {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<span>💾</span> Crear Turno';
+      });
+      */
+  }
+
+  // Limpiar formulario
+  function resetForm() {
+      document.getElementById('formTurno').reset();
+      document.getElementById('petInfo').classList.remove('show');
+      document.getElementById('availabilityStatus').style.display = 'none';
+
+      // Restablecer fecha de solicitud
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      document.getElementById('fechaSolicitud').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@ public class turnoController {
     public String turnos(){
 
 
-        return "gestionTrunos";
+        return "/turnos/gestionTurnos";
     }
 
 }

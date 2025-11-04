@@ -4,6 +4,7 @@ import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +13,14 @@ import java.util.Optional;
 @Service
 public class UserService implements com.VetPaw.Veterinaria.service.Service<Usuario> {
 
-    @Autowired
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -48,6 +52,13 @@ public class UserService implements com.VetPaw.Veterinaria.service.Service<Usuar
         return userRepository.findByDocumento(documento);
     }
 
-
+    public Usuario registrarUsuario(Usuario usuario){
+        if(userRepository.findByDocumento(usuario.getDocumento()).isPresent()){
+            throw new IllegalArgumentException("El documento ya esta registrado");
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        return userRepository.save(usuario);
+    }
 
 }
+
