@@ -2,6 +2,7 @@ package com.VetPaw.Veterinaria.controller;
 
 import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.service.Service;
+import com.VetPaw.Veterinaria.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,12 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class LoginController {
 
     @Autowired
-    private final Service<Usuario> service;
+    private UserService usuarioService;
 
 
-    public LoginController(Service<Usuario> service) {
-        this.service = service;
-    }
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false)String error, @RequestParam(value = "logout",required = false)String logout, Model model){
@@ -53,14 +51,15 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public String form(@Valid @ModelAttribute("user") Usuario user, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status){
+    public String form(@Valid @ModelAttribute("user") Usuario user, RedirectAttributes redirectAttributes,BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status){
 
-        if(result.hasErrors()){
-            model.addAttribute("title", "Validando formulario");
-            return "form";
-        }else{
-            service.save(user);
-            return "redirect:/auth/postRegistro";
+        try{
+            usuarioService.registrarUsuario(user);
+            redirectAttributes.addFlashAttribute("success", "Registro exitoso");
+            return "redirect:/auth/login";
+        }catch(Exception e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/auth/register";
         }
 
 

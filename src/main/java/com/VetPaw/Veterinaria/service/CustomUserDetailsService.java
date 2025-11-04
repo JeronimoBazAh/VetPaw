@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
     private final UserRepository usuarioRepository;
 
     public CustomUserDetailsService(UserRepository usuarioRepository) {
@@ -19,8 +18,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String nombre) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByNombre(nombre).orElseThrow(() -> new UsernameNotFoundException(("Usuario no encontrado")));
+    public UserDetails loadUserByUsername(String documento) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByDocumento(documento).orElseThrow(() -> new UsernameNotFoundException(("Usuario no encontrado")));
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getDocumento())
