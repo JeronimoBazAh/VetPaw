@@ -15,4 +15,11 @@ public class turnoController {
         return "/turnos/gestionTurnos";
     }
 
+    @GetMapping("/crearTurno")
+    public String crearTurno(){
+
+
+        return "/turnos/crearTurno";
+    }
+
 }
