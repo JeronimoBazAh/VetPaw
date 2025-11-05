@@ -33,6 +33,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .header-left h1 {
@@ -65,6 +67,31 @@
     .btn-back:hover {
         background: white;
         color: #667eea;
+    }
+
+    .demo-note {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px;
+        font-size: 14px;
+        color: #856404;
+    }
+
+    .demo-note strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .demo-note ul {
+        margin-left: 20px;
+        margin-top: 8px;
+    }
+
+    .demo-note li {
+        margin: 5px 0;
     }
 
     .form-content {
@@ -103,6 +130,16 @@
         grid-column: 1 / -1;
     }
 
+    .search-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .search-row .form-group {
+        flex: 1;
+    }
+
     label {
         font-size: 14px;
         font-weight: 600;
@@ -131,6 +168,11 @@
         outline: none;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input:disabled, select:disabled {
+        background: #f5f7fa;
+        cursor: not-allowed;
     }
 
     textarea {
@@ -184,6 +226,22 @@
         gap: 8px;
     }
 
+    .btn-search {
+        background: #667eea;
+        color: white;
+        padding: 12px 24px;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        background: #5568d3;
+    }
+
+    .btn-search:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+    }
+
     .btn-secondary {
         background: #e1e8ed;
         color: #525f7f;
@@ -202,6 +260,12 @@
         background: #5568d3;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+        transform: none;
     }
 
     .alert {
@@ -240,22 +304,94 @@
         display: none;
     }
 
-    .selected-info {
+    .info-card {
         background: #f8f9fa;
-        padding: 15px;
+        padding: 20px;
         border-radius: 8px;
-        margin-top: 10px;
-        font-size: 13px;
-        color: #525f7f;
+        margin-top: 15px;
+        border: 2px solid #e1e8ed;
         display: none;
+        animation: fadeIn 0.3s ease;
     }
 
-    .selected-info.show {
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-card.show {
         display: block;
     }
 
-    .selected-info strong {
+    .info-card h4 {
         color: #2c3e50;
+        margin-bottom: 12px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-card .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        font-size: 13px;
+        color: #525f7f;
+    }
+
+    .info-card .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-card .info-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 3px;
+    }
+
+    .pets-list {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px solid #e1e8ed;
+    }
+
+    .pet-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border: 2px solid #e1e8ed;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .pet-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        transform: translateX(5px);
+    }
+
+    .pet-card.selected {
+        border-color: #667eea;
+        background: #f0f4ff;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .pet-card h5 {
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pet-card .pet-details {
+        font-size: 13px;
+        color: #525f7f;
+        line-height: 1.6;
     }
 
     .availability-check {
@@ -295,6 +431,17 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    @media (max-width: 768px) {
+        .search-row {
+            flex-direction: column;
+        }
+
+        .btn-search {
+            width: 100%;
+            justify-content: center;
+        }
+    }
   </style>
 </head>
 <body>
@@ -304,10 +451,22 @@
       <h1>📅 Registrar Nuevo Turno</h1>
       <p>Complete los datos de la cita veterinaria</p>
     </div>
-    <a href="gestion-turnos.html" class="btn-back">
+    <a href="#" class="btn-back" onclick="alert('Demo: Volvería a gestión de turnos'); return false;">
       <span>⬅️</span>
       Volver
     </a>
+  </div>
+
+  <div class="demo-note">
+    <strong>🎮 MODO DEMO - Prueba el sistema</strong>
+    Usa estos DNIs para probar:
+    <ul>
+      <li><strong>35123456</strong> - María González (2 perros: Max y Bella)</li>
+      <li><strong>28456789</strong> - Juan Rodríguez (1 gato: Luna)</li>
+      <li><strong>40234567</strong> - Ana Martínez (2 perros: Rocky y Coco)</li>
+      <li><strong>33890123</strong> - Laura Sánchez (1 gato: Mimi)</li>
+      <li><strong>37345678</strong> - Carlos Gómez (1 perro: Toby)</li>
+    </ul>
   </div>
 
   <div class="form-content">
@@ -315,7 +474,7 @@
       <span style="font-size: 20px;">ℹ️</span>
       <div>
         Los campos marcados con <span class="required">*</span> son obligatorios.
-        El sistema verificará automáticamente la disponibilidad del profesional.
+        Primero busque al propietario por su DNI.
       </div>
     </div>
 
@@ -330,35 +489,64 @@
     </div>
 
     <form id="formTurno" onsubmit="handleSubmit(event)">
+      <!-- Búsqueda de Propietario -->
       <div class="form-section">
         <div class="section-title">
-          <span>🐾</span>
-          Datos del Paciente
+          <span>👤</span>
+          Buscar Propietario
         </div>
 
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label>Mascota <span class="required">*</span></label>
+        <div class="search-row">
+          <div class="form-group">
+            <label>DNI del Propietario <span class="required">*</span></label>
             <div class="input-icon" data-icon="🔍">
-              <select id="idMascota" name="idMascota" required onchange="showPetInfo(this)">
-                <option value="">Buscar y seleccionar mascota...</option>
-                <option value="1" data-nombre="Max" data-especie="Perro" data-raza="Golden Retriever" data-peso="32" data-propietario="María González" data-celular="(351) 456-7890">Max - Golden Retriever (María González)</option>
-                <option value="2" data-nombre="Luna" data-especie="Gato" data-raza="Siamés" data-peso="4.5" data-propietario="Juan Rodríguez" data-celular="(351) 789-4561">Luna - Siamés (Juan Rodríguez)</option>
-                <option value="3" data-nombre="Rocky" data-especie="Perro" data-raza="Bulldog Francés" data-peso="12" data-propietario="Ana Martínez" data-celular="(351) 234-5678">Rocky - Bulldog Francés (Ana Martínez)</option>
-                <option value="4" data-nombre="Mimi" data-especie="Gato" data-raza="Persa" data-peso="3.8" data-propietario="Laura Sánchez" data-celular="(351) 890-1234">Mimi - Persa (Laura Sánchez)</option>
-                <option value="5" data-nombre="Toby" data-especie="Perro" data-raza="Beagle" data-peso="15" data-propietario="Carlos Gómez" data-celular="(351) 345-6789">Toby - Beagle (Carlos Gómez)</option>
-              </select>
+              <input type="text" id="dniPropietario" placeholder="Ej: 35123456" maxlength="8" pattern="[0-9]{7,8}">
             </div>
-            <span class="help-text">Seleccione la mascota que necesita atención</span>
+            <span class="help-text">Ingrese el DNI sin puntos ni espacios</span>
+          </div>
 
-            <div class="selected-info" id="petInfo">
-              <strong>📋 Información de la Mascota:</strong><br>
-              <span id="petDetails"></span>
+          <button type="button" class="btn btn-search" onclick="buscarPropietario()">
+            <span>🔎</span>
+            Buscar
+          </button>
+        </div>
+
+        <!-- Información del Propietario -->
+        <div class="info-card" id="ownerInfo">
+          <h4>
+            <span>📋</span>
+            Datos del Propietario
+          </h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Nombre Completo:</span>
+              <span id="ownerNombre"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">DNI:</span>
+              <span id="ownerDocumento"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Celular:</span>
+              <span id="ownerCelular"></span>
             </div>
           </div>
+
+          <!-- Lista de Mascotas -->
+          <div class="pets-list">
+            <h4>
+              <span>🐾</span>
+              Seleccione una Mascota <span class="required">*</span>
+            </h4>
+            <div id="petsList"></div>
+          </div>
         </div>
+
+        <input type="hidden" id="idPropietario" name="idPropietario">
+        <input type="hidden" id="idMascota" name="idMascota" required>
       </div>
 
+      <!-- Profesional y Fecha -->
       <div class="form-section">
         <div class="section-title">
           <span>👨‍⚕️</span>
@@ -371,10 +559,10 @@
             <div class="input-icon" data-icon="👨‍⚕️">
               <select id="idVeterinario" name="idVeterinario" required onchange="checkAvailability()">
                 <option value="">Seleccionar veterinario...</option>
-                <option value="1">Dr. Martín Fernández</option>
-                <option value="2">Dra. Carolina López</option>
-                <option value="3">Dr. Roberto García</option>
-                <option value="4">Dra. Valeria Torres</option>
+                <option value="1">Dr. Martín Fernández (Mat: 30456789)</option>
+                <option value="2">Dra. Carolina López (Mat: 28789456)</option>
+                <option value="3">Dr. Roberto García (Mat: 32567890)</option>
+                <option value="4">Dra. Valeria Torres (Mat: 29123456)</option>
               </select>
             </div>
           </div>
@@ -384,9 +572,9 @@
             <div class="input-icon" data-icon="👤">
               <select id="idRecepcionista" name="idRecepcionista" required>
                 <option value="">Seleccionar recepcionista...</option>
-                <option value="1" selected>Sofía Ramírez</option>
-                <option value="2">Lucas Morales</option>
-                <option value="3">Gabriela Castro</option>
+                <option value="1" selected>Sofía Ramírez (DNI: 36234567)</option>
+                <option value="2">Lucas Morales (DNI: 34567890)</option>
+                <option value="3">Gabriela Castro (DNI: 38901234)</option>
               </select>
             </div>
           </div>
@@ -406,7 +594,7 @@
             <div class="input-icon" data-icon="🕐">
               <input type="time" id="hora" name="hora" required onchange="checkAvailability()" min="08:00" max="19:00">
             </div>
-            <span class="help-text">Horario de atención: 8:00 - 19:00</span>
+            <span class="help-text">Horario: 8:00 - 19:00 (Evita las XX:00 para ver el mensaje de "no disponible")</span>
           </div>
         </div>
 
@@ -431,11 +619,14 @@
               <option value="PROGRAMADO" selected>Programado</option>
               <option value="CONFIRMADO">Confirmado</option>
               <option value="EN_CURSO">En Curso</option>
+              <option value="COMPLETADO">Completado</option>
+              <option value="CANCELADO">Cancelado</option>
             </select>
           </div>
         </div>
       </div>
 
+      <!-- Motivo de Consulta -->
       <div class="form-section">
         <div class="section-title">
           <span>📝</span>
@@ -472,6 +663,134 @@
 </div>
 
 <script>
+  // Base de datos simulada de propietarios y mascotas
+  const propietarios = {
+      '35123456': {
+          idPropietario: 1,
+          documento: '35123456',
+          nombre: 'María',
+          apellido: 'González',
+          celular: '(351) 456-7890',
+          mascotas: [
+              {
+                  idMascota: 1,
+                  nombre: 'Max',
+                  especie: 'Perro',
+                  raza: 'Golden Retriever',
+                  edad: 3,
+                  color: 'Dorado',
+                  peso: 32,
+                  sexo: 'Macho',
+                  fechaNacimiento: '2021-05-15'
+              },
+              {
+                  idMascota: 2,
+                  nombre: 'Bella',
+                  especie: 'Perro',
+                  raza: 'Labrador',
+                  edad: 5,
+                  color: 'Negro',
+                  peso: 28,
+                  sexo: 'Hembra',
+                  fechaNacimiento: '2019-03-10'
+              }
+          ]
+      },
+      '28456789': {
+          idPropietario: 2,
+          documento: '28456789',
+          nombre: 'Juan',
+          apellido: 'Rodríguez',
+          celular: '(351) 789-4561',
+          mascotas: [
+              {
+                  idMascota: 3,
+                  nombre: 'Luna',
+                  especie: 'Gato',
+                  raza: 'Siamés',
+                  edad: 2,
+                  color: 'Crema',
+                  peso: 4.5,
+                  sexo: 'Hembra',
+                  fechaNacimiento: '2022-08-20'
+              }
+          ]
+      },
+      '40234567': {
+          idPropietario: 3,
+          documento: '40234567',
+          nombre: 'Ana',
+          apellido: 'Martínez',
+          celular: '(351) 234-5678',
+          mascotas: [
+              {
+                  idMascota: 4,
+                  nombre: 'Rocky',
+                  especie: 'Perro',
+                  raza: 'Bulldog Francés',
+                  edad: 4,
+                  color: 'Atigrado',
+                  peso: 12,
+                  sexo: 'Macho',
+                  fechaNacimiento: '2020-11-05'
+              },
+              {
+                  idMascota: 5,
+                  nombre: 'Coco',
+                  especie: 'Perro',
+                  raza: 'Poodle',
+                  edad: 2,
+                  color: 'Blanco',
+                  peso: 7,
+                  sexo: 'Macho',
+                  fechaNacimiento: '2022-04-12'
+              }
+          ]
+      },
+      '33890123': {
+          idPropietario: 4,
+          documento: '33890123',
+          nombre: 'Laura',
+          apellido: 'Sánchez',
+          celular: '(351) 890-1234',
+          mascotas: [
+              {
+                  idMascota: 6,
+                  nombre: 'Mimi',
+                  especie: 'Gato',
+                  raza: 'Persa',
+                  edad: 5,
+                  color: 'Blanco',
+                  peso: 3.8,
+                  sexo: 'Hembra',
+                  fechaNacimiento: '2019-07-18'
+              }
+          ]
+      },
+      '37345678': {
+          idPropietario: 5,
+          documento: '37345678',
+          nombre: 'Carlos',
+          apellido: 'Gómez',
+          celular: '(351) 345-6789',
+          mascotas: [
+              {
+                  idMascota: 7,
+                  nombre: 'Toby',
+                  especie: 'Perro',
+                  raza: 'Beagle',
+                  edad: 6,
+                  color: 'Tricolor',
+                  peso: 15,
+                  sexo: 'Macho',
+                  fechaNacimiento: '2018-09-25'
+              }
+          ]
+      }
+  };
+
+  let propietarioActual = null;
+
   // Auto-completar fecha de solicitud con fecha/hora actual
   document.addEventListener('DOMContentLoaded', function() {
       const now = new Date();
@@ -488,27 +807,93 @@
       document.getElementById('fecha').min = `${year}-${month}-${day}`;
   });
 
-  // Mostrar información de la mascota seleccionada
-  function showPetInfo(select) {
-      const info = document.getElementById('petInfo');
-      const details = document.getElementById('petDetails');
+  // Buscar propietario por DNI
+  function buscarPropietario() {
+      const dni = document.getElementById('dniPropietario').value.trim();
+      const ownerInfo = document.getElementById('ownerInfo');
+      const alertError = document.getElementById('alertError');
 
-      if (select.value) {
-          const option = select.options[select.selectedIndex];
-          const nombre = option.dataset.nombre;
-          const especie = option.dataset.especie;
-          const raza = option.dataset.raza;
-          const peso = option.dataset.peso;
-          const propietario = option.dataset.propietario;
-          const celular = option.dataset.celular;
+      if (!dni || dni.length < 7) {
+          alertError.style.display = 'flex';
+          document.getElementById('errorMessage').textContent = 'Por favor, ingrese un DNI válido (mínimo 7 dígitos)';
+          setTimeout(() => {
+              alertError.style.display = 'none';
+          }, 3000);
+          return;
+      }
 
-          details.innerHTML = `
-              Especie: ${especie} | Raza: ${raza} | Peso: ${peso} kg<br>
-              Propietario: ${propietario} | Celular: ${celular}
-          `;
-          info.classList.add('show');
+      const propietario = propietarios[dni];
+
+      if (propietario) {
+          propietarioActual = propietario;
+          mostrarDatosPropietario(propietario);
+          ownerInfo.classList.add('show');
       } else {
-          info.classList.remove('show');
+          alertError.style.display = 'flex';
+          document.getElementById('errorMessage').textContent = '❌ No se encontró un propietario con ese DNI. Prueba con: 35123456, 28456789, 40234567, 33890123 o 37345678';
+          setTimeout(() => {
+              alertError.style.display = 'none';
+          }, 5000);
+          ownerInfo.classList.remove('show');
+          propietarioActual = null;
+      }
+  }
+
+  // Mostrar datos del propietario y sus mascotas
+  function mostrarDatosPropietario(propietario) {
+      document.getElementById('ownerNombre').textContent = `${propietario.nombre} ${propietario.apellido}`;
+      document.getElementById('ownerDocumento').textContent = propietario.documento;
+      document.getElementById('ownerCelular').textContent = propietario.celular;
+      document.getElementById('idPropietario').value = propietario.idPropietario;
+
+      // Mostrar mascotas
+      const petsList = document.getElementById('petsList');
+      petsList.innerHTML = '';
+
+      if (propietario.mascotas.length === 0) {
+          petsList.innerHTML = '<p style="color: #8898aa; font-size: 13px;">Este propietario no tiene mascotas registradas.</p>';
+          return;
+      }
+
+      propietario.mascotas.forEach(mascota => {
+          const petCard = document.createElement('div');
+          petCard.className = 'pet-card';
+          petCard.onclick = () => seleccionarMascota(mascota.idMascota, petCard);
+
+          const icon = mascota.especie === 'Perro' ? '🐕' : '🐈';
+
+          petCard.innerHTML = `
+              <h5>${icon} ${mascota.nombre}</h5>
+              <div class="pet-details">
+                  <strong>Especie:</strong> ${mascota.especie} |
+                  <strong>Raza:</strong> ${mascota.raza}<br>
+                  <strong>Edad:</strong> ${mascota.edad} año(s) |
+                  <strong>Sexo:</strong> ${mascota.sexo} |
+                  <strong>Color:</strong> ${mascota.color}<br>
+                  <strong>Peso:</strong> ${mascota.peso} kg |
+                  <strong>Fecha Nacimiento:</strong> ${mascota.fechaNacimiento}
+              </div>
+          `;
+
+          petsList.appendChild(petCard);
+      });
+  }
+
+  // Seleccionar mascota
+  function seleccionarMascota(idMascota, cardElement) {
+      // Remover selección anterior
+      document.querySelectorAll('.pet-card').forEach(card => {
+          card.classList.remove('selected');
+      });
+
+      // Marcar nueva selección
+      cardElement.classList.add('selected');
+      document.getElementById('idMascota').value = idMascota;
+
+      // Mostrar feedback visual
+      const mascotaSeleccionada = propietarioActual.mascotas.find(m => m.idMascota === idMascota);
+      if (mascotaSeleccionada) {
+          console.log(`✅ Mascota seleccionada: ${mascotaSeleccionada.nombre}`);
       }
   }
 
@@ -533,7 +918,7 @@
       // Simular llamada a API con debounce
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-          // Simulación: disponible si no es hora en punto (00 minutos)
+          // Simulación: no disponible si es hora en punto (00 minutos)
           const disponible = hora.split(':')[1] !== '00';
 
           if (disponible) {
@@ -550,6 +935,18 @@
   function handleSubmit(event) {
       event.preventDefault();
 
+      // Validar que se haya seleccionado una mascota
+      const idMascota = document.getElementById('idMascota').value;
+      if (!idMascota) {
+          const alertError = document.getElementById('alertError');
+          alertError.style.display = 'flex';
+          document.getElementById('errorMessage').textContent = 'Por favor, seleccione una mascota antes de continuar.';
+          setTimeout(() => {
+              alertError.style.display = 'none';
+          }, 4000);
+          return;
+      }
+
       const btnSubmit = document.getElementById('btnSubmit');
       const alertSuccess = document.getElementById('alertSuccess');
       const alertError = document.getElementById('alertError');
@@ -558,19 +955,20 @@
       btnSubmit.disabled = true;
       btnSubmit.innerHTML = '<span class="loading"></span> Guardando...';
 
-      // Recopilar datos del formulario
+      // Recopilar datos del formulario según el diagrama de clases
       const formData = {
-          idMascota: document.getElementById('idMascota').value,
-          idVeterinario: document.getElementById('idVeterinario').value,
-          idRecepcionista: document.getElementById('idRecepcionista').value,
+          idTurno: null, // Se generará en el backend
+          idVeterinario: parseInt(document.getElementById('idVeterinario').value),
+          idMascota: parseInt(idMascota),
+          idRecepcionista: parseInt(document.getElementById('idRecepcionista').value),
+          estado: document.getElementById('estado').value,
           fecha: document.getElementById('fecha').value,
           hora: document.getElementById('hora').value,
           fechaSolicitud: document.getElementById('fechaSolicitud').value,
-          estado: document.getElementById('estado').value,
           motivo: document.getElementById('motivo').value
       };
 
-      console.log('Datos del turno:', formData);
+      console.log('📋 Datos del turno a guardar:', formData);
 
       // Simular llamada a API
       setTimeout(() => {
@@ -579,14 +977,23 @@
 
           if (exito) {
               alertSuccess.style.display = 'flex';
-              document.getElementById('successMessage').textContent =
-                  `Turno registrado exitosamente para el ${formData.fecha} a las ${formData.hora}`;
+              const mascotaSeleccionada = propietarioActual?.mascotas.find(m => m.idMascota === formData.idMascota);
+              const nombreMascota = mascotaSeleccionada ? mascotaSeleccionada.nombre : '';
+              const nombrePropietario = propietarioActual ? `${propietarioActual.nombre} ${propietarioActual.apellido}` : '';
 
-              // Limpiar formulario después de 2 segundos
+              document.getElementById('successMessage').innerHTML = `
+                  <strong>¡Turno registrado exitosamente!</strong><br>
+                  Mascota: ${nombreMascota} | Propietario: ${nombrePropietario}<br>
+                  Fecha: ${formData.fecha} a las ${formData.hora}
+              `;
+
+              console.log('✅ Turno guardado correctamente');
+
+              // Limpiar formulario después de 4 segundos
               setTimeout(() => {
-                  resetForm();
                   alertSuccess.style.display = 'none';
-              }, 3000);
+                  resetForm();
+              }, 4000);
           } else {
               alertError.style.display = 'flex';
               document.getElementById('errorMessage').textContent =
@@ -612,14 +1019,31 @@
           },
           body: JSON.stringify(formData)
       })
-      .then(response => response.json())
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Error en la respuesta del servidor');
+          }
+          return response.json();
+      })
       .then(data => {
           alertSuccess.style.display = 'flex';
-          setTimeout(() => resetForm(), 2000);
+          document.getElementById('successMessage').textContent =
+              `Turno registrado exitosamente con ID: ${data.idTurno}`;
+          console.log('✅ Turno guardado:', data);
+          setTimeout(() => {
+              resetForm();
+              alertSuccess.style.display = 'none';
+              // window.location.href = 'gestion-turnos.html';
+          }, 3000);
       })
       .catch(error => {
           alertError.style.display = 'flex';
-          console.error('Error:', error);
+          document.getElementById('errorMessage').textContent =
+              'Error al registrar el turno: ' + error.message;
+          console.error('❌ Error:', error);
+          setTimeout(() => {
+              alertError.style.display = 'none';
+          }, 5000);
       })
       .finally(() => {
           btnSubmit.disabled = false;
@@ -631,8 +1055,17 @@
   // Limpiar formulario
   function resetForm() {
       document.getElementById('formTurno').reset();
-      document.getElementById('petInfo').classList.remove('show');
+      document.getElementById('dniPropietario').value = '';
+      document.getElementById('ownerInfo').classList.remove('show');
       document.getElementById('availabilityStatus').style.display = 'none';
+      document.getElementById('idPropietario').value = '';
+      document.getElementById('idMascota').value = '';
+      propietarioActual = null;
+
+      // Limpiar selección de mascotas
+      document.querySelectorAll('.pet-card').forEach(card => {
+          card.classList.remove('selected');
+      });
 
       // Restablecer fecha de solicitud
       const now = new Date();
@@ -643,7 +1076,20 @@
       const minutes = String(now.getMinutes()).padStart(2, '0');
 
       document.getElementById('fechaSolicitud').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+      // Restablecer estado por defecto
+      document.getElementById('estado').value = 'PROGRAMADO';
+
+      console.log('🔄 Formulario reiniciado');
   }
+
+  // Permitir buscar con Enter en el campo DNI
+  document.getElementById('dniPropietario').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+          e.preventDefault();
+          buscarPropietario();
+      }
+  });
 </script>
 </body>
 </html>
