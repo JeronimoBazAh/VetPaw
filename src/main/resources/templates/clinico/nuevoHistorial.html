@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Evolución Clínica - VetPaw</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .patient-banner {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e1e8ed;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .patient-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .patient-details {
+            font-size: 14px;
+            color: #8898aa;
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e8ed;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #525f7f;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon input {
+            padding-left: 40px;
+        }
+
+        .input-icon::before {
+            content: attr(data-icon);
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #8898aa;
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            padding-top: 30px;
+            border-top: 2px solid #e1e8ed;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #e1e8ed;
+            color: #525f7f;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <h1>📝 Registrar Evolución Clínica</h1>
+            <p>Complete los datos del historial clínico del paciente</p>
+        </div>
+        <button class="btn-back">
+            <span>⬅️</span>
+            Volver al Historial
+        </button>
+    </div>
+
+    <div class="patient-banner">
+        <div class="patient-avatar">🐕</div>
+        <div class="patient-info">
+            <div class="patient-name">Max - Golden Retriever</div>
+            <div class="patient-details">
+                Propietario: María González | Edad: 3 años | Peso actual: 32 kg |
+                Episodio #12 - Abierto desde: 15/10/2025
+            </div>
+        </div>
+    </div>
+
+    <div class="form-content">
+        <div class="alert alert-info">
+            <span style="font-size: 20px;">ℹ️</span>
+            <div>
+                Esta evolución se registrará en el episodio clínico actualmente abierto.
+                Asegúrese de completar todos los campos obligatorios.
+            </div>
+        </div>
+
+        <form>
+            <div class="form-section">
+                <div class="section-title">
+                    <span>📊</span>
+                    Datos Básicos
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Veterinario <span class="required">*</span></label>
+                        <select required disabled>
+                            <option>Dr. Martín Fernández</option>
+                        </select>
+                        <span class="help-text">Veterinario responsable del episodio</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de Atención <span class="required">*</span></label>
+                        <div class="input-icon" data-icon="📅">
+                            <input type="date" required value="2025-10-24">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Peso Actual (kg) <span class="required">*</span></label>
+                        <div class="input-icon" data-icon="⚖️">
+                            <input type="number" step="0.1" placeholder="Ej: 32.5" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">
+                    <span>🩺</span>
+                    Diagnóstico
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Diagnóstico <span class="required">*</span></label>
+                    <textarea placeholder="Describa el diagnóstico clínico del paciente..." required></textarea>
+                    <span class="help-text">Ingrese el diagnóstico determinado para este episodio</span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">
+                    <span>💊</span>
+                    Medicación y Tratamiento
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Medicación Prescrita</label>
+                    <textarea placeholder="Detalle los medicamentos recetados, dosis y frecuencia..."></textarea>
+                    <span class="help-text">Ejemplo: Amoxicilina 500mg cada 12 horas por 7 días</span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">
+                    <span>📋</span>
+                    Observaciones Adicionales
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Otro (Observaciones, Recomendaciones, etc.)</label>
+                    <textarea placeholder="Ingrese cualquier información adicional relevante..."></textarea>
+                    <span class="help-text">Recomendaciones al propietario, cuidados especiales, etc.</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary">
+                    <span>✖️</span>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-success">
+                    <span>✔️</span>
+                    Guardar y Cerrar Episodio
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <span>💾</span>
+                    Guardar Evolución
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
