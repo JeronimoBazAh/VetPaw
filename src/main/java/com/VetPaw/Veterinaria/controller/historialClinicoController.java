@@ -2,8 +2,10 @@ package com.VetPaw.Veterinaria.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller("/clinica")
+@Controller
+@RequestMapping("/clinica")
 public class historialClinicoController {
 
     @GetMapping("/historial")
