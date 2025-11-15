@@ -79,4 +79,11 @@ public class LoginController {
         return "/clinico/principalVet";
     }
 
+    @GetMapping("/inicio")
+    public String inicio(){
+
+
+        return "inicio";
+    }
+
 }

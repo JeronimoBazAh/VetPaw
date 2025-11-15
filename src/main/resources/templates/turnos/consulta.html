@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Evolución Clínica - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS GENERAL y de LAYOUT (Mantenemos la consistencia) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ------------------------------------- */
+        /* NAVEGACIÓN LATERAL (SIDEBAR) - MORADO (Estructural) */
+        /* ------------------------------------- */
+        .app-sidebar {
+            width: 260px;
+            background-color: #6d28d9;
+            color: white;
+            padding: 1.5rem 0;
+            flex-shrink: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 1.5rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-nav a.active {
+            background-color: #7c3aed;
+            border-left-color: #f59e0b;
+        }
+
+        .sidebar-nav a svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        /* ------------------------------------- */
+        /* CONTENIDO PRINCIPAL Y ENCABEZADO DE FORMULARIO */
+        /* ------------------------------------- */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+        }
+
+        .container {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            max-width: 100%;
+            margin: 0;
+            overflow-y: auto;
+            height: calc(100vh - 66px);
+        }
+
+        /* Contenedor del Formulario (Tarjeta grande) */
+        .form-container-card {
+            max-width: 900px;
+            margin: 1.5rem auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Encabezado del Formulario (Header degradado) */
+        .form-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            padding: 2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-header p {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+        }
+
+        .btn-back-history {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 18px;
+            border: 1px solid white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back-history:hover {
+            background: white;
+            color: #7c3aed;
+        }
+
+        /* Contenido del Formulario */
+        .form-content {
+            padding: 2.5rem;
+        }
+
+        /* Banner de Alerta Azul (Información) */
+        .alert-info-banner {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #1976d2;
+            font-size: 14px;
+        }
+
+        /* Estilos del Paciente (Detalle Max - Golden Retriever) */
+        .patient-details {
+            padding: 15px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .patient-details h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Secciones del Formulario */
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #525f7f;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Acciones del Formulario (Botones Inferiores) */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 30px;
+        }
+
+        .btn-action-base {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        .btn-cancel {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .btn-cancel:hover {
+            background-color: #d1d5db;
+        }
+
+        .btn-save-close {
+            background-color: #10b981; /* Verde - Guarda y Cierra Episodio */
+            color: white;
+        }
+
+        .btn-save-close:hover {
+            background-color: #059669;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-save {
+            background-color: #6d28d9; /* Morado - Solo Guarda Evolución */
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #5b21b6;
+            box-shadow: 0 2px 4px rgba(109, 40, 217, 0.3);
+        }
+
+        .required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+    </style>
+</head>
+<body>
+<div class="app-sidebar">
+</div>
+
+<div class="main-wrapper">
+    <div class="top-bar"></div>
+
+    <div class="container">
+
+        <div class="form-container-card">
+
+            <div class="form-header">
+                <div>
+                    <h2>🩺 Registrar Evolución Clínica</h2>
+                    <p>Complete los datos de la cita veterinaria para el paciente.</p>
+                </div>
+                <a href="#historial" class="btn-back-history">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                    </svg>
+                    Volver al Historial
+                </a>
+            </div>
+
+            <div class="form-content">
+
+                <div class="patient-details">
+                    <h3>🐶 Max - Golden Retriever</h3>
+                    Propietario: María González | Edad: 3 años | Peso actual: 32 kg | **Episodio #12 - Abierto desde: 15/10/2025**
+                </div>
+
+                <div class="alert-info-banner">
+                    <span style="font-size: 1.2rem; margin-right: 10px;">ℹ️</span> Esta evolución se registrará en el episodio clínico actualmente abierto. Asegúrese de completar todos los campos obligatorios.
+                </div>
+
+                <form onsubmit="handleEvolutionSubmit(event)">
+
+                    <h4 class="form-section-title">Datos Básicos</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="veterinario" class="required">Veterinario</label>
+                            <select id="veterinario" disabled>
+                                <option value="Dr. Fernandez">Dr. Jerónimo Bazán (Responsable)</option>
+                                <option value="Dra. Martinez">Dra. Martínez</option>
+                            </select>
+                            <small style="font-size: 12px; color: #8898aa;">Veterinario responsable del episodio</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaAtencion" class="required">Fecha de Atención</label>
+                            <input type="date" id="fechaAtencion" value="2025-10-24" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoActual" class="required">Peso Actual (kg)</label>
+                            <input type="number" id="pesoActual" placeholder="Ej: 32.5" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <h4 class="form-section-title">Diagnóstico y Evolución</h4>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="diagnostico" class="required">Descripción Clínica y Anamnesis</label>
+                        <textarea id="diagnostico" placeholder="Realizar anamnesis y examen físico. Registrar hallazgos preliminares. (CU-04)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diagnosticoFinal" class="required">Diagnóstico (CIE-Veterinario)</label>
+                        <textarea id="diagnosticoFinal" placeholder="Describa el diagnóstico clínico del paciente. (CU-04: Registrar diagnóstico)"></textarea>
+                        <small style="font-size: 12px; color: #8898aa;">Ingrese el diagnóstico determinado para este episodio</small>
+                    </div>
+
+                    <h4 class="form-section-title">Medicación y Tratamiento</h4>
+                    <div class="form-group">
+                        <label for="medicacion">Medicación Prescrita</label>
+                        <textarea id="medicacion" placeholder="Detalle los medicamentos recetados, dosis y frecuencia... Ejemplo: Amoxicilina 500mg cada 12 horas por 7 días"></textarea>
+                    </div>
+
+                    <h4 class="form-section-title">Observaciones Adicionales</h4>
+                    <div class="form-group">
+                        <label for="observaciones">Otros (Observaciones, Recomendaciones, Estudios, etc.)</label>
+                        <textarea id="observaciones" placeholder="Ingrese cualquier información adicional relevante, recomendaciones al propietario, cuidados especiales, etc."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-action-base btn-cancel" onclick="alert('Cancelando y volviendo al Historial')">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-action-base btn-save-close" onclick="closeEpisode()">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Guardar y Cerrar Episodio
+                        </button>
+                        <button type="submit" class="btn-action-base btn-save">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Guardar Evolución
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Función para manejar el envío del formulario (simulación)
+    function handleEvolutionSubmit(event) {
+        event.preventDefault();
+        const btnText = event.submitter.textContent.trim();
+
+        if (btnText.includes('Guardar y Cerrar Episodio')) {
+            closeEpisode();
+        } else {
+            // CU-04: Registrar evolución clínica
+            alert('Guardando Evolución clínica en el episodio abierto. El formulario permanece abierto para más entradas.');
+        }
+        console.log('Datos de evolución enviados al backend.');
+    }
+
+    // Función de cierre de episodio (simulación)
+    function closeEpisode() {
+        // CU-04: Cerrar episodio
+        if (confirm('Advertencia: Al cerrar el episodio, no se podrán agregar más evoluciones. ¿Desea continuar?')) {
+            alert('Episodio Cerrado. Navegando de vuelta al Historial Clínico completo.');
+            // Aquí iría la lógica de cerrar el episodio (Cambiar estado a CERRADO)
+        }
+    }
+</script>
+</body>
+</html>

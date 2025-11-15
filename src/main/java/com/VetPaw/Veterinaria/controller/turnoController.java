@@ -15,12 +15,7 @@ public class turnoController {
         return "/turnos/agendaTurnos";
     }
 
-    @GetMapping("/inicio")
-    public String inicio(){
 
-
-        return "principal";
-    }
 
     @GetMapping("/crearTurno")
     public String crearTurno(){

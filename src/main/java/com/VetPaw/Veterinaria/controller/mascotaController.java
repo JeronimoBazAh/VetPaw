@@ -22,7 +22,7 @@ public class mascotaController {
     public String crearMascota(){
 
 
-        return "/clinico/registroMascota";
+        return "/clinico/registrarMascota";
     }
 
     @GetMapping("/gestion")
@@ -31,4 +31,29 @@ public class mascotaController {
 
         return "/clinico/gestionMascotas";
     }
+
+    @GetMapping("/vacunacion")
+    public String vecunacion(){
+
+
+        return "/clinico/nuevoVacunacion";
+    }
+
+    @GetMapping("/tratamiento")
+    public String tratamiento(){
+
+
+        return "/clinico/tratamientos";
+    }
+
+    @GetMapping("/historial")
+    public String clinico(){
+
+
+        return "/clinico/nuevoHistorial";
+    }
+
+
+
+
 }
