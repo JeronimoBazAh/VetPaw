@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Propietarios - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* BASE Y LAYOUT GENERAL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ------------------------------------- */
+        /* NAVEGACIÓN LATERAL (SIDEBAR) - MORADO */
+        /* ------------------------------------- */
+        .app-sidebar {
+            width: 260px;
+            background-color: #6d28d9;
+            color: white;
+            padding: 1.5rem 0;
+            flex-shrink: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 1.5rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-logo span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-logo h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            color: white;
+            background-color: #7c3aed;
+        }
+
+        .sidebar-nav a.active {
+            color: white;
+            background-color: #7c3aed;
+            border-left-color: #f59e0b;
+        }
+
+        .sidebar-nav a svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        /* ------------------------------------- */
+        /* CONTENIDO PRINCIPAL Y TOP BAR */
+        /* ------------------------------------- */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .icon-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #6b7280;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            max-width: 100%;
+            margin: 0;
+            overflow-y: auto;
+            height: calc(100vh - 66px);
+        }
+
+        /* ------------------------------------- */
+        /* ESTILOS ESPECÍFICOS DE GESTIÓN DE PROPIETARIOS */
+        /* ------------------------------------- */
+
+        .page-header {
+            /* Usamos la misma base del header de la imagen */
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            border-radius: 12px 12px 0 0; /* Bordes redondeados solo arriba */
+            padding: 1.5rem 2rem;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0; /* Quitamos margin-bottom */
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header p {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+        }
+
+        .btn-new-propietario {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-new-propietario:hover {
+            background-color: #2563eb;
+        }
+
+        /* Contenedor Principal (Para agrupar header, filtros y tabla) */
+        .main-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 1.5rem; /* Separación del top-bar */
+        }
+
+        /* Barra de Búsqueda y Filtros */
+        .filters-actions-bar {
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .search-input-group {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .search-input-group input {
+            width: 100%;
+            padding: 8px 12px 8px 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-input-group svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            stroke: #6b7280;
+        }
+
+        .filters-actions-bar select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Métricas (Contadores) */
+        .metrics-propietarios {
+            display: flex;
+            padding: 1.5rem;
+            gap: 40px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            padding-right: 40px;
+        }
+
+        .metric-item.total {
+            border-right: 2px solid #7c3aed;
+        }
+
+        .metric-item.activos {
+            border-left: 2px solid #10b981;
+            padding-left: 40px;
+        }
+
+        .metric-item .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.1rem;
+        }
+
+        .metric-item.total .value { color: #7c3aed; }
+        .metric-item.activos .value { color: #10b981; }
+
+        .metric-item .label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        /* Tabla de Listado */
+        .propietarios-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+
+        .propietarios-table th, .propietarios-table td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .propietarios-table th {
+            background-color: white;
+            color: #4b5563;
+            font-weight: 600;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .propietarios-table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .propietarios-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .propietarios-table td:nth-child(1) { width: 10%; font-weight: 600; color: #7c3aed; } /* ID */
+        .propietarios-table td:nth-child(2) { width: 15%; } /* Documento */
+        .propietarios-table td:nth-child(3), .propietarios-table td:nth-child(4) { width: 15%; } /* Nombre/Apellido */
+        .propietarios-table td:nth-child(5) { width: 15%; } /* Celular */
+        .propietarios-table td:nth-child(6) { width: 15%; } /* Mascotas */
+        .propietarios-table td:nth-child(7) { width: 15%; white-space: nowrap; } /* Acciones */
+
+        .btn-table-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .btn-ver { color: #3b82f6; }
+        .btn-editar { color: #f59e0b; }
+
+        /* Paginación (Parte inferior) */
+        .pagination-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .page-link {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .page-link.active {
+            background-color: #7c3aed;
+            color: white;
+            border-color: #7c3aed;
+        }
+
+        .page-link:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+
+        /* Media Queries para Responsive */
+        @media (max-width: 1024px) {
+             .propietarios-table th, .propietarios-table td {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1rem;
+            }
+            .filters-actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filters-actions-bar > * {
+                width: 100%;
+            }
+            .search-input-group {
+                order: -1;
+            }
+            .metrics-propietarios {
+                flex-direction: column;
+                gap: 20px;
+                padding: 1rem;
+            }
+            .metric-item {
+                border-right: none;
+                padding-right: 0;
+                border-bottom: 1px dashed #e5e7eb;
+                padding-bottom: 10px;
+                align-items: flex-start;
+            }
+            .metric-item.activos {
+                border-left: none;
+                padding-left: 0;
+            }
+            /* La tabla se hará responsive con un scroll horizontal */
+            .table-wrapper {
+                overflow-x: auto;
+                width: 100%;
+            }
+            .propietarios-table {
+                min-width: 700px;
+                table-layout: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-sidebar">
+    <div class="sidebar-logo">
+        <span>🐾</span>
+        <h2>VetPaw</h2>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" />
+            </svg>
+            Inicio (Dashboard)
+        </a>
+
+        <a href="#propietarios" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+            Gestión de Propietarios
+        </a>
+        <a href="#mascotas">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            Gestión de Mascotas
+        </a>
+
+        <a href="#turnos">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" />
+            </svg>
+            Agenda y Turnos
+        </a>
+        <a href="#historial">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" />
+            </svg>
+            Historial Clínico
+        </a>
+
+
+        <a href="#reportes">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" />
+            </svg>
+            Reportes y Estadísticas
+        </a>
+    </nav>
+</div>
+
+<div class="main-wrapper">
+    <div class="top-bar">
+        <h1>Gestión de Propietarios</h1>
+        <div class="top-bar-actions">
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                <span class="notification-dot"></span>
+            </button>
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="main-card">
+
+            <div class="page-header">
+                <div>
+                    <h2><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="24" height="24" style="stroke:white;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                    </svg> Gestión de Propietarios</h2>
+                    <p>Administra la información de los dueños de mascotas</p>
+                </div>
+            </div>
+
+            <div class="filters-actions-bar">
+                <div class="search-input-group">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <input type="text" placeholder="Buscar por documento, nombre, apellido o celular..." onkeyup="filterPropietarios()">
+                </div>
+
+                <select>
+                    <option>Ordenar por: Nombre</option>
+                    <option>Documento</option>
+                    <option>Mascotas (mayor a menor)</option>
+                </select>
+
+                <button class="btn-new-propietario" onclick="alert('Abriendo formulario de Nuevo Propietario')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Nuevo Propietario
+                </button>
+            </div>
+
+            <div class="metrics-propietarios">
+                <div class="metric-item total">
+                    <div class="value">247</div>
+                    <div class="label">TOTAL PROPIETARIOS</div>
+                </div>
+                <div class="metric-item activos">
+                    <div class="value">231</div>
+                    <div class="label">CON MASCOTAS ACTIVAS</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="propietarios-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>DOCUMENTO</th>
+                        <th>NOMBRE</th>
+                        <th>APELLIDO</th>
+                        <th>CELULAR</th>
+                        <th>MASCOTAS</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>#001</td>
+                        <td>35421789</td>
+                        <td>María</td>
+                        <td>González</td>
+                        <td>(351) 456-7890</td>
+                        <td>2 mascotas</td>
+                        <td>
+                            <button class="btn-table-action btn-ver" onclick="viewPropietario(1)">● Ver</button>
+                            <button class="btn-table-action btn-editar" onclick="editPropietario(1)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#002</td>
+                        <td>28567432</td>
+                        <td>Juan</td>
+                        <td>Rodríguez</td>
+                        <td>(351) 789-4561</td>
+                        <td>1 mascota</td>
+                        <td>
+                            <button class="btn-table-action btn-ver" onclick="viewPropietario(2)">● Ver</button>
+                            <button class="btn-table-action btn-editar" onclick="editPropietario(2)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#003</td>
+                        <td>41234876</td>
+                        <td>Ana</td>
+                        <td>Martínez</td>
+                        <td>(351) 234-5678</td>
+                        <td>3 mascotas</td>
+                        <td>
+                            <button class="btn-table-action btn-ver" onclick="viewPropietario(3)">● Ver</button>
+                            <button class="btn-table-action btn-editar" onclick="editPropietario(3)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#004</td>
+                        <td>32987654</td>
+                        <td>Roberto</td>
+                        <td>Fernández</td>
+                        <td>(351) 567-8901</td>
+                        <td>1 mascota</td>
+                        <td>
+                            <button class="btn-table-action btn-ver" onclick="viewPropietario(4)">● Ver</button>
+                            <button class="btn-table-action btn-editar" onclick="editPropietario(4)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#005</td>
+                        <td>37654321</td>
+                        <td>Laura</td>
+                        <td>Sánchez</td>
+                        <td>(351) 890-1234</td>
+                        <td>2 mascotas</td>
+                        <td>
+                            <button class="btn-table-action btn-ver" onclick="viewPropietario(5)">● Ver</button>
+                            <button class="btn-table-action btn-editar" onclick="editPropietario(5)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#006</td>
+                        <td>29876543</td>
+                        <td>Carlos</td>
+                        <td>Gómez</td>
+                        <td>(351) 345-6789</td>
+                        <td>1 mascota</td>
+                        <td>
+                            <button class="btn-table-action btn-ver" onclick="viewPropietario(6)">● Ver</button>
+                            <button class="btn-table-action btn-editar" onclick="editPropietario(6)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination-footer">
+                <a href="#" class="page-link" onclick="goToPage(1)">⏪ Primera</a>
+                <a href="#" class="page-link" onclick="goToPage('prev')">⬅️ Anterior</a>
+                <a href="#" class="page-link active">1</a>
+                <a href="#" class="page-link">2</a>
+                <a href="#" class="page-link">3</a>
+                <a href="#" class="page-link">4</a>
+                <a href="#" class="page-link">5</a>
+                <a href="#" class="page-link" onclick="goToPage('next')">Siguiente ➡️</a>
+                <a href="#" class="page-link" onclick="goToPage(9)">Última ⏩</a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Funciones de acción simuladas
+    function viewPropietario(id) {
+        alert(`Abriendo detalle del Propietario #${id}. (CU-01: Consultar/Ver detalle)`);
+        // Simular navegación a la página de detalle del cliente
+    }
+
+    function editPropietario(id) {
+        alert(`Abriendo formulario de Edición para Propietario #${id}. (CU-01: Actualizar)`);
+        // Simular navegación a la página de edición del cliente
+    }
+
+    function filterPropietarios() {
+        // Función activada al escribir en la barra de búsqueda (CU-01: Consultar/Buscar)
+        console.log('Aplicando filtros de búsqueda en la lista de propietarios...');
+    }
+
+    function goToPage(page) {
+        alert(`Simulando ir a la página: ${page}`);
+        // Lógica para actualizar la tabla y la paginación
+        // Aquí iría la llamada al API: consultarCliente(criterios, page)
+    }
+</script>
+</body>
+</html>

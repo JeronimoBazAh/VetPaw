@@ -12,7 +12,14 @@ public class turnoController {
     public String turnos(){
 
 
-        return "/turnos/gestionTurnos";
+        return "/turnos/agendaTurnos";
+    }
+
+    @GetMapping("/inicio")
+    public String inicio(){
+
+
+        return "principal";
     }
 
     @GetMapping("/crearTurno")
@@ -21,5 +28,13 @@ public class turnoController {
 
         return "/turnos/crearTurno";
     }
+    @GetMapping("/reportes")
+    public String reportes(){
+
+
+        return "reporteEstadistica";
+    }
+
+
 
 }

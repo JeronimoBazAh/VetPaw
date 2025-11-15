@@ -17,4 +17,18 @@ public class mascotaController {
 
         return "vistaPrincipal.html";
     }
+
+    @GetMapping("/crear")
+    public String crearMascota(){
+
+
+        return "/clinico/registroMascota";
+    }
+
+    @GetMapping("/gestion")
+    public String gestionMascota(){
+
+
+        return "/clinico/gestionMascotas";
+    }
 }

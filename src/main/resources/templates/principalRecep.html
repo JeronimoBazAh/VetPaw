@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - VetPaw (Accesos Rápidos Corregidos)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ------------------------------------- */
+        /* NAVEGACIÓN LATERAL (SIDEBAR) - MORADO */
+        /* ------------------------------------- */
+        .app-sidebar {
+            width: 260px;
+            background-color: #6d28d9;
+            color: white;
+            padding: 1.5rem 0;
+            flex-shrink: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 1.5rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-logo span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-logo h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            color: white;
+            background-color: #7c3aed;
+        }
+
+        .sidebar-nav a.active {
+            color: white;
+            background-color: #7c3aed;
+            border-left-color: #f59e0b;
+        }
+
+        .sidebar-nav a svg {
+            /* TAMAÑO CORREGIDO DEL SIDEBAR */
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        /* ------------------------------------- */
+        /* CONTENIDO PRINCIPAL Y TOP BAR */
+        /* ------------------------------------- */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .icon-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .icon-btn svg {
+            /* TAMAÑO CORREGIDO DE LA TOP BAR */
+            width: 20px;
+            height: 20px;
+            stroke: #6b7280;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 1.5rem;
+            max-width: 100%;
+            margin: 0;
+            overflow-y: auto;
+            height: calc(100vh - 66px);
+        }
+
+        /* Estilos de Contenido (Dashboard) */
+        .welcome-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background-color: #7c3aed;
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .turnos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .turno-item {
+            border-left: 4px solid #10b981;
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .turno-item.urgente {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        /* CORRECCIÓN DE TAMAÑO DE ÍCONO DE ACCESOS RÁPIDOS */
+        .action-btn svg {
+            width: 20px;
+            height: 20px;
+            /* No stroke:currentColor aquí, ya que el stroke debe ser blanco (inherited del botón) */
+        }
+
+        .btn-purple { background-color: #7c3aed; }
+        .btn-purple:hover { background-color: #6d28d9; }
+        .btn-blue { background-color: #3b82f6; }
+        .btn-blue:hover { background-color: #2563eb; }
+        .btn-green { background-color: #10b981; }
+        .btn-green:hover { background-color: #059669; }
+        .btn-indigo { background-color: #6366f1; }
+        .btn-indigo:hover { background-color: #4f46e5; }
+
+        .weekly-view {
+            margin-bottom: 1.5rem;
+        }
+
+        .weekly-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.75rem;
+        }
+
+        .day-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .day-card.today {
+            border-color: #7c3aed;
+            background-color: #f5f3ff;
+        }
+
+        .turnos-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* MEDIA QUERIES (Mismos estilos) */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .app-sidebar {
+                width: 100%;
+                height: auto;
+                padding: 1rem 0;
+            }
+            .sidebar-logo {
+                justify-content: center;
+            }
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+            .sidebar-nav a {
+                padding: 0.5rem 1rem;
+                flex-basis: 40%;
+                justify-content: center;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+            .sidebar-nav a.active {
+                border-left-color: transparent;
+                border-bottom-color: #7c3aed;
+            }
+            .container {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-sidebar">
+    <div class="sidebar-logo">
+        <span>🐾</span>
+        <h2>VetPaw</h2>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#dashboard" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" />
+            </svg>
+            Inicio (Dashboard)
+        </a>
+
+        <a href="/cliente/gestionCliente">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+            Gestión de Propietarios
+        </a>
+        <a href="/mascota/gestion">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            Gestión de Mascotas
+        </a>
+
+        <a href="/administracion/turnos">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" />
+            </svg>
+            Agenda y Turnos
+        </a>
+
+
+
+        <a href="/administracion/reportes">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" />
+            </svg>
+            Reportes y Estadísticas
+        </a>
+    </nav>
+</div>
+
+<div class="main-wrapper">
+    <div class="top-bar">
+        <h1>Inicio</h1>
+        <div class="top-bar-actions">
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                <span class="notification-dot"></span>
+            </button>
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-header">
+            <h2>¡Buenos días, Paula! 👋</h2>
+            <p>Tienes 12 turnos programados para hoy </p>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="value">12</div>
+                <div class="label">Turnos Hoy</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">45</div>
+                <div class="label">Turnos Esta Semana</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">3</div>
+                <div class="label">Turnos Pendientes</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">2</div>
+                <div class="label">Cancelados Hoy</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Próximos Turnos</h3>
+                    <a href="#agenda">Ver agenda completa →</a>
+                </div>
+                <div class="turnos-list">
+                    <div class="turno-item">
+                        <div class="turno-content">
+                            <div class="turno-left">
+                                <div class="turno-hora">10:00</div>
+                                <div class="turno-info">
+                                    <div class="cliente">María González</div>
+                                    <div class="detalles">Max • Perro • Consulta</div>
+                                    <div class="veterinario">Dr. Rodríguez</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="turno-item">
+                        <div class="turno-content">
+                            <div class="turno-left">
+                                <div class="turno-hora">10:30</div>
+                                <div class="turno-info">
+                                    <div class="cliente">Juan Pérez</div>
+                                    <div class="detalles">Luna • Gato • Vacunación</div>
+                                    <div class="veterinario">Dra. Martínez</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="turno-item urgente">
+                        <div class="turno-content">
+                            <div class="turno-left">
+                                <div class="turno-hora">11:00</div>
+                                <div class="turno-info">
+                                    <div class="cliente">Ana Silva</div>
+                                    <div class="detalles">Rocky • Perro • Control</div>
+                                    <div class="veterinario">Dr. Rodríguez</div>
+                                </div>
+                            </div>
+                            <span class="urgente-badge">URGENTE</span>
+                        </div>
+                    </div>
+                    <div class="turno-item">
+                        <div class="turno-content">
+                            <div class="turno-left">
+                                <div class="turno-hora">11:30</div>
+                                <div class="turno-info">
+                                    <div class="cliente">Carlos Díaz</div>
+                                    <div class="detalles">Michi • Gato • Consulta</div>
+                                    <div class="veterinario">Dra. Martínez</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="turno-item">
+                        <div class="turno-content">
+                            <div class="turno-left">
+                                <div class="turno-hora">12:00</div>
+                                <div class="turno-info">
+                                    <div class="cliente">Laura Ruiz</div>
+                                    <div class="detalles">Toby • Perro • Cirugía</div>
+                                    <div class="veterinario">Dr. Rodríguez</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Accesos Rápidos</h3>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="action-btn btn-purple" onclick="window.location.href='/administracion/crearTurno'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Nuevo Turno
+                        </button>
+                        <button class="action-btn btn-blue" onclick="window.location.href='/mascota/crear'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Nueva Mascota
+                        </button>
+                        <button class="action-btn btn-green" onclick="window.location.href='/administracion/crearCliente'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                            </svg>
+                            Nuevo Cliente
+                        </button>
+                        <button class="action-btn btn-indigo" onclick="window.location.href='/administracion/crearConsulta'">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                            </svg>
+                            Registrar Consulta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card weekly-view">
+            <div class="weekly-header">
+                <h3>Vista Semanal</h3>
+                <div class="weekly-nav">
+                    <button class="nav-btn" onclick="changeWeek(-1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+                    <button class="today-btn" onclick="goToToday()">Hoy</button>
+                    <button class="nav-btn" onclick="changeWeek(1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="week-grid" id="weekGrid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inicialización de datos
+    const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const monthsShort = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const daysShort = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+    // Configuración inicial
+    const now = new Date();
+    document.getElementById('currentDate').textContent =
+        `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+
+    let currentWeekOffset = 0;
+
+    function renderWeek() {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay() + currentWeekOffset * 7);
+
+        const weekGrid = document.getElementById('weekGrid');
+        weekGrid.innerHTML = '';
+
+        // Simulación de datos (solo contador de turno y urgencia)
+        const mockData = [
+            { count: 5, urgent: false },
+            { count: 10, urgent: true },
+            { count: 7, urgent: false },
+            { count: 12, urgent: true },
+            { count: 9, urgent: false },
+            { count: 15, urgent: true },
+            { count: 3, urgent: false }
+        ];
+
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startOfWeek);
+            date.setDate(startOfWeek.getDate() + i);
+
+            const isToday = date.toDateString() === new Date().toDateString() && currentWeekOffset === 0;
+            const data = mockData[i];
+
+            const dayCard = document.createElement('div');
+            dayCard.className = `day-card ${isToday ? 'today' : ''}`;
+            dayCard.innerHTML = `
+                ${data.urgent ? '<span class="urgency-dot"></span>' : ''}
+                <div class="day-name">${daysShort[date.getDay()]}</div>
+                <div class="day-number">${date.getDate()}</div>
+                <div class="day-month">${monthsShort[date.getMonth()]}</div>
+                <div class="turnos-count">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0h-6" />
+                    </svg>
+                    <span class="count">${data.count}</span>
+                </div>
+            `;
+            weekGrid.appendChild(dayCard);
+        }
+    }
+
+    function changeWeek(offset) {
+        currentWeekOffset += offset;
+        renderWeek();
+    }
+
+    function goToToday() {
+        currentWeekOffset = 0;
+        renderWeek();
+    }
+
+    // Renderizar la semana inicial al cargar
+    renderWeek();
+</script>
+</body>
+</html>

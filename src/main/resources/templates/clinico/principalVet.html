@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Principal - VetPaw</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* BASE Y LAYOUT GENERAL */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f4f6;
+        color: #1f2937;
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* ------------------------------------- */
+    /* NAVEGACIÓN LATERAL (SIDEBAR) - MORADO */
+    /* ------------------------------------- */
+    .app-sidebar {
+        width: 260px;
+        background-color: #6d28d9;
+        color: white;
+        padding: 1.5rem 0;
+        flex-shrink: 0;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 1.5rem;
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 15px;
+    }
+
+    .sidebar-logo span {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .sidebar-logo h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        color: #e5e7eb;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+        border-left: 4px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+        color: white;
+        background-color: #7c3aed;
+    }
+
+    .sidebar-nav a.active {
+        color: white;
+        background-color: #7c3aed;
+        border-left-color: #f59e0b; /* Color de acento naranja */
+    }
+
+    .sidebar-nav a svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+    }
+
+    /* ------------------------------------- */
+    /* CONTENIDO PRINCIPAL Y TOP BAR */
+    /* ------------------------------------- */
+    .main-wrapper {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-bar {
+        background-color: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .top-bar h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .top-bar-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: background-color 0.2s;
+    }
+
+    .icon-btn:hover {
+        background-color: #f3f4f6;
+    }
+
+    .icon-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #6b7280;
+    }
+
+    .notification-dot {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        background-color: #ef4444;
+        border-radius: 50%;
+    }
+
+    .container {
+        padding: 1.5rem;
+        max-width: 100%;
+        margin: 0;
+        overflow-y: auto;
+        height: calc(100vh - 66px);
+    }
+
+    /* ------------------------------------- */
+    /* ESTILOS ESPECÍFICOS DEL DASHBOARD */
+    /* ------------------------------------- */
+
+    /* Banner de Bienvenida (Mismo estilo que el encabezado degradado) */
+    .welcome-banner {
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .welcome-banner h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-banner p {
+        font-size: 1.125rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .welcome-banner .quick-info {
+        font-weight: 600;
+    }
+
+    /* Grid Principal del Dashboard */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr; /* Agenda a la izquierda, Alertas a la derecha */
+        gap: 1.5rem;
+    }
+
+    /* Contenedores de Tarjetas (KPIs, Agenda, Alertas) */
+    .card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 10px;
+    }
+
+    /* ----------------------- */
+    /* 1. KPIs (Key Metrics) */
+    /* ----------------------- */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-left: 5px solid #6d28d9;
+    }
+
+    .kpi-card.naranja { border-left-color: #f59e0b; }
+    .kpi-card.verde { border-left-color: #10b981; }
+    .kpi-card.azul { border-left-color: #3b82f6; }
+
+    .kpi-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .kpi-card .label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    /* ----------------------- */
+    /* 2. Agenda Diaria */
+    /* ----------------------- */
+    .agenda-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .agenda-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .agenda-item:last-child {
+        border-bottom: none;
+    }
+
+    .agenda-time {
+        flex-shrink: 0;
+        width: 80px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #f59e0b;
+    }
+
+    .agenda-details {
+        flex-grow: 1;
+    }
+
+    .agenda-details h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+        color: #1f2937;
+    }
+
+    .agenda-details p {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    .agenda-action-btn {
+        background-color: #e5e7eb;
+        color: #4b5563;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-left: 10px;
+    }
+
+    .agenda-action-btn:hover {
+        background-color: #d1d5db;
+    }
+
+    /* ----------------------- */
+    /* 3. Alertas y Recordatorios */
+    /* ----------------------- */
+    .alert-item {
+        padding: 10px 0;
+        border-bottom: 1px dashed #e5e7eb;
+        display: flex;
+        gap: 10px;
+    }
+
+    .alert-item:last-child {
+        border-bottom: none;
+    }
+
+    .alert-icon {
+        color: #ef4444;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .alert-details {
+        font-size: 0.9rem;
+    }
+
+    .alert-details strong {
+        color: #1f2937;
+    }
+
+    .alert-details span {
+        color: #6b7280;
+    }
+
+    .quick-actions-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quick-btn {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        padding: 10px 15px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .quick-btn:hover {
+        background-color: #e5e7eb;
+        border-color: #7c3aed;
+    }
+
+    /* Media Queries */
+    @media (max-width: 1024px) {
+        .kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .dashboard-grid {
+            grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+        }
+    }
+  </style>
+</head>
+<body>
+<div class="app-sidebar">
+  <div class="sidebar-logo">
+    <span>🐾</span>
+    <h2>VetPaw</h2>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#dashboard" class="active">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" />
+      </svg>
+      Inicio (Dashboard)
+    </a>
+
+    <a href="#propietarios">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+      </svg>
+      Gestión de Propietarios
+    </a>
+    <a href="#mascotas">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      </svg>
+      Gestión de Mascotas
+    </a>
+
+    <a href="#turnos">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" />
+      </svg>
+      Agenda y Turnos
+    </a>
+    <a href="#historial">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" />
+      </svg>
+      Historial Clínico
+    </a>
+
+    <a href="#recordatorios">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+      </svg>
+      Gestión de Recordatorios
+    </a>
+    <a href="#personal">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.75a4.5 4.5 0 00-4.5-4.5h-3a4.5 4.5 0 00-4.5 4.5m1.5-12h7.5m-7.5 7.5h7.5" />
+      </svg>
+      Personal y Roles
+    </a>
+    <a href="#reportes">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" />
+      </svg>
+      Reportes y Estadísticas
+    </a>
+  </nav>
+</div>
+
+<div class="main-wrapper">
+  <div class="top-bar">
+    <h1>Panel de Control (Dashboard)</h1>
+    <div class="top-bar-actions">
+      <button class="icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+        </svg>
+        <span class="notification-dot"></span>
+      </button>
+      <button class="icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="welcome-banner">
+      <div>
+        <h2>👋 Bienvenido/a, Dr. Jerónimo Bazán.</h2>
+        <p>Hoy es **Martes, 13 de Febrero de 2024**. Estamos listos para comenzar.</p>
+      </div>
+      <div class="quick-info">
+        <p>Turnos del día: 12</p>
+        <p>Recordatorios Activos: 5</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="value">12</div>
+        <div class="label">TURNOS PENDIENTES HOY</div>
+      </div>
+      <div class="kpi-card naranja">
+        <div class="value">3</div>
+        <div class="label">VACUNAS VENCEN PRONTO</div>
+      </div>
+      <div class="kpi-card verde">
+        <div class="value">543</div>
+        <div class="label">TOTAL DE MASCOTAS</div>
+      </div>
+      <div class="kpi-card azul">
+        <div class="value">2</div>
+        <div class="label">NUEVOS PROPIETARIOS (Últimos 7 días)</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <div class="agenda-card card">
+        <div class="card-header">📅 Turnos de Hoy</div>
+        <ul class="agenda-list">
+          <li class="agenda-item">
+            <span class="agenda-time">09:00</span>
+            <div class="agenda-details">
+              <h4>Max (Golden Retriever)</h4>
+              <p>Propietario: María González | Motivo: Vacunación Anual</p>
+            </div>
+            <button class="agenda-action-btn" onclick="startConsultation(1)">Iniciar</button>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-time">09:45</span>
+            <div class="agenda-details">
+              <h4>Luna (Gato Siamés)</h4>
+              <p>Propietario: Juan Rodríguez | Motivo: Control post-cirugía</p>
+            </div>
+            <button class="agenda-action-btn" onclick="startConsultation(2)">Iniciar</button>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-time">10:30</span>
+            <div class="agenda-details">
+              <h4>Rocky (Bulldog Francés)</h4>
+              <p>Propietario: Ana Martínez | Motivo: Consulta Dermatológica</p>
+            </div>
+            <button class="agenda-action-btn" onclick="startConsultation(3)">Iniciar</button>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-time">11:15</span>
+            <div class="agenda-details">
+              <h4>Toby (Beagle)</h4>
+              <p>Propietario: Carlos Gómez | Motivo: Chequeo Cachorro</p>
+            </div>
+            <button class="agenda-action-btn" onclick="startConsultation(4)">Iniciar</button>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-time">12:00</span>
+            <div class="agenda-details">
+              <h4>Piolín (Canario)</h4>
+              <p>Propietario: Roberto Fdez | Motivo: Desparasitación</p>
+            </div>
+            <button class="agenda-action-btn" onclick="startConsultation(5)">Iniciar</button>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="alerts-card card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">🚨 Alertas Urgentes</div>
+          <ul class="alerts-list" style="list-style: none; padding: 0; margin: 0;">
+            <li class="alert-item">
+              <span class="alert-icon">⚠️</span>
+              <div class="alert-details">
+                <strong>Max</strong> (Golden) necesita un **recordatorio** de medicación urgente.
+              </div>
+            </li>
+            <li class="alert-item">
+              <span class="alert-icon">❌</span>
+              <div class="alert-details">
+                Resultado de laboratorio para **Luna** ha vuelto **pendiente** de revisión.
+              </div>
+            </li>
+            <li class="alert-item">
+              <span class="alert-icon">📅</span>
+              <div class="alert-details">
+                **Toby** tiene su vacuna antirrábica vencida hace 3 días.
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="quick-actions-card card">
+          <div class="card-header">⚡ Acciones Rápidas</div>
+          <button class="quick-btn" onclick="quickAction('new_client')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20" style="stroke:#7c3aed;"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v1.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V7.5m18 0a2.25 2.25 0 00-2.25-2.25H4.5A2.25 2.25 0 002.25 7.5m18 0a2.25 2.25 0 01-2.25 2.25H4.5m18-1.5v4.5m-18 0v4.5m18-4.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25m18 0h-2.25m-15 0H2.25" /></svg>
+            Registrar Nuevo Cliente/Mascota
+          </button>
+          <button class="quick-btn" onclick="quickAction('search_record')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20" style="stroke:#7c3aed;"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" /></svg>
+            Buscar Historial Clínico
+          </button>
+          <button class="quick-btn" onclick="quickAction('new_appointment')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20" style="stroke:#7c3aed;"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" /></svg>
+            Agendar Nuevo Turno
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Funciones de acción simuladas
+  function startConsultation(id) {
+      alert(`Iniciando la consulta para el turno #${id}. Esto abriría el formulario de Historia Clínica.`);
+      // Lógica para abrir la ficha del paciente y el formulario de consulta
+  }
+
+  function quickAction(action) {
+      if (action === 'new_client') {
+          alert('Abriendo formulario de registro de Nuevo Propietario/Mascota.');
+      } else if (action === 'search_record') {
+          alert('Abriendo la barra de búsqueda avanzada de Historial Clínico.');
+      } else if (action === 'new_appointment') {
+          alert('Abriendo el módulo de Agenda para crear un nuevo turno.');
+      }
+  }
+</script>
+</body>
+</html>

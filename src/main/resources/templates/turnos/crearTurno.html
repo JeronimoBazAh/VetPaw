@@ -448,10 +448,10 @@
 <div class="container">
   <div class="header">
     <div class="header-left">
-      <h1>📅 Registrar Nuevo Turno</h1>
+      <h1>📅Nueva Consulta</h1>
       <p>Complete los datos de la cita veterinaria</p>
     </div>
-    <a href="#" class="btn-back" onclick="alert('Demo: Volvería a gestión de turnos'); return false;">
+    <a href="/administracion/inicio" class="btn-back" >
       <span>⬅️</span>
       Volver
     </a>
@@ -951,11 +951,9 @@
       const alertSuccess = document.getElementById('alertSuccess');
       const alertError = document.getElementById('alertError');
 
-      // Deshabilitar botón
       btnSubmit.disabled = true;
       btnSubmit.innerHTML = '<span class="loading"></span> Guardando...';
 
-      // Recopilar datos del formulario según el diagrama de clases
       const formData = {
           idTurno: null, // Se generará en el backend
           idVeterinario: parseInt(document.getElementById('idVeterinario').value),
@@ -970,7 +968,6 @@
 
       console.log('📋 Datos del turno a guardar:', formData);
 
-      // Simular llamada a API
       setTimeout(() => {
           // Simulación de éxito
           const exito = true;

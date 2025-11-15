@@ -24,5 +24,5 @@ public class historialClinicoController {
         return "/clinico/nuevoVacunacion";
     }
 
-    public ResponseEntity<Tratamiento> crearTratamiento(@RequestBody Trata)
+
 }

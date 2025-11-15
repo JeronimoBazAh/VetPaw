@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Turnos - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* BASE Y LAYOUT GENERAL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ------------------------------------- */
+        /* NAVEGACIÓN LATERAL (SIDEBAR) - MORADO */
+        /* ------------------------------------- */
+        .app-sidebar {
+            width: 260px;
+            background-color: #6d28d9;
+            color: white;
+            padding: 1.5rem 0;
+            flex-shrink: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 1.5rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-logo span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-logo h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            color: white;
+            background-color: #7c3aed;
+        }
+
+        .sidebar-nav a.active {
+            color: white;
+            background-color: #7c3aed;
+            border-left-color: #f59e0b;
+        }
+
+        .sidebar-nav a svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        /* ------------------------------------- */
+        /* CONTENIDO PRINCIPAL Y TOP BAR */
+        /* ------------------------------------- */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .icon-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #6b7280;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 1.5rem;
+            max-width: 100%;
+            margin: 0;
+            overflow-y: auto;
+            height: calc(100vh - 66px);
+        }
+
+        /* ------------------------------------- */
+        /* ESTILOS ESPECÍFICOS DE AGENDA */
+        /* ------------------------------------- */
+
+        .page-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-primary {
+            background-color: white; /* Botón blanco para contraste en el header */
+            color: #7c3aed;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        .filters-bar {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filters-bar input,
+        .filters-bar select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filters-bar .search-input {
+            flex-grow: 1;
+            padding-left: 40px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z' /%3E%3C/svg%3E") no-repeat 10px center;
+            background-size: 20px;
+        }
+
+        /* Contenedor del Calendario */
+        .calendar-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-nav button:hover {
+            background-color: #f3f4f6;
+            border-color: #7c3aed;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border-top: 1px solid #d1d5db;
+            border-left: 1px solid #d1d5db;
+        }
+
+        .day-name {
+            background-color: #f9fafb;
+            padding: 10px;
+            font-weight: 600;
+            color: #4b5563;
+            text-align: center;
+            border-right: 1px solid #d1d5db;
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .day-cell {
+            min-height: 100px;
+            padding: 5px;
+            border-right: 1px solid #d1d5db;
+            border-bottom: 1px solid #d1d5db;
+            position: relative;
+        }
+
+        .day-number-small {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .day-cell.other-month {
+            background-color: #fafafa;
+            opacity: 0.6;
+        }
+
+        .turno-card {
+            background-color: #10b981; /* Verde - Programado */
+            color: white;
+            padding: 4px 6px;
+            margin-bottom: 3px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .turno-card.control { background-color: #3b82f6; } /* Azul - Control */
+        .turno-card.cirugia { background-color: #f59e0b; } /* Amarillo - Cirugía */
+        .turno-card.cancelado { background-color: #ef4444; text-decoration: line-through; opacity: 0.7; } /* Rojo - Cancelado */
+
+
+        /* Métricas (Mismas que el dashboard, pero abajo del calendario) */
+        .metrics-grid-bottom {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .metric-card .value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-card .label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+    </style>
+</head>
+<body>
+<div class="app-sidebar">
+    <div class="sidebar-logo">
+        <span>🐾</span>
+        <h2>VetPaw</h2>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" />
+            </svg>
+            Inicio (Dashboard)
+        </a>
+
+        <a href="#propietarios">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+            Gestión de Propietarios
+        </a>
+        <a href="#mascotas">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            Gestión de Mascotas
+        </a>
+
+        <a href="#turnos" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" />
+            </svg>
+            Agenda y Turnos
+        </a>
+        <a href="#historial">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" />
+            </svg>
+            Historial Clínico
+        </a>
+
+
+        <a href="#reportes">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" />
+            </svg>
+            Reportes y Estadísticas
+        </a>
+    </nav>
+</div>
+
+<div class="main-wrapper">
+    <div class="top-bar">
+        <h1>Agenda y Turnos</h1>
+        <div class="top-bar-actions">
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                <span class="notification-dot"></span>
+            </button>
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="page-header">
+            <div>
+                <h2>🗓️ Gestión de Citas y Disponibilidad</h2>
+                <p>Cree, reprograme y consulte turnos validando la disponibilidad de profesionales. (CU-03) [cite: 260]</p>
+            </div>
+            <button class="btn-primary" onclick="alert('Abriendo formulario de Nuevo Turno')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0h-6" />
+                </svg>
+                Nuevo Turno
+            </button>
+        </div>
+
+        <div class="filters-bar">
+            <input type="text" placeholder="Buscar mascota o cliente..." class="search-input">
+
+            <select>
+                <option value="todos">Todos los veterinarios</option>
+                <option value="101">Dr. Rodríguez</option>
+                <option value="102">Dra. Martínez</option>
+            </select>
+
+            <select>
+                <option value="todos">Todos los estados</option>
+                <option value="programado">Programado</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="cancelado">Cancelado</option>
+            </select>
+
+            <input type="month" value="2025-10">
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <h3>Octubre 2025</h3>
+                <div class="calendar-nav">
+                    <button onclick="changeMonth(-1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+                    <button onclick="changeMonth(0)">Hoy</button>
+                    <button onclick="changeMonth(1)">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="day-name">Lun</div>
+                <div class="day-name">Mar</div>
+                <div class="day-name">Mié</div>
+                <div class="day-name">Jue</div>
+                <div class="day-name">Vie</div>
+                <div class="day-name">Sáb</div>
+                <div class="day-name">Dom</div>
+
+                <div class="day-cell other-month"><div class="day-number-small">29</div></div>
+                <div class="day-cell other-month"><div class="day-number-small">30</div></div>
+
+                <div class="day-cell">
+                    <div class="day-number-small">1</div>
+                    <div class="turno-card">09:00 Max - Control</div>
+                    <div class="turno-card">14:00 Luna - Vacuna</div>
+                </div>
+
+                <div class="day-cell">
+                    <div class="day-number-small">2</div>
+                    <div class="turno-card control">10:00 Rocky - Consulta</div>
+                </div>
+
+                <div class="day-cell">
+                    <div class="day-number-small">3</div>
+                    <div class="turno-card cirugia">11:00 Toby - Cirugía</div>
+                    <div class="turno-card cancelado">14:00 Teo - Cancelado</div>
+                </div>
+
+                <div class="day-cell">
+                    <div class="day-number-small">4</div>
+                    <div class="turno-card">09:00 Sofía - Control</div>
+                    <div class="turno-card control">13:00 Simba - Vacuna</div>
+                    <div class="turno-card">16:00 Coco - Consulta</div>
+                </div>
+
+                <div class="day-cell other-month"><div class="day-number-small">5</div></div>
+
+                <div class="day-cell">
+                    <div class="day-number-small">6</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">7</div>
+                    <div class="turno-card control">10:00 Mimo - Revisión</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">8</div>
+                    <div class="turno-card">09:30 Blue - Consulta</div>
+                    <div class="turno-card control">11:30 Veto - Vacuna</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">9</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">10</div>
+                    <div class="turno-card">14:00 Thor - Control</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">11</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">12</div>
+                </div>
+
+                <div class="day-cell">
+                    <div class="day-number-small">13</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">14</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">15</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">16</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">17</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">18</div>
+                </div>
+                <div class="day-cell">
+                    <div class="day-number-small">19</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="metrics-grid-bottom">
+            <div class="metric-card">
+                <div class="value">12</div>
+                <div class="label">Turnos Hoy</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">45</div>
+                <div class="label">Turnos Esta Semana</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">3</div>
+                <div class="label">Turnos Pendientes</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">2</div>
+                <div class="label">Cancelados Hoy</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Funcionalidad simulada para la navegación del calendario (CU-03)
+
+    // Función de navegación de mes simulada
+    function changeMonth(offset) {
+        if (offset === 0) {
+            alert('Volviendo al mes actual (Noviembre 2025).');
+        } else if (offset < 0) {
+            alert('Simulando ir al mes anterior (Septiembre 2025).');
+        } else {
+            alert('Simulando ir al mes siguiente (Noviembre 2025).');
+        }
+        console.log('Navegando en el calendario.');
+    }
+
+    // Función de click en turno simulado (Reprogramar/Cancelar)
+    document.querySelectorAll('.turno-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const info = card.textContent;
+            alert(`Turno Seleccionado: ${info}. Abriendo opciones para Reprogramar, Cancelar o Ver Detalle. (CU-03: Actualizar/Cancelar)`);
+        });
+    });
+</script>
+</body>
+</html>

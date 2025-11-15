@@ -72,4 +72,11 @@ public class LoginController {
         return "postRegistro";
     }
 
+    @GetMapping("/vet")
+    public String principalVet(){
+
+
+        return "/clinico/principalVet";
+    }
+
 }
