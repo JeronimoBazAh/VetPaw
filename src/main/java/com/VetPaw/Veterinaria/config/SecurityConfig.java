@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .usernameParameter("documento")
                         .passwordParameter("password")
                         .loginProcessingUrl("/auth/login")           // URL donde Spring procesa el login
-                        .defaultSuccessUrl("/auth/vet", true)       // Redirige aquí después del login exitoso
+                        .defaultSuccessUrl("/auth/inicio", true)       // Redirige aquí después del login exitoso
                         .failureUrl("/auth/login?error=true")        // Redirige aquí si falla el login
                         .permitAll()
                 )

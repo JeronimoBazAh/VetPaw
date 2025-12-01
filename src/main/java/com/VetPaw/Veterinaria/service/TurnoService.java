@@ -1,6 +1,5 @@
 package com.VetPaw.Veterinaria.service;
 
-import com.VetPaw.Veterinaria.repository.propietarioRepository;
 import com.VetPaw.Veterinaria.repository.turnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
