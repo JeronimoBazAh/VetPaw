@@ -1,8 +1,10 @@
 package com.VetPaw.Veterinaria.controller;
 
 import com.VetPaw.Veterinaria.model.Propietario;
+import com.VetPaw.Veterinaria.service.PropietarioService;
 import com.VetPaw.Veterinaria.service.Service;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,11 +19,8 @@ import java.util.Optional;
 public class clienteController {
 
 
-    private final Service<Propietario> propietarioService;
-
-    public clienteController(Service<Propietario> propietarioService) {
-        this.propietarioService = propietarioService;
-    }
+    @Autowired
+    private PropietarioService propietarioService;
 
     @GetMapping("/crearCliente")
     public String nuevoCliente(){
@@ -42,11 +41,20 @@ public class clienteController {
 
         if(result.hasErrors()){
             // indicar los campos result.rejectValue();
-            return "/crearCliente ";
+            return "/crearCliente";
         }
         if(cliente.getDocumento() != null){
-            Optional<Propietario> existe = propietarioService.findBy
+            Optional<Propietario> existe = propietarioService.findByDocumento(cliente.getDocumento());
+            if(existe.isPresent()){
+                result.rejectValue("documento","error.documento","El   documento ya esta registrado");
+                return "/crearCliente";
+            }else{
+                propietarioService.save(cliente);
+                status.setComplete();
+            }
         }
+        redirect.addFlashAttribute("success");
+
 
 
 
