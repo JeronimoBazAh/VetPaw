@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -361,7 +361,7 @@
             <div id="errorMessage">Error al registrar la mascota</div>
         </div>
 
-        <form id="formMascota" onsubmit="handleSubmit(event)">
+        <form th:form="@/mascota/registrarMascota" method="post" th:object="${mascota}" onsubmit="handleSubmit(event)">
             <!-- Buscar Propietario -->
             <div class="form-section">
                 <div class="section-title">

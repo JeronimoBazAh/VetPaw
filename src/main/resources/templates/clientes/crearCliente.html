@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head >
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Propietario - VetPaw</title>
@@ -254,7 +254,9 @@
 
         <div class="alert alert-success" id="alertSuccess">
             <span style="font-size: 20px;">✅</span>
-            <div id="successMessage">Propietario registrado exitosamente.</div>
+            <div>
+                <strong th:text="${success}">Cliente registrado exitosamente</strong>
+            </div>
         </div>
 
         <div class="alert alert-error" id="alertError">
@@ -262,7 +264,7 @@
             <div id="errorMessage">Error al guardar el propietario.</div>
         </div>
 
-        <form id="formPropietario" onsubmit="handleSubmit(event)">
+        <form th:action="@{/cliente/crearCliente}"  method="post"  th:object="${cliente}">
             <div class="form-section">
                 <div class="section-title">
                     <span>👤</span>
@@ -273,7 +275,7 @@
                     <div class="form-group">
                         <label>Documento <span class="required">*</span></label>
                         <div class="input-icon">
-                            <input type="text" id="documento" name="documento" placeholder="Ej: 35421789" required maxlength="10" pattern="[0-9]+">
+                            <input type="text" th:field="*{documento}" th:classappend="${#fields.hasErrors('documento')} ? 'field-error' : ''" placeholder="Ej: 35421789" required maxlength="10" pattern="[0-9]+">
                         </div>
                         <span class="help-text">Sin puntos ni espacios</span>
                     </div>
@@ -281,7 +283,7 @@
                     <div class="form-group">
                         <label>Celular <span class="required">*</span></label>
                         <div class="input-icon">
-                            <input type="tel" id="celular" name="celular" placeholder="Ej: 3514567890" required pattern="[0-9]{10,}">
+                            <input type="tel" th:field="*{celular}" th:classappend="${#fields.hasErrors('celular')} ? 'field-error' : ''" placeholder="Ej: 3514567890" required pattern="[0-9]{10,}">
                         </div>
                     </div>
                 </div>
@@ -290,14 +292,14 @@
                     <div class="form-group">
                         <label>Nombre <span class="required">*</span></label>
                         <div class="input-icon">
-                            <input type="text" id="nombre" name="nombre" placeholder="Ej: María" required>
+                            <input type="text" th:field="*{nombre}" th:classappend="${#fields.hasErrors('nombre')} ? 'field-error' : ''" placeholder="Ej: María" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Apellido <span class="required">*</span></label>
                         <div class="input-icon">
-                            <input type="text" id="apellido" name="apellido" placeholder="Ej: González" required>
+                            <input type="text" th:field="*{apellido}" th:classappend="${#fields.hasErrors('apellido')} ? 'field-error' : ''" placeholder="Ej: González" required>
                         </div>
                     </div>
                 </div>
@@ -319,6 +321,7 @@
 
 <script>
     // Manejar envío del formulario
+
     function handleSubmit(event) {
         event.preventDefault();
 

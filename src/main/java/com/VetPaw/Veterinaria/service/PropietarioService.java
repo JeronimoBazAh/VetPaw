@@ -32,7 +32,8 @@ public class PropietarioService implements com.VetPaw.Veterinaria.service.Servic
 
     @Override
     public Propietario save(Propietario x) {
-        return null;
+        propietarioRepository.save(x);
+        return x;
     }
 
     @Override

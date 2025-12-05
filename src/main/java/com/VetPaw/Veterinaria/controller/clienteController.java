@@ -23,10 +23,40 @@ public class clienteController {
     private PropietarioService propietarioService;
 
     @GetMapping("/crearCliente")
-    public String nuevoCliente(){
+    public String nuevoCliente(Model model){
+
+        model.addAttribute("cliente",new Propietario());
+
+        return "clientes/crearCliente";
+    }
 
 
-        return "crearCliente";
+
+    @PostMapping("/crearCliente")
+    public String crearCliente(@Valid @ModelAttribute("cliente")Propietario cliente, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status){
+
+        if(result.hasErrors()){
+
+            return "/crearCliente";
+        }
+        if(cliente.getDocumento() != null){
+            Optional<Propietario> existe = propietarioService.findByDocumento(cliente.getDocumento());
+            if(existe.isPresent()){
+                result.rejectValue("documento","error.documento","El   documento ya esta registrado");
+                return "clientes/crearCliente";
+            }
+
+            propietarioService.save(cliente);
+            status.setComplete();
+
+        }
+        redirect.addFlashAttribute("success", "Propietario registrado");
+
+
+
+
+
+        return "redirect:/cliente/crearCliente";
     }
 
     @GetMapping("/gestionCliente")
@@ -34,31 +64,5 @@ public class clienteController {
 
 
         return "/turnos/gestionPropietarios";
-    }
-
-    @PostMapping
-    public String crearCliente(@Valid @ModelAttribute("cliente")Propietario cliente, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status){
-
-        if(result.hasErrors()){
-            // indicar los campos result.rejectValue();
-            return "/crearCliente";
-        }
-        if(cliente.getDocumento() != null){
-            Optional<Propietario> existe = propietarioService.findByDocumento(cliente.getDocumento());
-            if(existe.isPresent()){
-                result.rejectValue("documento","error.documento","El   documento ya esta registrado");
-                return "/crearCliente";
-            }else{
-                propietarioService.save(cliente);
-                status.setComplete();
-            }
-        }
-        redirect.addFlashAttribute("success");
-
-
-
-
-
-        return "redirect";
     }
 }
