@@ -23,26 +23,25 @@ public class clienteController {
     private PropietarioService propietarioService;
 
     @GetMapping("/crearCliente")
-    public String nuevoCliente(Model model){
+    public String nuevoCliente(Model model) {
 
-        model.addAttribute("cliente",new Propietario());
+        model.addAttribute("cliente", new Propietario());
 
         return "clientes/crearCliente";
     }
 
 
-
     @PostMapping("/crearCliente")
-    public String crearCliente(@Valid @ModelAttribute("cliente")Propietario cliente, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status){
+    public String crearCliente(@Valid @ModelAttribute("cliente") Propietario cliente, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status) {
 
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
 
             return "/crearCliente";
         }
-        if(cliente.getDocumento() != null){
+        if (cliente.getDocumento() != null) {
             Optional<Propietario> existe = propietarioService.findByDocumento(cliente.getDocumento());
-            if(existe.isPresent()){
-                result.rejectValue("documento","error.documento","El   documento ya esta registrado");
+            if (existe.isPresent()) {
+                result.rejectValue("documento", "error.documento", "El   documento ya esta registrado");
                 return "clientes/crearCliente";
             }
 
@@ -53,16 +52,28 @@ public class clienteController {
         redirect.addFlashAttribute("success", "Propietario registrado");
 
 
-
-
-
         return "redirect:/cliente/crearCliente";
     }
 
     @GetMapping("/gestionCliente")
-    public String gestionCliente(){
+    public String gestionCliente() {
 
 
         return "/turnos/gestionPropietarios";
     }
+
+    @PostMapping
+    public Optional<Propietario> buscarCliente(@Valid @ModelAttribute("cliente") Propietario cliente, String dni, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status) {
+        Optional<Propietario> existe = propietarioService.findByDocumento(dni);
+        if (existe.isEmpty()) {
+            result.rejectValue("error", "error.documento", "El cliente no existe");
+
+
+        } else{
+            return existe;
+        }
+
+        return null;
+    }
 }
+

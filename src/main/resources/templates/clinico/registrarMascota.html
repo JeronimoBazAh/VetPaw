@@ -360,9 +360,7 @@
             <span style="font-size: 20px;">❌</span>
             <div id="errorMessage">Error al registrar la mascota</div>
         </div>
-
-        <form th:form="@/mascota/registrarMascota" method="post" th:object="${mascota}" onsubmit="handleSubmit(event)">
-            <!-- Buscar Propietario -->
+        <form id="buscarPropietario" th:action="@" method="post" th:object="${propietario}">
             <div class="form-section">
                 <div class="section-title">
                     <span>👤</span>
@@ -373,6 +371,7 @@
                     <div class="form-group">
                         <label>DNI del Propietario <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🔍">
+
                             <input type="text" id="dniPropietario" placeholder="Ej: 35123456" maxlength="8" pattern="[0-9]{7,8}">
                         </div>
                         <span class="help-text">Ingrese el DNI sin puntos ni espacios</span>
@@ -409,6 +408,11 @@
                 <input type="hidden" id="idPropietario" name="idPropietario">
             </div>
 
+        </form>
+
+        <form id="formMascota" th:action="@{/mascota/crear}" method="post" th:object="${mascota}" onsubmit="return handleSubmit(event)">
+
+
             <!-- Datos de la Mascota -->
             <div class="form-section">
                 <div class="section-title">
@@ -420,14 +424,14 @@
                     <div class="form-group">
                         <label>Nombre <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🐾">
-                            <input type="text" id="nombre" name="nombre" placeholder="Ej: Max" required>
+                            <input th:field="*{nombre}" type="text" id="nombre" name="nombre" placeholder="Ej: Max" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Especie <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🦴">
-                            <select id="especie" name="especie" required>
+                            <select th:field="*{especie}" id="especie" name="especie" required>
                                 <option value="">Seleccionar...</option>
                                 <option value="Perro">Perro</option>
                                 <option value="Gato">Gato</option>
@@ -444,14 +448,14 @@
                     <div class="form-group">
                         <label>Raza <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📝">
-                            <input type="text" id="raza" name="raza" placeholder="Ej: Golden Retriever" required>
+                            <input th:field="*{raza}" type="text" id="raza" name="raza" placeholder="Ej: Golden Retriever" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Edad (años) <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🎂">
-                            <input type="number" id="edad" name="edad" placeholder="Ej: 3" min="0" max="30" required>
+                            <input th:field="*{edad}" type="number" id="edad" name="edad" placeholder="Ej: 3" min="0" max="30" required>
                         </div>
                     </div>
                 </div>
@@ -460,14 +464,14 @@
                     <div class="form-group">
                         <label>Color <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🎨">
-                            <input type="text" id="color" name="color" placeholder="Ej: Dorado" required>
+                            <input th:field="*{color}" type="text" id="color" name="color" placeholder="Ej: Dorado" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Peso (kg) <span class="required">*</span></label>
                         <div class="input-icon" data-icon="⚖️">
-                            <input type="number" id="peso" name="peso" placeholder="Ej: 32.5" step="0.1" min="0" required>
+                            <input th:field="*{peso}" type="number" id="peso" name="peso" placeholder="Ej: 32.5" step="0.1" min="0" required>
                         </div>
                     </div>
                 </div>
@@ -476,7 +480,7 @@
                     <div class="form-group">
                         <label>Sexo <span class="required">*</span></label>
                         <div class="input-icon" data-icon="⚧">
-                            <select id="sexo" name="sexo" required>
+                            <select th:field="*{sexo}" id="sexo" name="sexo" required>
                                 <option value="">Seleccionar...</option>
                                 <option value="Macho">Macho</option>
                                 <option value="Hembra">Hembra</option>
@@ -487,7 +491,7 @@
                     <div class="form-group">
                         <label>Fecha de Nacimiento <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📅">
-                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                            <input th:field="*{fechaNacimiento}" type="date" id="fechaNacimiento" name="fechaNacimiento" required>
                         </div>
                     </div>
                 </div>
@@ -496,7 +500,7 @@
                     <div class="form-group">
                         <label>Fecha de Ingreso <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📆">
-                            <input type="date" id="fechaIngreso" name="fechaIngreso" required readonly>
+                            <input th:field="*{fechaIngreso}" type="date" id="fechaIngreso" name="fechaIngreso" required readonly>
                         </div>
                         <span class="help-text">Fecha de registro en el sistema (automática)</span>
                     </div>

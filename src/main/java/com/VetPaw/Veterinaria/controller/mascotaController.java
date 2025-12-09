@@ -18,11 +18,12 @@ public class mascotaController {
     public String crearMascota(Model model){
         model.addAttribute("mascota", new Mascota());
 
-        return "clinico/registrarMascota";
+        return "/clinico/registrarMascota";
     }
 
 
-    @PostMapping("regisrarMascota")
+
+    @PostMapping("/crear")
     public String registrar(){
 
 
