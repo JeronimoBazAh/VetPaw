@@ -16,6 +16,12 @@ public class Mascota {
     private String raza;
     private String nombre;
     private LocalDate fechaNacimiento;
+    private Long edad;
+    private String color;
+    private Long peso;
+    private String sexo;
+    private LocalDate fechaIngreso;
+
 
 
     @ManyToOne

@@ -1,6 +1,7 @@
 package com.VetPaw.Veterinaria.controller;
 
 import com.VetPaw.Veterinaria.model.Mascota;
+import com.VetPaw.Veterinaria.model.Propietario;
 import com.VetPaw.Veterinaria.model.Vacunacion;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +18,8 @@ public class mascotaController {
     @GetMapping("/crear")
     public String crearMascota(Model model){
         model.addAttribute("mascota", new Mascota());
-
-        return "/clinico/registrarMascota";
+        model.addAttribute("propietario", new Propietario());
+        return "clinico/registrarMascota";
     }
 
 
@@ -28,7 +29,7 @@ public class mascotaController {
 
 
 
-        return null;
+        return "redirect:/mascota/crear";
     }
 
     @GetMapping("/gestion")

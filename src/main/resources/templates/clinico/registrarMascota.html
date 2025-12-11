@@ -360,7 +360,7 @@
             <span style="font-size: 20px;">❌</span>
             <div id="errorMessage">Error al registrar la mascota</div>
         </div>
-        <form id="buscarPropietario" th:action="@" method="post" th:object="${propietario}">
+        <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post" th:object="${propietario}">
             <div class="form-section">
                 <div class="section-title">
                     <span>👤</span>
@@ -372,12 +372,12 @@
                         <label>DNI del Propietario <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🔍">
 
-                            <input type="text" id="dniPropietario" placeholder="Ej: 35123456" maxlength="8" pattern="[0-9]{7,8}">
+                         <input th:field="*{documento}" type="text"  placeholder="Ej: 35123456" >
                         </div>
                         <span class="help-text">Ingrese el DNI sin puntos ni espacios</span>
                     </div>
 
-                    <button type="button" class="btn btn-search" onclick="buscarPropietario()">
+                    <button type="submit" class="btn btn-search" >
                         <span>🔎</span>
                         Buscar
                     </button>
@@ -405,13 +405,14 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="idPropietario" name="idPropietario">
+
             </div>
 
         </form>
 
+                        <!-- Form Mascota -->
         <form id="formMascota" th:action="@{/mascota/crear}" method="post" th:object="${mascota}" onsubmit="return handleSubmit(event)">
-
+            <input type="hidden" id="idPropietario" name="idPropietario">
 
             <!-- Datos de la Mascota -->
             <div class="form-section">
@@ -424,14 +425,14 @@
                     <div class="form-group">
                         <label>Nombre <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🐾">
-                            <input th:field="*{nombre}" type="text" id="nombre" name="nombre" placeholder="Ej: Max" required>
+                            <input th:field="*{nombre}" type="text"  placeholder="Ej: Max" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Especie <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🦴">
-                            <select th:field="*{especie}" id="especie" name="especie" required>
+                            <select th:field="*{especie}"  required>
                                 <option value="">Seleccionar...</option>
                                 <option value="Perro">Perro</option>
                                 <option value="Gato">Gato</option>
@@ -448,14 +449,14 @@
                     <div class="form-group">
                         <label>Raza <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📝">
-                            <input th:field="*{raza}" type="text" id="raza" name="raza" placeholder="Ej: Golden Retriever" required>
+                            <input th:field="*{raza}" type="text"  placeholder="Ej: Golden Retriever" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Edad (años) <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🎂">
-                            <input th:field="*{edad}" type="number" id="edad" name="edad" placeholder="Ej: 3" min="0" max="30" required>
+                            <input th:field="*{edad}" type="number" placeholder="Ej: 3" min="0" max="30" required>
                         </div>
                     </div>
                 </div>
@@ -464,14 +465,14 @@
                     <div class="form-group">
                         <label>Color <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🎨">
-                            <input th:field="*{color}" type="text" id="color" name="color" placeholder="Ej: Dorado" required>
+                            <input th:field="*{color}" type="text"  placeholder="Ej: Dorado" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Peso (kg) <span class="required">*</span></label>
                         <div class="input-icon" data-icon="⚖️">
-                            <input th:field="*{peso}" type="number" id="peso" name="peso" placeholder="Ej: 32.5" step="0.1" min="0" required>
+                            <input th:field="*{peso}" type="number"  placeholder="Ej: 32.5" step="0.1" min="0" required>
                         </div>
                     </div>
                 </div>
@@ -480,7 +481,7 @@
                     <div class="form-group">
                         <label>Sexo <span class="required">*</span></label>
                         <div class="input-icon" data-icon="⚧">
-                            <select th:field="*{sexo}" id="sexo" name="sexo" required>
+                            <select th:field="*{sexo}"  required>
                                 <option value="">Seleccionar...</option>
                                 <option value="Macho">Macho</option>
                                 <option value="Hembra">Hembra</option>
@@ -491,7 +492,7 @@
                     <div class="form-group">
                         <label>Fecha de Nacimiento <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📅">
-                            <input th:field="*{fechaNacimiento}" type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                            <input th:field="*{fechaNacimiento}" type="date"  required>
                         </div>
                     </div>
                 </div>
@@ -500,7 +501,7 @@
                     <div class="form-group">
                         <label>Fecha de Ingreso <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📆">
-                            <input th:field="*{fechaIngreso}" type="date" id="fechaIngreso" name="fechaIngreso" required readonly>
+                            <input th:field="*{fechaIngreso}" type="date"  required readonly>
                         </div>
                         <span class="help-text">Fecha de registro en el sistema (automática)</span>
                     </div>
@@ -510,7 +511,7 @@
             </div>
 
             <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                <button type="submit" class="btn btn-secondary" >
                     <span>✖️</span>
                     Cancelar
                 </button>
@@ -523,7 +524,7 @@
     </div>
 </div>
 
-<script>
+<!--<script>
     // Base de datos simulada de propietarios
     const propietarios = {
         '35123456': {
@@ -761,6 +762,6 @@
             buscarPropietario();
         }
     });
-</script>
+</script>-->
 </body>
 </html>

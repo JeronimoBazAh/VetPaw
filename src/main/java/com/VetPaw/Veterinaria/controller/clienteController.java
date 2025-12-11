@@ -1,5 +1,6 @@
 package com.VetPaw.Veterinaria.controller;
 
+import com.VetPaw.Veterinaria.model.Mascota;
 import com.VetPaw.Veterinaria.model.Propietario;
 import com.VetPaw.Veterinaria.service.PropietarioService;
 import com.VetPaw.Veterinaria.service.Service;
@@ -62,18 +63,21 @@ public class clienteController {
         return "/turnos/gestionPropietarios";
     }
 
-    @PostMapping
-    public Optional<Propietario> buscarCliente(@Valid @ModelAttribute("cliente") Propietario cliente, String dni, BindingResult result, Model model, RedirectAttributes redirect, SessionStatus status) {
-        Optional<Propietario> existe = propietarioService.findByDocumento(dni);
+    @PostMapping("/buscar")
+    public String buscarCliente(@RequestParam("documento")String documento, Model model, RedirectAttributes redirect) {
+        Optional<Propietario> existe = propietarioService.findByDocumento(documento);
+
+        model.addAttribute("mascota", new Mascota());
+        model.addAttribute("propietario", new Propietario());
         if (existe.isEmpty()) {
-            result.rejectValue("error", "error.documento", "El cliente no existe");
+            model.addAttribute("errorBusqueda", "Cliente no encontrado con ese DNI");
 
-
-        } else{
-            return existe;
+        }else{
+            model.addAttribute("propietarioEncontrado", existe.get());
+            model.addAttribute("mostrarDatos", true);
         }
 
-        return null;
+        return "clinico/registrarMascota";
     }
 }
 
