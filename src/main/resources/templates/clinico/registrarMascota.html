@@ -240,7 +240,7 @@
             padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 25px;
-            display: flex;
+
             align-items: center;
             gap: 12px;
             font-size: 14px;
@@ -256,14 +256,14 @@
             background: #d4edda;
             color: #155724;
             border-left: 4px solid #28a745;
-            display: none;
+
         }
 
         .alert-error {
             background: #f8d7da;
             color: #721c24;
             border-left: 4px solid #dc3545;
-            display: none;
+
         }
 
         .info-card {
@@ -272,7 +272,7 @@
             border-radius: 8px;
             margin-top: 15px;
             border: 2px solid #e1e8ed;
-            display: none;
+
             animation: fadeIn 0.3s ease;
         }
 
@@ -350,7 +350,7 @@
                 Primero busque al propietario por su DNI.
             </div>
         </div>
-
+<!--
         <div class="alert alert-success" id="alertSuccess">
             <span style="font-size: 20px;">✅</span>
             <div id="successMessage">Mascota registrada exitosamente</div>
@@ -360,7 +360,9 @@
             <span style="font-size: 20px;">❌</span>
             <div id="errorMessage">Error al registrar la mascota</div>
         </div>
-        <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post" th:object="${propietario}">
+-->
+
+        <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post" >
             <div class="form-section">
                 <div class="section-title">
                     <span>👤</span>
@@ -372,7 +374,7 @@
                         <label>DNI del Propietario <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🔍">
 
-                         <input th:field="*{documento}" type="text"  placeholder="Ej: 35123456" >
+                         <input name="documento" type="text"  placeholder="Ej: 35123456" >
                         </div>
                         <span class="help-text">Ingrese el DNI sin puntos ni espacios</span>
                     </div>
@@ -383,8 +385,20 @@
                     </button>
                 </div>
 
-                <!-- Información del Propietario -->
-                <div class="info-card" id="ownerInfo">
+                <!-- Si no lo encontro-->
+
+                <div th:if="${errorBusqueda}" class="alert alert-error animated-alert">
+                    <span style="font-size: 20px;">❌</span>
+                    <div style="font-size: 20px;">
+                        <div th:text="${errorBusqueda}"></div>
+                    </div>
+
+
+
+                </div>
+
+                <!-- Si lo encontro -->
+                <div th:if="${mostrarDatos}" class="info-card" id="ownerInfo">
                     <h4>
                         <span>📋</span>
                         Datos del Propietario
@@ -392,15 +406,15 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">Nombre Completo:</span>
-                            <span id="ownerNombre"></span>
+                            <span th:text="${encontrado.nombre}"></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">DNI:</span>
-                            <span id="ownerDocumento"></span>
+                            <span th:text="${encontrado.documento}"></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Celular:</span>
-                            <span id="ownerCelular"></span>
+                            <span th:text="${encontrado.celular}"></span>
                         </div>
                     </div>
                 </div>
@@ -411,8 +425,8 @@
         </form>
 
                         <!-- Form Mascota -->
-        <form id="formMascota" th:action="@{/mascota/crear}" method="post" th:object="${mascota}" onsubmit="return handleSubmit(event)">
-            <input type="hidden" id="idPropietario" name="idPropietario">
+        <form th:if="${mostrarDatos}" id="formMascota" th:action="@{/mascota/crear}" method="post" th:object="${mascota}" >
+            <input type="hidden" id="propietario.id" th:value="${encontrado.id}">
 
             <!-- Datos de la Mascota -->
             <div class="form-section">

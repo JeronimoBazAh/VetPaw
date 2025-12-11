@@ -70,11 +70,13 @@ public class clienteController {
         model.addAttribute("mascota", new Mascota());
         model.addAttribute("propietario", new Propietario());
         if (existe.isEmpty()) {
-            model.addAttribute("errorBusqueda", "Cliente no encontrado con ese DNI");
+            model.addAttribute("errorBusqueda","No existe cliente con ese DNI");
+            System.out.println("no encontro");
 
         }else{
-            model.addAttribute("propietarioEncontrado", existe.get());
+            model.addAttribute("encontrado", existe.get());
             model.addAttribute("mostrarDatos", true);
+            System.out.println("Encontro");
         }
 
         return "clinico/registrarMascota";
