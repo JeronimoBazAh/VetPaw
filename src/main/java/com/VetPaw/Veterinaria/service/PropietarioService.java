@@ -38,7 +38,8 @@ public class PropietarioService implements com.VetPaw.Veterinaria.service.Servic
 
     @Override
     public Optional<Propietario> findById(Long id) {
-        return Optional.empty();
+        Optional<Propietario> prop = propietarioRepository.findById(id);
+        return prop;
     }
 
     @Override

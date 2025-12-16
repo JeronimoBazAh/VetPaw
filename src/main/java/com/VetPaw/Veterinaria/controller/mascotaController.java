@@ -3,16 +3,29 @@ package com.VetPaw.Veterinaria.controller;
 import com.VetPaw.Veterinaria.model.Mascota;
 import com.VetPaw.Veterinaria.model.Propietario;
 import com.VetPaw.Veterinaria.model.Vacunacion;
+import com.VetPaw.Veterinaria.service.MascotaService;
+import com.VetPaw.Veterinaria.service.PropietarioService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/mascota")
 public class mascotaController {
 
+
+    @Autowired
+    private MascotaService serviceMascota;
+
+    @Autowired
+    private PropietarioService servicePropietario;
 
 
     @GetMapping("/crear")
@@ -25,11 +38,35 @@ public class mascotaController {
 
 
     @PostMapping("/crear")
-    public String registrar(){
+    public String registrar(@Valid @ModelAttribute("mascota") Mascota mascota, BindingResult result, @RequestParam("propietarioid") Long propietarioid, Model model, RedirectAttributes redirect, SessionStatus status){
+
+        if(result.hasErrors()){
+            model.addAttribute("error", "Error en los campos del formulario");
+            return "redirect:/mascota/crear";
+        }
+
+        //String mensaje = "La mascota ha sido registrada con exito ";
+
+        Optional<Propietario> prop = servicePropietario.findById(propietarioid);
+        if(prop.isPresent()){
+            mascota.setPropietario(prop.get());
+            serviceMascota.save(mascota);
+            status.setComplete();
+            model.addAttribute("exito", "La mascota ha sido registrada exitosamente");
+            System.out.println("supuestamente guardo");
+            return "clinico/registrarMascota";
 
 
 
-        return "redirect:/mascota/crear";
+        }else{
+            model.addAttribute("errorm", "Error, la mascota no ha podido ser guardada");
+
+            redirect.addFlashAttribute("Error", "Propietario no encontrado");
+            System.out.println("no guardo un pingo ");
+            return "clinico/registrarMascota";
+        }
+
+
     }
 
     @GetMapping("/gestion")

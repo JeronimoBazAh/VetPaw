@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class TratamientoMonitorService {
+    /*
 
     private final TratamientoRepository tratamientoRepository;
 
@@ -70,4 +71,6 @@ public class TratamientoMonitorService {
         log.info("🔧 Ejecutando monitoreo manual...");
         monitorearTratamientos();
     }
+
+     */
 }

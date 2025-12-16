@@ -24,12 +24,14 @@ public class MascotaService implements Service<Mascota>{
 
     @Override
     public Mascota save(Mascota x) {
-        return null;
+        mascotaRepository.save(x);
+        return x;
     }
 
     @Override
     public Optional<Mascota> findById(Long id) {
-        return Optional.empty();
+        Optional<Mascota> mascota = mascotaRepository.findById(id);
+        return mascota;
     }
 
     @Override

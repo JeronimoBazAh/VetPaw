@@ -350,17 +350,7 @@
                 Primero busque al propietario por su DNI.
             </div>
         </div>
-<!--
-        <div class="alert alert-success" id="alertSuccess">
-            <span style="font-size: 20px;">✅</span>
-            <div id="successMessage">Mascota registrada exitosamente</div>
-        </div>
 
-        <div class="alert alert-error" id="alertError">
-            <span style="font-size: 20px;">❌</span>
-            <div id="errorMessage">Error al registrar la mascota</div>
-        </div>
--->
 
         <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post" >
             <div class="form-section">
@@ -406,7 +396,8 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">Nombre Completo:</span>
-                            <span th:text="${encontrado.nombre}"></span>
+                            <span th:text="${encontrado.nombre} + ' ' + ${encontrado.apellido}"></span>
+
                         </div>
                         <div class="info-item">
                             <span class="info-label">DNI:</span>
@@ -425,8 +416,22 @@
         </form>
 
                         <!-- Form Mascota -->
+        <div th:if="${errorm}" class="alert alert-error animated-alert">
+            <span style="font-size: 20px;">❌</span>
+            <div style="font-size: 20px;">
+                <div th:text="${errorm}"></div>
+            </div>
+
+        </div>
+        <div th:if="${exito}" class="alert alert-success animated-alert">
+            <span style="font-size: 20px;">✅</span>
+            <div style="font-size: 20px;">
+                <div th:text="${exito}"></div>
+            </div>
+
+        </div>
         <form th:if="${mostrarDatos}" id="formMascota" th:action="@{/mascota/crear}" method="post" th:object="${mascota}" >
-            <input type="hidden" id="propietario.id" th:value="${encontrado.id}">
+            <input type="hidden" name="propietarioid" th:value="${encontrado.id}">
 
             <!-- Datos de la Mascota -->
             <div class="form-section">
@@ -515,7 +520,7 @@
                     <div class="form-group">
                         <label>Fecha de Ingreso <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📆">
-                            <input th:field="*{fechaIngreso}" type="date"  required readonly>
+                            <input th:field="*{fechaIngreso}" id="fechaIngreso" type="date"  required readonly>
                         </div>
                         <span class="help-text">Fecha de registro en el sistema (automática)</span>
                     </div>
@@ -534,9 +539,28 @@
                     Registrar Mascota
                 </button>
             </div>
+
+
+
+
         </form>
     </div>
 </div>
+<script>
+
+    const today = new Date();
+
+
+    const year = today.getFullYear();
+
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+
+
+    document.getElementById('fechaIngreso').value = formattedDate;
+</script>
 
 <!--<script>
     // Base de datos simulada de propietarios
