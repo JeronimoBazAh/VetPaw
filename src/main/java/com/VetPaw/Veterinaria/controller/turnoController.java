@@ -21,7 +21,7 @@ public class turnoController {
     public String crearTurno(){
 
 
-        return "/turnos/crearTurno";
+        return "/turnos/nuevoTurno";
     }
     @GetMapping("/reportes")
     public String reportes(){
