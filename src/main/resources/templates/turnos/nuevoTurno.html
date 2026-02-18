@@ -294,14 +294,12 @@
             background: #d4edda;
             color: #155724;
             border-left: 4px solid #28a745;
-            display: none;
         }
 
         .alert-error {
             background: #f8d7da;
             color: #721c24;
             border-left: 4px solid #dc3545;
-            display: none;
         }
 
         .info-card {
@@ -310,17 +308,12 @@
             border-radius: 8px;
             margin-top: 15px;
             border: 2px solid #e1e8ed;
-            display: none;
             animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        .info-card.show {
-            display: block;
         }
 
         .info-card h4 {
@@ -353,8 +346,15 @@
 
         .pets-list {
             margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid #e1e8ed;
+        }
+
+        .pets-list h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .pet-card {
@@ -433,6 +433,10 @@
         }
 
         @media (max-width: 768px) {
+            .form-content {
+                padding: 20px;
+            }
+
             .search-row {
                 flex-direction: column;
             }
@@ -441,17 +445,20 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body>
 <div class="container">
     <div class="header">
         <div class="header-left">
-            <h1>📅Nueva Consulta</h1>
+            <h1>📅 Nueva Consulta</h1>
             <p>Complete los datos de la cita veterinaria</p>
         </div>
-        <a href="/administracion/inicio" class="btn-back" >
+        <a href="/administracion/inicio" class="btn-back">
             <span>⬅️</span>
             Volver
         </a>
@@ -478,17 +485,10 @@
             </div>
         </div>
 
-        <div class="alert alert-success" id="alertSuccess">
-            <span style="font-size: 20px;">✅</span>
-            <div id="successMessage">Turno registrado exitosamente</div>
-        </div>
+        <!-- Formulario de búsqueda -->
+        <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post">
+            <input type="hidden" name="vistaOrigen" value="turnos/nuevoTurno">
 
-        <div class="alert alert-error" id="alertError">
-            <span style="font-size: 20px;">❌</span>
-            <div id="errorMessage">Error al registrar el turno</div>
-        </div>
-
-        <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post" >
             <div class="form-section">
                 <div class="section-title">
                     <span>👤</span>
@@ -499,32 +499,27 @@
                     <div class="form-group">
                         <label>DNI del Propietario <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🔍">
-
-                            <input name="documento" type="text"  placeholder="Ej: 35123456" >
+                            <input name="documento" type="text" placeholder="Ej: 35123456">
                         </div>
                         <span class="help-text">Ingrese el DNI sin puntos ni espacios</span>
                     </div>
 
-                    <button type="submit" class="btn btn-search" >
+                    <button type="submit" class="btn btn-search">
                         <span>🔎</span>
                         Buscar
                     </button>
                 </div>
 
-                <!-- Si no lo encontro-->
-
-                <div th:if="${errorBusqueda}" class="alert alert-error animated-alert">
+                <!-- Si no lo encontró -->
+                <div th:if="${errorBusqueda}" class="alert alert-error">
                     <span style="font-size: 20px;">❌</span>
-                    <div style="font-size: 20px;">
+                    <div>
                         <div th:text="${errorBusqueda}"></div>
                     </div>
-
-
-
                 </div>
 
-                <!-- Si lo encontro -->
-                <div th:if="${mostrarDatos}" class="info-card" id="ownerInfo">
+                <!-- Si lo encontró -->
+                <div th:if="${mostrarDatos}" class="info-card" >
                     <h4>
                         <span>📋</span>
                         Datos del Propietario
@@ -533,7 +528,6 @@
                         <div class="info-item">
                             <span class="info-label">Nombre Completo:</span>
                             <span th:text="${encontrado.nombre} + ' ' + ${encontrado.apellido}"></span>
-
                         </div>
                         <div class="info-item">
                             <span class="info-label">DNI:</span>
@@ -545,23 +539,39 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
         </form>
 
-                    <!-- Lista de Mascotas -->
-                    <div class="pets-list">
-                        <h4>
-                            <span>🐾</span>
-                            Seleccione una Mascota <span class="required">*</span>
-                        </h4>
-                        <div id="petsList"></div>
-                    </div>
+        <!-- Alertas de turno -->
+        <div th:if="${errort}" class="alert alert-error">
+            <span style="font-size: 20px;">❌</span>
+            <div>
+                <div th:text="${errort}"></div>
+            </div>
+        </div>
+
+        <div th:if="${exitot}" class="alert alert-success">
+            <span style="font-size: 20px;">✅</span>
+            <div>
+                <div th:text="${exitot}"></div>
+            </div>
+        </div>
+
+        <!-- Formulario de turno (solo visible cuando hay propietario) -->
+        <form th:if="${mostrarDatos}" id="formTurno" th:action="@{/turno/crear}" method="post" th:object="${turno}">
+            <input type="hidden" name="propietarioid" th:value="${encontrado.id}">
+
+            <!-- Lista de Mascotas -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>🐾</span>
+                    Seleccionar Mascota
                 </div>
 
-                <input type="hidden" id="idPropietario" name="idPropietario">
+                <div class="pets-list">
+                    <div id="petsList"></div>
+                </div>
+
                 <input type="hidden" id="idMascota" name="idMascota" required>
             </div>
 
@@ -576,12 +586,12 @@
                     <div class="form-group">
                         <label>Veterinario <span class="required">*</span></label>
                         <div class="input-icon" data-icon="👨‍⚕️">
-                            <select id="idVeterinario" name="idVeterinario" required onchange="checkAvailability()">
+                            <select th:field="*{vet}" required onchange="checkAvailability()">
                                 <option value="">Seleccionar veterinario...</option>
-                                <option value="1">Dr. Martín Fernández (Mat: 30456789)</option>
-                                <option value="2">Dra. Carolina López (Mat: 28789456)</option>
-                                <option value="3">Dr. Roberto García (Mat: 32567890)</option>
-                                <option value="4">Dra. Valeria Torres (Mat: 29123456)</option>
+                                <option th:each="veterinario : ${vets}"
+                                        th:value="${veterinario.id}"
+                                        th:text="${veterinario.nombre + ' ' + veterinario.apellido + ' (Mat: ' + veterinario.matricula + ')'}">
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -589,7 +599,7 @@
                     <div class="form-group">
                         <label>Recepcionista <span class="required">*</span></label>
                         <div class="input-icon" data-icon="👤">
-                            <select id="idRecepcionista" name="idRecepcionista" required>
+                            <select th:field="*{recep}" required>
                                 <option value="">Seleccionar recepcionista...</option>
                                 <option value="1" selected>Sofía Ramírez (DNI: 36234567)</option>
                                 <option value="2">Lucas Morales (DNI: 34567890)</option>
@@ -603,7 +613,7 @@
                     <div class="form-group">
                         <label>Fecha del Turno <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📅">
-                            <input type="date" id="fecha" name="fecha" required onchange="checkAvailability()" min="">
+                            <input type="date" th:field="*{fecha}" id="fecha" required onchange="checkAvailability()">
                         </div>
                         <span class="help-text">Fecha de la cita</span>
                     </div>
@@ -611,9 +621,9 @@
                     <div class="form-group">
                         <label>Hora <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🕐">
-                            <input type="time" id="hora" name="hora" required onchange="checkAvailability()" min="08:00" max="19:00">
+                            <input type="time" name="hora" id="hora" required onchange="checkAvailability()" min="08:00" max="19:00">
                         </div>
-                        <span class="help-text">Horario: 8:00 - 19:00 (Evita las XX:00 para ver el mensaje de "no disponible")</span>
+                        <span class="help-text">Horario: 8:00 - 19:00</span>
                     </div>
                 </div>
 
@@ -625,7 +635,7 @@
                     <div class="form-group full-width">
                         <label>Fecha de Solicitud <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📆">
-                            <input type="datetime-local" id="fechaSolicitud" name="fechaSolicitud" required readonly>
+                            <input type="datetime-local" th:field="*{fechaSolicitud}" id="fechaSolicitud" required readonly>
                         </div>
                         <span class="help-text">Fecha y hora en que se solicita el turno (automática)</span>
                     </div>
@@ -634,7 +644,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Estado Inicial</label>
-                        <select id="estado" name="estado">
+                        <select th:field="*{estado}">
                             <option value="PROGRAMADO" selected>Programado</option>
                             <option value="CONFIRMADO">Confirmado</option>
                             <option value="EN_CURSO">En Curso</option>
@@ -654,7 +664,7 @@
 
                 <div class="form-group full-width">
                     <label>Motivo <span class="required">*</span></label>
-                    <textarea id="motivo" name="motivo" placeholder="Describa el motivo de la consulta veterinaria..." required></textarea>
+                    <textarea th:field="*{motivo}" placeholder="Describa el motivo de la consulta veterinaria..." required></textarea>
                     <span class="help-text">Detalle los síntomas o razón de la visita</span>
                 </div>
             </div>
@@ -668,7 +678,7 @@
             </div>
 
             <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                <button type="button" class="btn btn-secondary" onclick="window.location.reload()">
                     <span>✖️</span>
                     Cancelar
                 </button>
@@ -680,6 +690,7 @@
         </form>
     </div>
 </div>
+
 
 <script>
     // Base de datos simulada de propietarios y mascotas
@@ -1107,5 +1118,5 @@
         }
     });
 </script>
-</body>
 </html>
+

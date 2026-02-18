@@ -25,7 +25,7 @@ public class Mascota {
 
 
     @ManyToOne
-    @JoinColumn(name = "propietario_id")
+    @JoinColumn(name = "propietarioid")
     private Propietario propietario;
 
 

@@ -33,6 +33,7 @@ public class Veterinario {
     private LocalDate fechaIngreso;
     private LocalDate fechaSalida;
     private String estado;
+    private String password;
 
     @PrePersist
     public void pre(){

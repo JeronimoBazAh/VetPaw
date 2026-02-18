@@ -16,8 +16,11 @@ public class Propietario {
     private String nombre;
     private String apellido;
     private String celular;
+    private String password;
 
 
     @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mascota> mascotas;
+
+
 }

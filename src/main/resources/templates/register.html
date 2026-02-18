@@ -170,6 +170,7 @@
     <div class="register-logo"><i class="fas fa-paw"></i>PetPaw</div>
 
     <form th:action="@{/auth/register}" th:object="${user}" method="post">
+        <input type="hidden" name="rol" value="Recepcionista">
         <div class="form-row">
             <div class="input-group">
                 <label for="nombre">Nombre</label>

@@ -91,6 +91,7 @@
             transition: background-color 0.3s;
             text-decoration: none;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .btn-primary {
@@ -124,6 +125,30 @@
             text-decoration: none;
             font-size: 14px;
         }
+
+        .divider {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .divider p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .register-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .register-buttons .btn-half {
+            flex: 1;
+            padding: 15px 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -135,16 +160,14 @@
         <span th:text="${error}"></span>
     </div>
 
-
-
     <div th:if="${param.logout}" class="alert alert-success">
         <span th:text="${message}"></span>
     </div>
 
     <div th:if="${success}" class="alert alert-success">
         <span th:text="${sucess}"></span>
-
     </div>
+
     <form th:action="@{/auth/login}" method="post">
         <div class="input-group">
             <label for="documento">Documento</label>
@@ -162,9 +185,12 @@
         <a href="#">¿Olvidaste tu contraseña?</a>
     </div>
 
-    <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-        <p style="color: #666; margin-bottom: 10px;">¿Aún no tienes una cuenta?</p>
-        <a th:href="@{/auth/register}" class="btn-secondary">Registrarse</a>
+    <div class="divider">
+        <p>¿Aún no tienes una cuenta?</p>
+        <div class="register-buttons">
+            <a th:href="@{/auth/register}" class="btn-secondary btn-half">Registrarse</a>
+            <a th:href="@{/auth/register-veterinario}" class="btn-secondary btn-half">Soy Veterinario</a>
+        </div>
     </div>
 </div>
 

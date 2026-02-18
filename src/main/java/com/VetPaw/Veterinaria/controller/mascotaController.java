@@ -50,6 +50,7 @@ public class mascotaController {
         Optional<Propietario> prop = servicePropietario.findById(propietarioid);
         if(prop.isPresent()){
             mascota.setPropietario(prop.get());
+
             serviceMascota.save(mascota);
             status.setComplete();
             model.addAttribute("exito", "La mascota ha sido registrada exitosamente");

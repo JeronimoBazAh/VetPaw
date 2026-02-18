@@ -2,8 +2,9 @@ package com.VetPaw.Veterinaria.controller;
 
 import com.VetPaw.Veterinaria.model.Mascota;
 import com.VetPaw.Veterinaria.model.Propietario;
+import com.VetPaw.Veterinaria.model.Turno;
 import com.VetPaw.Veterinaria.service.PropietarioService;
-import com.VetPaw.Veterinaria.service.Service;
+import com.VetPaw.Veterinaria.service.VeterinarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,12 +14,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.print.DocFlavor;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/cliente")
 public class clienteController {
 
+    @Autowired
+    VeterinarioService vetService;
 
     @Autowired
     private PropietarioService propietarioService;
@@ -46,6 +50,7 @@ public class clienteController {
                 return "clientes/crearCliente";
             }
 
+            cliente.setPassword(cliente.getDocumento());
             propietarioService.save(cliente);
             status.setComplete();
 
@@ -63,8 +68,44 @@ public class clienteController {
         return "/turnos/gestionPropietarios";
     }
 
+
+
     @PostMapping("/buscar")
-    public String buscarCliente(@RequestParam("documento")String documento, Model model, RedirectAttributes redirect) {
+    public String buscarCliente(@RequestParam("documento") String documento,@RequestParam String vistaOrigen ,Model model, RedirectAttributes redirect, String direccion) {
+        Optional<Propietario> existe = propietarioService.findByDocumento(documento);
+
+        model.addAttribute("mascota", new Mascota());
+        model.addAttribute("propietario", new Propietario());
+        model.addAttribute("turno", new Turno());
+        model.addAttribute("vets", vetService.findAll());
+        if (existe.isEmpty()) {
+            model.addAttribute("errorBusqueda","No existe cliente con ese DNI");
+            System.out.println("no encontro");
+            System.out.println(vistaOrigen);
+            return vistaOrigen;
+
+
+        }else{
+            model.addAttribute("encontrado", existe.get());
+            model.addAttribute("mostrarDatos", true);
+            System.out.println("Encontro");
+            System.out.println(vistaOrigen);
+            return vistaOrigen;
+        }
+
+    }
+
+
+
+
+
+
+    /*
+
+
+
+    @PostMapping("/buscar")
+    public String buscarCliente(@RequestParam("documento") String documento, Model model, RedirectAttributes redirect) {
         Optional<Propietario> existe = propietarioService.findByDocumento(documento);
 
         model.addAttribute("mascota", new Mascota());
@@ -79,7 +120,13 @@ public class clienteController {
             System.out.println("Encontro");
         }
 
-        return "clinico/registrarMascota";
+        return "encontro";
     }
+
+     */
+
+
+
+
 }
 

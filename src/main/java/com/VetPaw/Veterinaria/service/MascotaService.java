@@ -1,6 +1,7 @@
 package com.VetPaw.Veterinaria.service;
 
 import com.VetPaw.Veterinaria.model.Mascota;
+import com.VetPaw.Veterinaria.model.Propietario;
 import com.VetPaw.Veterinaria.repository.MascotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,4 +39,9 @@ public class MascotaService implements Service<Mascota>{
     public void delete(Long id) {
 
     }
+
+    List<Mascota> findByPropietario(Propietario propietario){
+        return mascotaRepository.findByPropietario(propietario);
+    };
+
 }
