@@ -1,12 +1,11 @@
 package com.VetPaw.Veterinaria.service;
 
-import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.model.Veterinario;
-import com.VetPaw.Veterinaria.repository.UserRepository;
 import com.VetPaw.Veterinaria.repository.veterinarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +14,7 @@ public class VeterinarioService implements Service<Veterinario> {
 
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
     private veterinarioRepository veterinarioRepository;
 
     @Autowired
@@ -28,17 +28,18 @@ public class VeterinarioService implements Service<Veterinario> {
 
     @Override
     public List<Veterinario> findAll() {
-        return List.of();
+        return (List<Veterinario>) veterinarioRepository.findAll();
+
     }
 
     @Override
     public Veterinario save(Veterinario x) {
-        return null;
+        return veterinarioRepository.save(x);
     }
 
     @Override
     public Optional<Veterinario> findById(Long id) {
-        return Optional.empty();
+        return veterinarioRepository.findById(id);
     }
 
     @Override
@@ -53,4 +54,12 @@ public class VeterinarioService implements Service<Veterinario> {
 
         return repository.save(vet);
     }
+
+    public List<Veterinario> listarTodos() {
+        List<Veterinario> listaCompleta = new ArrayList<>();
+        veterinarioRepository.findAll().forEach(listaCompleta::add);
+        return listaCompleta;
+    }
+
+
 }

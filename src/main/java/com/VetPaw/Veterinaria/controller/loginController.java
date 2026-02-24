@@ -1,5 +1,6 @@
 package com.VetPaw.Veterinaria.controller;
 
+import com.VetPaw.Veterinaria.dto.RegistroDTO;
 import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.model.Veterinario;
 import com.VetPaw.Veterinaria.service.UserService;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -58,25 +58,46 @@ public class loginController {
     }
 
     @PostMapping("/register")
-    public String form(@Valid @ModelAttribute("user") Usuario user,@Valid @ModelAttribute("user") Veterinario vet, RedirectAttributes redirectAttributes,BindingResult result,String rol, Model model, RedirectAttributes redirect, SessionStatus status){
+    public String form(
+            @Valid @ModelAttribute("user") RegistroDTO registroDTO,
+            BindingResult result,
+            @RequestParam("rol") String rol,
+            @RequestParam("securityCode") String code,
+            RedirectAttributes redirectAttributes
+    ) {
 
-        try{
-            if(rol == "Veterinario"){
+        if (result.hasErrors()) {
+            return "auth/register";
+        }
+
+        try {
+            if ("Veterinario".equals(rol)) {
+                // Mapeas el DTO a tu entidad Veterinario
+                Veterinario vet = new Veterinario();
+                vet.setNombre(registroDTO.getNombre());
+                vet.setApellido(registroDTO.getApellido());
+                vet.setDocumento(registroDTO.getDocumento());
+                vet.setCelular(registroDTO.getCelular());
+                vet.setPassword(registroDTO.getPassword());
+                vet.setEstado("Activo");
                 vetService.registrarUsuario(vet);
 
-            } else if (rol ==  "Recepcionista") {
+            } else if ("Recepcionista".equals(rol)) {
+                // Mapeas el DTO a tu entidad Usuario
+                Usuario user = new Usuario();
+                user.setNombre(registroDTO.getNombre());
+                // ... set de los demás campos ...
+
                 usuarioService.registrarUsuario(user);
-                redirectAttributes.addFlashAttribute("success", "Registro exitoso");
-                return "redirect:/auth/login";
             }
 
-        }catch(Exception e){
+            redirectAttributes.addFlashAttribute("success", "Registro exitoso");
+            return "redirect:/auth/login";
+
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/auth/register";
         }
-
-        return "redirect:/auth/login";
-
     }
     @GetMapping("/register-veterinario")
     public String registerVet(Model model){
@@ -93,7 +114,7 @@ public class loginController {
         return "postRegistro";
     }
 
-    @GetMapping("/vet")
+    @GetMapping("/vetDashboard")
     public String principalVet(){
 
 
@@ -106,5 +127,6 @@ public class loginController {
 
         return "inicio";
     }
+
 
 }

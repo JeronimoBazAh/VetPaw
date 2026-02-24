@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -71,9 +73,17 @@ public class mascotaController {
     }
 
     @GetMapping("/gestion")
-    public String gestionMascota(){
+    public String gestionMascota(@RequestParam(required = false, defaultValue = "") String dni,Model model){
+        Optional<Propietario> propietario = servicePropietario.findByDocumento(dni);
+        List<Mascota> mascotas;
+        if (!dni.isBlank()) {
+            mascotas = serviceMascota.findByPropietario(propietario.get());
+        } else {
+            mascotas = new ArrayList<>();
+        }
 
-
+        model.addAttribute("mascotas", mascotas);
+        model.addAttribute("dni", dni);
         return "clinico/gestionMascotas";
     }
 
@@ -96,6 +106,18 @@ public class mascotaController {
 
 
         return "clinico/nuevoHistorial";
+    }
+
+    @GetMapping("/detalle/{id}")
+    public String detalle(@PathVariable Long id, Model model) {
+        Optional<Mascota> mascota = serviceMascota.findById(id);
+
+        if (mascota.isPresent()) {
+            model.addAttribute("mascota", mascota.get());
+            return "clinico/detalleMascota";
+        } else {
+            return "redirect:/mascota/gestion";
+        }
     }
 
 

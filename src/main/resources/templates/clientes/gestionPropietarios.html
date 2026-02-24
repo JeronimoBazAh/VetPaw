@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -549,6 +549,7 @@
                     </tr>
                     </thead>
                     <tbody>
+
                     <tr>
                         <td>#001</td>
                         <td>35421789</td>
@@ -619,6 +620,18 @@
                         <td>
                             <button class="btn-table-action btn-ver" onclick="viewPropietario(6)">● Ver</button>
                             <button class="btn-table-action btn-editar" onclick="editPropietario(6)">✏️ Editar</button>
+                        </td>
+                    </tr>
+                    <tr th:each="propietario : ${lista}">
+                        <td th:text="'#' + ${propietario.id}"></td>
+                        <td th:text="${propietario.documento}"></td>
+                        <td th:text="${propietario.nombre}"></td>
+                        <td th:text="${propietario.apellido}"></td>
+                        <td th:text="${propietario.celular}"></td>
+                        <td th:text="${propietario.cantidadMascotas} + ' mascotas'"></td>
+                        <td>
+                            <button class="btn-table-action btn-ver" th:onclick="'viewPropietario(' + ${propietario.id} + ')'">● Ver</button>
+                            <button class="btn-table-action btn-editar" th:onclick="'editPropietario(' + ${propietario.id} + ')'">✏️ Editar</button>
                         </td>
                     </tr>
                     </tbody>

@@ -1,502 +1,122 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Mascotas - VetPaw</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* BASE Y LAYOUT GENERAL */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; display: flex; min-height: 100vh; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
-            display: flex;
-            min-height: 100vh;
-        }
+        /* SIDEBAR */
+        .app-sidebar { width: 260px; background-color: #6d28d9; color: white; padding: 1.5rem 0; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 1.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; }
+        .sidebar-logo span { font-size: 1.8rem; font-weight: 700; color: white; }
+        .sidebar-logo h2 { font-size: 1.5rem; font-weight: 600; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; color: #e5e7eb; text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-nav a:hover { color: white; background-color: #7c3aed; }
+        .sidebar-nav a.active { color: white; background-color: #7c3aed; border-left-color: #f59e0b; }
+        .sidebar-nav a svg { width: 20px; height: 20px; stroke: currentColor; }
 
-        /* ------------------------------------- */
-        /* NAVEGACIÓN LATERAL (SIDEBAR) - MORADO */
-        /* ------------------------------------- */
-        .app-sidebar {
-            width: 260px;
-            background-color: #6d28d9;
-            color: white;
-            padding: 1.5rem 0;
-            flex-shrink: 0;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-        }
+        /* MAIN */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
+        .top-bar { background-color: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .top-bar h1 { font-size: 1.5rem; font-weight: 700; color: #1f2937; }
+        .top-bar-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: background-color 0.2s; }
+        .icon-btn:hover { background-color: #f3f4f6; }
+        .icon-btn svg { width: 20px; height: 20px; stroke: #6b7280; }
+        .notification-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; }
+        .container { padding: 1.5rem; max-width: 100%; overflow-y: auto; height: calc(100vh - 66px); }
 
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 1.5rem;
-            margin-bottom: 2.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 15px;
-        }
+        /* PAGE HEADER */
+        .page-header { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-radius: 12px; padding: 2rem; color: white; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .page-header p { font-size: 1.125rem; color: rgba(255,255,255,0.9); }
+        .btn-primary { background-color: white; color: #7c3aed; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { background-color: #f3f4f6; transform: translateY(-1px); }
 
-        .sidebar-logo span {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-        }
+        /* FILTROS */
+        .filters-actions-bar { background-color: white; border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .search-input-group { flex-grow: 1; position: relative; max-width: 400px; }
+        .search-input-group label { display: block; font-size: 0.75rem; font-weight: 700; color: #6d28d9; margin-bottom: 4px; text-transform: uppercase; }
+        .input-wrapper { position: relative; }
+        .search-input-group input { width: 100%; padding: 10px 12px 10px 40px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
+        .search-input-group input:focus { outline: none; border-color: #7c3aed; }
+        .search-input-group svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; stroke: #7c3aed; }
+        .btn-search-dni { background-color: #7c3aed; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 18px; transition: background 0.2s; }
+        .btn-search-dni:hover { background-color: #5b21b6; }
 
-        .sidebar-logo h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            color: #e5e7eb;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-nav a:hover {
-            color: white;
-            background-color: #7c3aed;
-        }
-
-        .sidebar-nav a.active {
-            color: white;
-            background-color: #7c3aed;
-            border-left-color: #f59e0b;
-        }
-
-        .sidebar-nav a svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-        }
-
-        /* ------------------------------------- */
-        /* CONTENIDO PRINCIPAL Y TOP BAR */
-        /* ------------------------------------- */
-        .main-wrapper {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .top-bar {
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .top-bar h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .top-bar-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: background-color 0.2s;
-        }
-
-        .icon-btn:hover {
-            background-color: #f3f4f6;
-        }
-
-        .icon-btn svg {
-            width: 20px;
-            height: 20px;
-            stroke: #6b7280;
-        }
-
-        .notification-dot {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background-color: #ef4444;
-            border-radius: 50%;
-        }
-
-        .container {
-            padding: 1.5rem;
-            max-width: 100%;
-            margin: 0;
-            overflow-y: auto;
-            height: calc(100vh - 66px);
-        }
-
-        /* ------------------------------------- */
-        /* ESTILOS ESPECÍFICOS DE GESTIÓN DE MASCOTAS */
-        /* ------------------------------------- */
-
-        .page-header {
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-header p {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .btn-primary {
-            background-color: white;
-            color: #7c3aed;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #f3f4f6;
-            transform: translateY(-1px);
-        }
-
-        /* Barra de búsqueda y filtros */
-        .filters-actions-bar {
-            background-color: white;
-            border-radius: 12px;
-            padding: 1.2rem 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .search-input-group {
-            flex-grow: 1;
-            position: relative;
-        }
-
-        .search-input-group input {
-            width: 100%;
-            padding: 8px 12px 8px 40px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .search-input-group svg {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            stroke: #6b7280;
-        }
-
-        .filters-actions-bar select {
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        /* Metricas / Contadores */
-        .metrics-grid-mascotas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            background-color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .metric-item {
-            text-align: center;
-            padding: 10px 0;
-            border-right: 1px solid #e5e7eb;
-        }
-
-        .metric-item:last-child {
-            border-right: none;
-        }
-
-        .metric-item .value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.2rem;
-        }
-
+        /* MÉTRICAS */
+        .metrics-grid-mascotas { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); background-color: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .metric-item { text-align: center; padding: 10px 0; border-right: 1px solid #e5e7eb; }
+        .metric-item:last-child { border-right: none; }
+        .metric-item .value { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.2rem; }
         .metric-item.total .value { color: #7c3aed; }
-        .metric-item.perro .value { color: #3b82f6; }
-        .metric-item.gato .value { color: #6366f1; }
-        .metric-item.otros .value { color: #10b981; }
+        .metric-item.perro .value  { color: #3b82f6; }
+        .metric-item.gato .value   { color: #6366f1; }
+        .metric-item .label { font-size: 0.875rem; font-weight: 600; color: #6b7280; }
 
-        .metric-item .label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #6b7280;
-        }
-
-        /* Tarjetas de Mascota */
-        .mascota-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .mascota-card {
-            background-color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-header-mascota {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #f3f4f6;
-            padding-bottom: 10px;
-        }
-
-        .mascota-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: #7c3aed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .mascota-icon.gato { background-color: #6366f1; }
-        .mascota-icon.ave { background-color: #f59e0b; }
+        /* TARJETAS */
+        .mascota-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .mascota-card { background-color: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+        .card-header-mascota { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
+        .mascota-icon { width: 48px; height: 48px; border-radius: 50%; background-color: #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; flex-shrink: 0; }
+        .mascota-icon.gato   { background-color: #6366f1; }
+        .mascota-icon.ave    { background-color: #f59e0b; }
         .mascota-icon.conejo { background-color: #10b981; }
+        .mascota-info h4 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem; color: #1f2937; }
+        .mascota-info p  { font-size: 0.875rem; color: #6b7280; font-weight: 500; }
+        .card-body-mascota { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.875rem; color: #4b5563; margin-bottom: 15px; }
+        .detail-item strong { font-weight: 600; color: #1f2937; }
+        .propietario-link { font-size: 0.875rem; font-weight: 600; color: #7c3aed; margin-bottom: 15px; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+        .propietario-link:hover { text-decoration: underline; }
+        .card-actions { display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f3f4f6; padding-top: 10px; margin-top: auto; }
+        .btn-card-action { padding: 8px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.875rem; border: none; text-decoration: none; display: inline-block; }
+        .btn-ver    { background-color: #e5e7eb; color: #4b5563; }
+        .btn-ver:hover    { background-color: #d1d5db; }
+        .btn-editar { background-color: #f59e0b; color: white; }
+        .btn-editar:hover { background-color: #d97706; }
 
-        .mascota-info {
-            line-height: 1.3;
-        }
+        /* SIN RESULTADOS */
+        .empty-state { text-align: center; padding: 3rem; color: #9ca3af; font-size: 0.95rem; background: white; border-radius: 12px; border: 1px dashed #d1d5db; grid-column: 1 / -1; }
+        .empty-state span { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
 
-        .mascota-info h4 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.1rem;
-            color: #1f2937;
-        }
-
-        .mascota-info p {
-            font-size: 0.875rem;
-            color: #6b7280;
-            font-weight: 500;
-        }
-
-        .card-body-mascota {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.875rem;
-            color: #4b5563;
-            margin-bottom: 15px;
-        }
-
-        .detail-item strong {
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .propietario-link {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #7c3aed;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .propietario-link:hover {
-            text-decoration: underline;
-        }
-
-        .card-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid #f3f4f6;
-            padding-top: 10px;
-            margin-top: auto;
-        }
-
-        .btn-card-action {
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-
-        .btn-ver {
-            background-color: #e5e7eb;
-            color: #4b5563;
-            border: none;
-        }
-
-        .btn-ver:hover {
-            background-color: #d1d5db;
-        }
-
-        .btn-editar {
-            background-color: #f59e0b;
-            color: white;
-            border: none;
-        }
-
-        .btn-editar:hover {
-            background-color: #d97706;
-        }
-
-        /* Paginación */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-            margin-top: 1rem;
-        }
-
-        .page-link {
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #4b5563;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .page-link.active, .page-link:hover {
-            background-color: #7c3aed;
-            color: white;
-            border-color: #7c3aed;
-        }
-
-        /* Media Queries */
         @media (max-width: 768px) {
-            .filters-actions-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .filters-actions-bar > * {
-                width: 100%;
-            }
-            .search-input-group {
-                order: -1;
-            }
+            .filters-actions-bar { flex-direction: column; align-items: stretch; }
+            .filters-actions-bar > * { width: 100%; margin-top: 5px !important; }
+            .search-input-group { order: -1; max-width: 100%; }
         }
     </style>
 </head>
 <body>
+
 <div class="app-sidebar">
     <div class="sidebar-logo">
         <span>🐾</span>
         <h2>VetPaw</h2>
     </div>
     <nav class="sidebar-nav">
-        <a href="/auth/inicio" class="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" />
-            </svg>
+        <a href="/auth/inicio">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" /></svg>
             Inicio (Dashboard)
         </a>
-
         <a href="/cliente/gestionCliente">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
             Gestión de Propietarios
         </a>
-        <a href="/mascota/gestion">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+        <a href="/mascota/gestion" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
             Gestión de Mascotas
         </a>
-
         <a href="/administracion/turnos">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" /></svg>
             Agenda y Turnos
         </a>
-
-
-
         <a href="/administracion/reportes">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" /></svg>
             Reportes y Estadísticas
         </a>
     </nav>
@@ -507,15 +127,8 @@
         <h1>Gestión de Mascotas</h1>
         <div class="top-bar-actions">
             <button class="icon-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
                 <span class="notification-dot"></span>
-            </button>
-            <button class="icon-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                </svg>
             </button>
         </div>
     </div>
@@ -524,248 +137,175 @@
 
         <div class="page-header">
             <div>
-                <h2>🐾 Gestión de Mascotas</h2>
-                <p>Administra los pacientes de la clínica veterinaria.</p>
+                <h2>🐾 Listado de Mascotas</h2>
+                <p>Busca rápidamente por el documento del propietario.</p>
             </div>
-        </div>
-
-        <div class="filters-actions-bar">
-            <div class="search-input-group">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                <input type="text" placeholder="Buscar por nombre, especie, raza o propietario..." onkeyup="filterMascotas()">
-            </div>
-
-            <select>
-                <option>Especie: Todas</option>
-                <option>Perros</option>
-                <option>Gatos</option>
-                <option>Otros</option>
-            </select>
-
-            <select>
-                <option>Sexo: Todos</option>
-                <option>Macho</option>
-                <option>Hembra</option>
-            </select>
-
-            <select>
-                <option>Ordenar por: Nombre</option>
-                <option>Edad</option>
-                <option>Última visita</option>
-            </select>
-
-            <button class="btn-primary" onclick="alert('Abriendo formulario de Nueva Mascota')">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
+            <button class="btn-primary" onclick="alert('Nueva Mascota')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 Nueva Mascota
             </button>
         </div>
 
+        <!-- ===================== -->
+        <!-- FORM BÚSQUEDA POR DNI -->
+        <!-- ===================== -->
+        <form id="buscarPropietario" th:action="@{/mascota/gestion}" method="get">
+            <div class="filters-actions-bar">
+                <div class="search-input-group">
+                    <label for="dni">Buscar Mascota</label>
+                    <div class="input-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <!--
+                            El name="dni" es lo que Spring recibe en el Controller:
+                            @GetMapping("/buscarPorDni")
+                            public String buscar(@RequestParam String dni, Model model) { ... }
+                        -->
+                        <input type="text"
+                               id="dni"
+                               name="dni"
+                               th:value="${dniActual}"
+                               placeholder="Ingrese DNI del propietario...">
+                    </div>
+                </div>
+                <button class="btn-search-dni" type="submit">Buscar</button>
+            </div>
+        </form>
+
+        <!-- ===================== -->
+        <!-- MÉTRICAS              -->
+        <!-- ===================== -->
         <div class="metrics-grid-mascotas">
             <div class="metric-item total">
-                <div class="value">456</div>
+                <!--
+                    Si traés todas las mascotas al inicio usá mascotas.size().
+                    Si buscaste por DNI, mostrá cuántas encontraste.
+                -->
+                <div class="value" th:text="${#lists.size(mascotas)}">0</div>
                 <div class="label">TOTAL MASCOTAS</div>
             </div>
             <div class="metric-item perro">
-                <div class="value">278</div>
+                <div class="value"
+                     th:text="${#lists.size(mascotas.?[especie != null and especie.equalsIgnoreCase('Perro')])}">0</div>
                 <div class="label">PERROS</div>
             </div>
             <div class="metric-item gato">
-                <div class="value">154</div>
+                <div class="value"
+                     th:text="${#lists.size(mascotas.?[especie != null and especie.equalsIgnoreCase('Gato')])}">0</div>
                 <div class="label">GATOS</div>
             </div>
-            <div class="metric-item otros" style="border-right: none;">
-                <div class="value">24</div>
-                <div class="label">OTROS</div>
-            </div>
         </div>
 
+        <!-- ===================== -->
+        <!-- GRID DE MASCOTAS      -->
+        <!-- ===================== -->
         <div class="mascota-grid" id="mascotaGrid">
 
-            <div class="mascota-card">
+            <!--
+            ╔══════════════════════════════════════════════════════════════╗
+            ║  th:each itera la lista "mascotas" que viene del Controller  ║
+            ║  Cada mascota genera una tarjeta con el diseño de Max        ║
+            ╚══════════════════════════════════════════════════════════════╝
+            -->
+            <div class="mascota-card"
+                 th:each="mascota : ${mascotas}"
+                 th:attr="data-dni=${mascota.propietario != null ? mascota.propietario.documento : ''}">
+
+                <!-- HEADER: ícono dinámico + nombre y especie -->
                 <div class="card-header-mascota">
-                    <div class="mascota-icon">🐶</div>
+
+                    <!--
+                        El círculo de color cambia según la especie:
+                          Perro  → morado (defecto)
+                          Gato   → índigo
+                          Ave    → amarillo
+                          Conejo → verde
+                    -->
+                    <div th:class="${'mascota-icon ' +
+                        (#strings.equalsIgnoreCase(mascota.especie, 'Gato')   ? 'gato'   :
+                        (#strings.equalsIgnoreCase(mascota.especie, 'Ave')    ? 'ave'    :
+                        (#strings.equalsIgnoreCase(mascota.especie, 'Conejo') ? 'conejo' : '')))}">
+                        <span th:text="${
+                            #strings.equalsIgnoreCase(mascota.especie, 'Perro')  ? '🐶' :
+                            #strings.equalsIgnoreCase(mascota.especie, 'Gato')   ? '🐈' :
+                            #strings.equalsIgnoreCase(mascota.especie, 'Ave')    ? '🐦' :
+                            #strings.equalsIgnoreCase(mascota.especie, 'Conejo') ? '🐇' : '🐾'}">🐾</span>
+                    </div>
+
                     <div class="mascota-info">
-                        <h4>Max</h4>
-                        <p>Perro • Golden Retriever</p>
+                        <!-- Nombre de la mascota -->
+                        <h4 th:text="${mascota.nombre}">Nombre</h4>
+                        <!-- "Especie • Raza" -->
+                        <p>
+                            <span th:text="${mascota.especie}">Especie</span>
+                            •
+                            <span th:text="${mascota.raza} ?: '—'">Raza</span>
+                        </p>
                     </div>
                 </div>
+
+                <!-- CUERPO: datos de la mascota (mismo grid 2 columnas que Max) -->
                 <div class="card-body-mascota">
-                    <div class="detail-item"><strong>SEXO:</strong> Macho</div>
-                    <div class="detail-item"><strong>EDAD:</strong> 3 años</div>
-                    <div class="detail-item"><strong>PESO:</strong> 32 kg</div>
-                    <div class="detail-item"><strong>COLOR:</strong> Dorado</div>
+                    <div class="detail-item">
+                        <strong>SEXO:</strong>
+                        <span th:text="${mascota.sexo} ?: '—'">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>EDAD:</strong>
+                        <!--
+                            Tu entidad tiene campo "edad" (Long).
+                            Si está vacío mostramos "—".
+                        -->
+                        <span th:text="${mascota.edad != null ? mascota.edad + ' años' : '—'}">—</span>
+                    </div>
                 </div>
-                <a href="#" class="propietario-link" onclick="viewPropietario('María González')">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Propietario: María González
+
+                <!--
+                    PROPIETARIO — igual al diseño de Max:
+                    "DNI Prop: 35123456 (Nombre Apellido)"
+
+                    Accedemos a mascota.propietario.dni y mascota.propietario.nombre
+                    Si tu Propietario tiene campos con otro nombre, ajustá acá.
+                -->
+                <a th:if="${mascota.propietario != null}"
+                   th:href="@{/cliente/detalle/{id}(id=${mascota.propietario.id})}"
+                   class="propietario-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    DNI Prop:
+                    <span th:text="${mascota.propietario.documento}">—</span>
+                    (<span th:text="${mascota.propietario.nombre}">Nombre</span>
+                    <span th:text="${mascota.propietario.apellido}">Apellido</span>)
                 </a>
+                <span th:unless="${mascota.propietario != null}"
+                      class="propietario-link" style="color:#9ca3af; cursor:default;">
+                    Sin propietario asignado
+                </span>
+
+                <!-- ACCIONES: Ver y Editar con el ID real -->
                 <div class="card-actions">
-                    <button class="btn-card-action btn-ver" onclick="viewHistorial('Max')">Ver</button>
-                    <button class="btn-card-action btn-editar" onclick="editMascota('Max')">Editar</button>
+                    <a th:href="@{/mascota/detalle/{id}(id=${mascota.id})}">Ver</a>
+
+                    <a th:href="@{/mascota/editar/{id}(id=${mascota.id})}"
+                       class="btn-card-action btn-editar">Editar</a>
                 </div>
             </div>
 
-            <div class="mascota-card">
-                <div class="card-header-mascota">
-                    <div class="mascota-icon gato">🐈</div>
-                    <div class="mascota-info">
-                        <h4>Luna</h4>
-                        <p>Gato • Siamés</p>
-                    </div>
-                </div>
-                <div class="card-body-mascota">
-                    <div class="detail-item"><strong>SEXO:</strong> Hembra</div>
-                    <div class="detail-item"><strong>EDAD:</strong> 2 años</div>
-                    <div class="detail-item"><strong>PESO:</strong> 4.5 kg</div>
-                    <div class="detail-item"><strong>COLOR:</strong> Crema</div>
-                </div>
-                <a href="#" class="propietario-link" onclick="viewPropietario('Juan Rodríguez')">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Propietario: Juan Rodríguez
-                </a>
-                <div class="card-actions">
-                    <button class="btn-card-action btn-ver" onclick="viewHistorial('Luna')">Ver</button>
-                    <button class="btn-card-action btn-editar" onclick="editMascota('Luna')">Editar</button>
-                </div>
-            </div>
-
-            <div class="mascota-card">
-                <div class="card-header-mascota">
-                    <div class="mascota-icon">🐶</div>
-                    <div class="mascota-info">
-                        <h4>Rocky</h4>
-                        <p>Perro • Bulldog Francés</p>
-                    </div>
-                </div>
-                <div class="card-body-mascota">
-                    <div class="detail-item"><strong>SEXO:</strong> Macho</div>
-                    <div class="detail-item"><strong>EDAD:</strong> 5 años</div>
-                    <div class="detail-item"><strong>PESO:</strong> 12 kg</div>
-                    <div class="detail-item"><strong>COLOR:</strong> Atigrado</div>
-                </div>
-                <a href="#" class="propietario-link" onclick="viewPropietario('Ana Martínez')">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Propietario: Ana Martínez
-                </a>
-                <div class="card-actions">
-                    <button class="btn-card-action btn-ver" onclick="viewHistorial('Rocky')">Ver</button>
-                    <button class="btn-card-action btn-editar" onclick="editMascota('Rocky')">Editar</button>
-                </div>
-            </div>
-
-            <div class="mascota-card">
-                <div class="card-header-mascota">
-                    <div class="mascota-icon gato">🐈</div>
-                    <div class="mascota-info">
-                        <h4>Mimi</h4>
-                        <p>Gato • Persa</p>
-                    </div>
-                </div>
-                <div class="card-body-mascota">
-                    <div class="detail-item"><strong>SEXO:</strong> Hembra</div>
-                    <div class="detail-item"><strong>EDAD:</strong> 1 año</div>
-                    <div class="detail-item"><strong>PESO:</strong> 3.8 kg</div>
-                    <div class="detail-item"><strong>COLOR:</strong> Blanco</div>
-                </div>
-                <a href="#" class="propietario-link" onclick="viewPropietario('Laura Sánchez')">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Propietario: Laura Sánchez
-                </a>
-                <div class="card-actions">
-                    <button class="btn-card-action btn-ver" onclick="viewHistorial('Mimi')">Ver</button>
-                    <button class="btn-card-action btn-editar" onclick="editMascota('Mimi')">Editar</button>
-                </div>
-            </div>
-
-            <div class="mascota-card">
-                <div class="card-header-mascota">
-                    <div class="mascota-icon">🐶</div>
-                    <div class="mascota-info">
-                        <h4>Toby</h4>
-                        <p>Perro • Beagle</p>
-                    </div>
-                </div>
-                <div class="card-body-mascota">
-                    <div class="detail-item"><strong>SEXO:</strong> Macho</div>
-                    <div class="detail-item"><strong>EDAD:</strong> 4 años</div>
-                    <div class="detail-item"><strong>PESO:</strong> 15 kg</div>
-                    <div class="detail-item"><strong>COLOR:</strong> Tricolor</div>
-                </div>
-                <a href="#" class="propietario-link" onclick="viewPropietario('Carlos Gómez')">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Propietario: Carlos Gómez
-                </a>
-                <div class="card-actions">
-                    <button class="btn-card-action btn-ver" onclick="viewHistorial('Toby')">Ver</button>
-                    <button class="btn-card-action btn-editar" onclick="editMascota('Toby')">Editar</button>
-                </div>
-            </div>
-
-            <div class="mascota-card">
-                <div class="card-header-mascota">
-                    <div class="mascota-icon ave">🐦</div>
-                    <div class="mascota-info">
-                        <h4>Piolín</h4>
-                        <p>Ave • Canario</p>
-                    </div>
-                </div>
-                <div class="card-body-mascota">
-                    <div class="detail-item"><strong>SEXO:</strong> Macho</div>
-                    <div class="detail-item"><strong>EDAD:</strong> 2 años</div>
-                    <div class="detail-item"><strong>PESO:</strong> 0.02 kg</div>
-                    <div class="detail-item"><strong>COLOR:</strong> Amarillo</div>
-                </div>
-                <a href="#" class="propietario-link" onclick="viewPropietario('Roberto Fernández')">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Propietario: Roberto Fernández
-                </a>
-                <div class="card-actions">
-                    <button class="btn-card-action btn-ver" onclick="viewHistorial('Piolín')">Ver</button>
-                    <button class="btn-card-action btn-editar" onclick="editMascota('Piolín')">Editar</button>
-                </div>
+            <!-- Estado vacío: si la lista viene vacía -->
+            <div th:if="${#lists.isEmpty(mascotas)}" class="empty-state">
+                <span>🔍</span>
+                No se encontraron mascotas
+                <span th:if="${dniActual != null and !#strings.isEmpty(dniActual)}"
+                      th:text="' para el DNI ' + ${dniActual}"></span>.
             </div>
 
         </div>
-
-        <div class="pagination-container">
-            <a href="#" class="page-link" onclick="alert('Primera página')">⏪ Primera</a>
-            <a href="#" class="page-link" onclick="alert('Página Anterior')">⬅️ Anterior</a>
-            <a href="#" class="page-link active">1</a>
-            <a href="#" class="page-link">2</a>
-            <a href="#" class="page-link">3</a>
-            <a href="#" class="page-link">4</a>
-            <a href="#" class="page-link">5</a>
-            <a href="#" class="page-link" onclick="alert('Página Siguiente')">Siguiente ➡️</a>
-            <a href="#" class="page-link" onclick="alert('Última página')">Última ⏩</a>
-        </div>
+        <!-- fin mascota-grid -->
 
     </div>
 </div>
 
-<script>
-    // Funciones de acción simuladas
-    function viewHistorial(nombre) {
-        alert(`Abriendo Historial Clínico completo para ${nombre}. (CU-04: Consultar historial clínico)`);
-        // Simular navegación a la página de Historial Clínico
-        // window.location.href = `/historial?mascota=${nombre}`;
-    }
-
-    function editMascota(nombre) {
-        alert(`Abriendo formulario de Edición para ${nombre}. (CU-02: Actualizar mascota)`);
-    }
-
-    function viewPropietario(nombre) {
-        alert(`Abriendo detalles del Propietario: ${nombre}. (CU-01: Consultar cliente)`);
-    }
-
-    function filterMascotas() {
-        // Esta función se activaría al escribir en la barra de búsqueda (CU-02: Consultar/Buscar)
-        console.log('Aplicando filtros de búsqueda en la lista de mascotas...');
-    }
-</script>
 </body>
 </html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'VetPaw - ' + ${mascota.nombre}">VetPaw - Mascota</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --purple-dark: #5b21b6;
+            --orange: #f59e0b;
+            --orange-light: #fef3c7;
+            --green: #10b981;
+            --green-light: #d1fae5;
+            --red: #ef4444;
+            --red-light: #fee2e2;
+            --blue: #3b82f6;
+            --blue-light: #dbeafe;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --sidebar-w: 210px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: #4c1d95;
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 16px;
+        }
+        .sidebar-logo .logo-icon {
+            width: 32px; height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .sidebar-logo span { color: white; font-weight: 700; font-size: 18px; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+        /* MAIN */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 28px 32px;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+        .breadcrumb a { color: var(--purple); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: var(--gray-800); font-weight: 600; }
+        .header-actions { display: flex; gap: 10px; }
+        .btn {
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-outline {
+            background: white;
+            border: 1.5px solid var(--gray-200);
+            color: var(--gray-600);
+        }
+        .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
+        .btn-primary { background: var(--orange); color: white; }
+        .btn-primary:hover { background: #d97706; }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-purple:hover { background: var(--purple-dark); }
+
+        /* HERO CARD */
+        .hero-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 60%, #4c1d95 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 220px; height: 220px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; right: 100px;
+            width: 140px; height: 140px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+        .hero-inner {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+            z-index: 1;
+        }
+        .pet-avatar {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 3px solid rgba(255,255,255,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 46px;
+            flex-shrink: 0;
+        }
+        .pet-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .pet-sub { font-size: 14px; opacity: 0.8; margin-bottom: 14px; }
+        .pet-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+        .hero-stats {
+            margin-left: auto;
+            display: flex;
+            gap: 24px;
+            flex-shrink: 0;
+        }
+        .hero-stat {
+            text-align: center;
+            background: rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 14px 20px;
+            backdrop-filter: blur(4px);
+        }
+        .hero-stat .val { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+        .hero-stat .lbl { font-size: 11px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* GRID */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--gray-100);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+        .card-icon.purple { background: var(--purple-light); }
+        .card-icon.orange { background: var(--orange-light); }
+        .card-icon.green  { background: var(--green-light); }
+        .card-icon.blue   { background: var(--blue-light); }
+        .card-title { font-size: 15px; font-weight: 700; color: var(--gray-800); }
+
+        /* INFO GRID */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .info-item label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--gray-400);
+            margin-bottom: 4px;
+        }
+        .info-item .val { font-size: 14.5px; font-weight: 600; color: var(--gray-800); }
+
+        /* OWNER BOX */
+        .owner-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-100);
+        }
+        .owner-avatar {
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            background: var(--purple-light);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .owner-name  { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+        .owner-sub   { font-size: 13px; color: var(--gray-400); }
+        .owner-contact { margin-left: auto; display: flex; gap: 8px; }
+        .icon-btn {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            border: 1.5px solid var(--gray-200);
+            background: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+        .icon-btn:hover { border-color: var(--purple); background: var(--purple-light); }
+
+        /* TAGS */
+        .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+        .tag.green  { background: var(--green-light);  color: #065f46; }
+        .tag.blue   { background: var(--blue-light);   color: #1e40af; }
+        .tag.orange { background: var(--orange-light); color: #92400e; }
+        .tag.gray   { background: var(--gray-100);     color: var(--gray-600); }
+
+        /* NOTAS */
+        .nota-box {
+            background: var(--gray-50);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.7;
+            border: 1px solid var(--gray-100);
+        }
+
+        /* DATOS VACÍOS */
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--gray-400);
+            font-size: 13.5px;
+        }
+        .empty-state .icon { font-size: 32px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">🐾</div>
+        <span>VetPaw</span>
+    </div>
+    <a class="nav-item" href="/dashboard">
+        <span class="nav-icon">🏠</span> Inicio (Dashboard)
+    </a>
+    <a class="nav-item" href="/propietario/gestion">
+        <span class="nav-icon">👥</span> Gestión de Propietarios
+    </a>
+    <a class="nav-item active" href="/mascota/gestion">
+        <span class="nav-icon">🐾</span> Gestión de Mascotas
+    </a>
+    <a class="nav-item" href="/turno/agenda">
+        <span class="nav-icon">📅</span> Agenda y Turnos
+    </a>
+    <a class="nav-item" href="/reportes">
+        <span class="nav-icon">📊</span> Reportes y Estadísticas
+    </a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div class="breadcrumb">
+            <a href="/mascota/gestion">Gestión de Mascotas</a>
+            <span>›</span>
+            <span th:text="${mascota.nombre}">Nombre</span>
+        </div>
+        <div class="header-actions">
+            <!-- Vuelve al listado del propietario correspondiente -->
+            <a class="btn btn-outline"
+               th:href="@{/mascota/gestion(dni=${mascota.propietario.documento})}">
+                ← Volver
+            </a>
+            <a class="btn btn-primary"
+               th:href="@{/mascota/editar/{id}(id=${mascota.id})}">
+                ✏️ Editar
+            </a>
+            <a class="btn btn-purple" href="/turno/registrar">
+                + Nuevo Turno
+            </a>
+        </div>
+    </div>
+
+    <!-- HERO CARD -->
+    <div class="hero-card">
+        <div class="hero-inner">
+            <!-- Icono según especie -->
+            <div class="pet-avatar">
+                <span th:if="${#strings.equalsIgnoreCase(mascota.especie, 'perro')}">🐶</span>
+                <span th:if="${#strings.equalsIgnoreCase(mascota.especie, 'gato')}">🐱</span>
+                <span th:unless="${#strings.equalsIgnoreCase(mascota.especie, 'perro') or #strings.equalsIgnoreCase(mascota.especie, 'gato')}">🐾</span>
+            </div>
+
+            <div>
+                <div class="pet-name" th:text="${mascota.nombre}">Nombre</div>
+                <div class="pet-sub">
+                    <span th:text="${mascota.especie}">Especie</span> ·
+                    <span th:text="${mascota.raza}">Raza</span> ·
+                    <span th:text="${mascota.sexo}">Sexo</span>
+                    <span th:if="${mascota.edad != null}"> · <span th:text="${mascota.edad}">0</span> años</span>
+                </div>
+                <div class="pet-badges">
+                    <span class="badge">
+                        Ingresó: <span th:text="${#temporals.format(mascota.fechaIngreso, 'dd/MM/yyyy')}">-</span>
+                    </span>
+                    <span class="badge" th:if="${mascota.color != null and !mascota.color.isBlank()}"
+                          th:text="${mascota.color}">Color</span>
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="val" th:text="${mascota.peso != null ? mascota.peso + ' kg' : '-'}"
+                    >- kg</div>
+                    <div class="lbl">Peso</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="val" th:text="${mascota.edad != null ? mascota.edad : '-'}">-</div>
+                    <div class="lbl">Edad (años)</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="val"
+                         th:text="${mascota.propietario != null ? mascota.propietario.mascotas.size() : 1}">1</div>
+                    <div class="lbl">Mascotas del dueño</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW: Datos Generales + Propietario -->
+    <div class="grid-2">
+
+        <!-- DATOS GENERALES -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon purple">🐾</div>
+                <div class="card-title">Datos Generales</div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Nombre</label>
+                    <div class="val" th:text="${mascota.nombre}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Especie</label>
+                    <div class="val" th:text="${mascota.especie}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Raza</label>
+                    <div class="val" th:text="${mascota.raza != null ? mascota.raza : 'Sin especificar'}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Sexo</label>
+                    <div class="val" th:text="${mascota.sexo != null ? mascota.sexo : 'Sin especificar'}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Fecha de Nacimiento</label>
+                    <div class="val"
+                         th:text="${mascota.fechaNacimiento != null ? #temporals.format(mascota.fechaNacimiento, 'dd/MM/yyyy') : 'Sin especificar'}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Edad</label>
+                    <div class="val"
+                         th:text="${mascota.edad != null ? mascota.edad + ' años' : 'Sin especificar'}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Color / Pelaje</label>
+                    <div class="val"
+                         th:text="${mascota.color != null and !mascota.color.isBlank() ? mascota.color : 'Sin especificar'}">-</div>
+                </div>
+                <div class="info-item">
+                    <label>Fecha de Ingreso</label>
+                    <div class="val"
+                         th:text="${mascota.fechaIngreso != null ? #temporals.format(mascota.fechaIngreso, 'dd/MM/yyyy') : 'Sin especificar'}">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPIETARIO -->
+        <div class="card" style="display:flex; flex-direction:column; gap:20px;">
+            <div class="card-header" style="margin-bottom:0">
+                <div class="card-icon orange">👤</div>
+                <div class="card-title">Propietario</div>
+            </div>
+
+            <!-- Si tiene propietario asignado -->
+            <div th:if="${mascota.propietario != null}" class="owner-box">
+                <div class="owner-avatar">👨</div>
+                <div>
+                    <div class="owner-name"
+                         th:text="${mascota.propietario.nombre + ' ' + mascota.propietario.apellido}">Nombre</div>
+                    <div class="owner-sub">
+                        DNI: <span th:text="${mascota.propietario.documento}">-</span>
+                        <span th:if="${mascota.propietario.celular != null}">
+                            &nbsp;·&nbsp; Tel: <span th:text="${mascota.propietario.celular}">-</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="owner-contact">
+                    <a class="icon-btn"
+                       th:if="${mascota.propietario.celular != null}"
+                       th:href="'tel:' + ${mascota.propietario.celular}"
+                       title="Llamar">📞</a>
+                    <a class="icon-btn"
+                       th:if="${mascota.propietario.celular != null}"
+                       th:href="'https://wa.me/' + ${mascota.propietario.celular}"
+                       target="_blank"
+                       title="WhatsApp">💬</a>
+                </div>
+            </div>
+
+            <!-- Si NO tiene propietario -->
+            <div th:unless="${mascota.propietario != null}" class="empty-state">
+                <div class="icon">👤</div>
+                Sin propietario asignado
+            </div>
+
+            <!-- Resumen otras mascotas del mismo dueño -->
+            <div th:if="${mascota.propietario != null and mascota.propietario.mascotas.size() > 1}">
+                <div style="font-size:12.5px; font-weight:700; color:var(--gray-400); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+                    Otras mascotas del propietario
+                </div>
+                <div class="tags">
+                    <th:block th:each="otraMascota : ${mascota.propietario.mascotas}">
+                        <a th:if="${otraMascota.id != mascota.id}"
+                           th:href="@{/mascota/detalle/{id}(id=${otraMascota.id})}"
+                           class="tag blue"
+                           th:text="${otraMascota.nombre}">Mascota</a>
+                    </th:block>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NOTAS / OBSERVACIONES -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon green">📝</div>
+            <div class="card-title">Observaciones</div>
+            <!-- Podés agregar un botón para nueva consulta cuando implementes esa funcionalidad -->
+            <a class="btn btn-outline" href="/mascota/historial"
+               style="margin-left:auto; padding:6px 14px; font-size:12px;">
+                + Ver Historial
+            </a>
+        </div>
+        <div class="nota-box">
+            Ficha creada el
+            <strong th:text="${mascota.fechaIngreso != null ? #temporals.format(mascota.fechaIngreso, 'dd/MM/yyyy') : '-'}">-</strong>.
+            Para agregar consultas, tratamientos o vacunaciones utilizá el menú lateral.
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Turno - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +13,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
             padding: 20px;
         }
@@ -344,55 +345,241 @@
             margin-bottom: 3px;
         }
 
-        .pets-list {
-            margin-top: 15px;
-        }
+        /* =============================================
+           NUEVO DISEÑO: SECCIÓN MASCOTAS
+           ============================================= */
 
-        .pets-list h4 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
         }
 
         .pet-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 2px solid #e1e8ed;
+            position: relative;
+            border: 2px solid #e8ecf4;
+            border-radius: 14px;
+            padding: 18px 16px 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: border-color 0.22s, box-shadow 0.22s, transform 0.18s;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .pet-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.22s;
+            border-radius: inherit;
+            pointer-events: none;
         }
 
         .pet-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-            transform: translateX(5px);
+            border-color: #a0adf7;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.15);
+            transform: translateY(-2px);
         }
+
+        .pet-card:hover::before { opacity: 1; }
 
         .pet-card.selected {
             border-color: #667eea;
-            background: #f0f4ff;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 20px rgba(102,126,234,0.25);
+            background: #f4f6ff;
         }
 
-        .pet-card h5 {
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 15px;
+        .pet-card.selected::before { opacity: 1; }
+
+        .pet-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #d0d7e8;
+            background: white;
             display: flex;
             align-items: center;
+            justify-content: center;
+            transition: all 0.22s;
+            flex-shrink: 0;
+        }
+
+        .pet-card.selected .pet-check {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+        }
+
+        .pet-check svg {
+            opacity: 0;
+            transform: scale(0.4);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pet-card.selected .pet-check svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .pet-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 12px;
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+
+        .pet-avatar.perro { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        .pet-avatar.gato  { background: linear-gradient(135deg, #d4f4ff, #a8d8ea); }
+        .pet-avatar.otro  { background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
+
+        .pet-card:hover .pet-avatar,
+        .pet-card.selected .pet-avatar {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .pet-name {
+            font-size: 15.5px;
+            font-weight: 600;
+            color: #1e2a3a;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+            flex-wrap: wrap;
+            padding-right: 24px;
+        }
+
+        .pet-species-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: #eef0fb;
+            color: #667eea;
+            white-space: nowrap;
+        }
+
+        .pet-meta {
+            margin-top: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pet-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #6b7a99;
+            line-height: 1.4;
+        }
+
+        .pet-meta-row .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #c8cedf;
+            flex-shrink: 0;
+        }
+
+        .pet-meta-row strong {
+            color: #3d4f6e;
+            font-weight: 600;
+        }
+
+        .pet-divider {
+            height: 1px;
+            background: #eef0f7;
+            margin: 10px 0;
+        }
+
+        .pet-stats {
+            display: flex;
             gap: 8px;
         }
 
-        .pet-card .pet-details {
+        .pet-stat {
+            flex: 1;
+            background: #f7f8fc;
+            border-radius: 8px;
+            padding: 6px 8px;
+            text-align: center;
+            transition: background 0.22s;
+        }
+
+        .pet-card.selected .pet-stat {
+            background: rgba(102,126,234,0.08);
+        }
+
+        .pet-stat .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+
+        .pet-stat .stat-label {
+            font-size: 10px;
+            color: #9aa4bc;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1px;
+        }
+
+        .pets-empty {
+            text-align: center;
+            padding: 36px 20px;
+            color: #8898aa;
+            font-size: 13px;
+            grid-column: 1 / -1;
+        }
+
+        .pets-empty .empty-icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.45;
+        }
+
+        .selection-feedback {
+            margin-top: 14px;
+            padding: 11px 16px;
+            background: linear-gradient(135deg, rgba(102,126,234,0.07), rgba(118,75,162,0.07));
+            border: 1.5px solid rgba(102,126,234,0.22);
+            border-radius: 10px;
             font-size: 13px;
             color: #525f7f;
-            line-height: 1.6;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.25s ease;
         }
+
+        .selection-feedback.visible { display: flex; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .selection-feedback strong { color: #667eea; }
+
+        /* =============================================
+           FIN NUEVO DISEÑO MASCOTAS
+           ============================================= */
 
         .availability-check {
             background: #fff3cd;
@@ -433,22 +620,15 @@
         }
 
         @media (max-width: 768px) {
-            .form-content {
-                padding: 20px;
-            }
+            .form-content { padding: 20px; }
+            .search-row { flex-direction: column; }
+            .btn-search { width: 100%; justify-content: center; }
+            .form-row { grid-template-columns: 1fr; }
+            .pets-grid { grid-template-columns: 1fr 1fr; }
+        }
 
-            .search-row {
-                flex-direction: column;
-            }
-
-            .btn-search {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 440px) {
+            .pets-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -458,7 +638,7 @@
             <h1>📅 Nueva Consulta</h1>
             <p>Complete los datos de la cita veterinaria</p>
         </div>
-        <a href="/administracion/inicio" class="btn-back">
+        <a href="/auth/inicio" class="btn-back">
             <span>⬅️</span>
             Volver
         </a>
@@ -485,7 +665,7 @@
             </div>
         </div>
 
-        <!-- Formulario de búsqueda -->
+        <!-- Formulario de búsqueda — IGUAL AL ORIGINAL -->
         <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post">
             <input type="hidden" name="vistaOrigen" value="turnos/nuevoTurno">
 
@@ -510,7 +690,7 @@
                     </button>
                 </div>
 
-                <!-- Si no lo encontró -->
+                <!-- Si no lo encontró — ORIGINAL -->
                 <div th:if="${errorBusqueda}" class="alert alert-error">
                     <span style="font-size: 20px;">❌</span>
                     <div>
@@ -518,8 +698,8 @@
                     </div>
                 </div>
 
-                <!-- Si lo encontró -->
-                <div th:if="${mostrarDatos}" class="info-card" >
+                <!-- Si lo encontró — ORIGINAL -->
+                <div th:if="${mostrarDatos}" class="info-card">
                     <h4>
                         <span>📋</span>
                         Datos del Propietario
@@ -542,7 +722,7 @@
             </div>
         </form>
 
-        <!-- Alertas de turno -->
+        <!-- Alertas de turno — ORIGINALES -->
         <div th:if="${errort}" class="alert alert-error">
             <span style="font-size: 20px;">❌</span>
             <div>
@@ -557,25 +737,45 @@
             </div>
         </div>
 
-        <!-- Formulario de turno (solo visible cuando hay propietario) -->
-        <form th:if="${mostrarDatos}" id="formTurno" th:action="@{/turno/crear}" method="post" th:object="${turno}">
+        <!-- Formulario de turno — ORIGINAL con sección mascotas reemplazada -->
+        <form th:if="${mostrarDatos}" id="formTurno" th:action="@{/administracion/crear}" method="post" th:object="${turno}">
             <input type="hidden" name="propietarioid" th:value="${encontrado.id}">
 
-            <!-- Lista de Mascotas -->
+            <!-- ===== SECCIÓN MASCOTAS — NUEVO DISEÑO ===== -->
             <div class="form-section">
                 <div class="section-title">
                     <span>🐾</span>
                     Seleccionar Mascota
                 </div>
 
-                <div class="pets-list">
-                    <div id="petsList"></div>
+
+                <div class="pets-grid" id="petsList">
+
+                    <div th:each="mascota : ${encontrado.mascotas}"
+                         class="pet-data"
+                         style="display:none"
+                         th:data-id="${mascota.id}"
+                         th:data-nombre="${mascota.nombre}"
+                         th:data-especie="${mascota.especie}"
+                         th:data-raza="${mascota.raza}"
+                         th:data-edad="${mascota.edad}"
+                         th:data-color="${mascota.color}"
+                         th:data-peso="${mascota.peso}"
+                         th:data-sexo="${mascota.sexo}">
+                    </div>
                 </div>
 
+                <!-- Feedback visual de selección -->
+                <div class="selection-feedback" id="selectionFeedback">
+                    <span style="font-size:18px;">✅</span>
+                    <span>Mascota seleccionada: <strong id="feedbackNombre"></strong> — <span id="feedbackDetalle"></span></span>
+                </div>
+
+                <!-- Campo hidden que se envía al servidor — IGUAL AL ORIGINAL -->
                 <input type="hidden" id="idMascota" name="idMascota" required>
             </div>
 
-            <!-- Profesional y Fecha -->
+            <!-- Profesional y Fecha — ORIGINAL -->
             <div class="form-section">
                 <div class="section-title">
                     <span>👨‍⚕️</span>
@@ -586,12 +786,11 @@
                     <div class="form-group">
                         <label>Veterinario <span class="required">*</span></label>
                         <div class="input-icon" data-icon="👨‍⚕️">
-                            <select th:field="*{vet}" required onchange="checkAvailability()">
+                            <select name="idVeterinario" required>
                                 <option value="">Seleccionar veterinario...</option>
-                                <option th:each="veterinario : ${vets}"
-                                        th:value="${veterinario.id}"
-                                        th:text="${veterinario.nombre + ' ' + veterinario.apellido + ' (Mat: ' + veterinario.matricula + ')'}">
-                                </option>
+                                <option th:each="vet : ${vets}"
+                                        th:value="${vet.id}"
+                                        th:text="${vet.nombre} + ' ' +${vet.apellido}">Dr. Ejemplo</option>
                             </select>
                         </div>
                     </div>
@@ -599,11 +798,13 @@
                     <div class="form-group">
                         <label>Recepcionista <span class="required">*</span></label>
                         <div class="input-icon" data-icon="👤">
-                            <select th:field="*{recep}" required>
+                            <select name="recep" required>
                                 <option value="">Seleccionar recepcionista...</option>
-                                <option value="1" selected>Sofía Ramírez (DNI: 36234567)</option>
-                                <option value="2">Lucas Morales (DNI: 34567890)</option>
-                                <option value="3">Gabriela Castro (DNI: 38901234)</option>
+                                <option th:each="r : ${recep}"
+                                        th:value="${r.id}"
+                                        th:text="${r.nombre} + ' ' +${r.apellido}"></option>
+                                <option value="2">Jedrek Morales</option>
+                                <option value="3">Paulina Castro</option>
                             </select>
                         </div>
                     </div>
@@ -621,8 +822,7 @@
                     <div class="form-group">
                         <label>Hora <span class="required">*</span></label>
                         <div class="input-icon" data-icon="🕐">
-                            <input type="time" name="hora" id="hora" required onchange="checkAvailability()" min="08:00" max="19:00">
-                        </div>
+                            <input type="time" name="hora" id="hora" required min="08:00" max="19:00">                        </div>
                         <span class="help-text">Horario: 8:00 - 19:00</span>
                     </div>
                 </div>
@@ -635,7 +835,7 @@
                     <div class="form-group full-width">
                         <label>Fecha de Solicitud <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📆">
-                            <input type="datetime-local" th:field="*{fechaSolicitud}" id="fechaSolicitud" required readonly>
+                            <input type="datetime-local" name="fechaSolicitud" id="fechaSolicitud" required readonly>
                         </div>
                         <span class="help-text">Fecha y hora en que se solicita el turno (automática)</span>
                     </div>
@@ -655,7 +855,7 @@
                 </div>
             </div>
 
-            <!-- Motivo de Consulta -->
+            <!-- Motivo de Consulta — ORIGINAL -->
             <div class="form-section">
                 <div class="section-title">
                     <span>📝</span>
@@ -693,262 +893,150 @@
 
 
 <script>
-    // Base de datos simulada de propietarios y mascotas
-    const propietarios = {
-        '35123456': {
-            idPropietario: 1,
-            documento: '35123456',
-            nombre: 'María',
-            apellido: 'González',
-            celular: '(351) 456-7890',
-            mascotas: [
-                {
-                    idMascota: 1,
-                    nombre: 'Max',
-                    especie: 'Perro',
-                    raza: 'Golden Retriever',
-                    edad: 3,
-                    color: 'Dorado',
-                    peso: 32,
-                    sexo: 'Macho',
-                    fechaNacimiento: '2021-05-15'
-                },
-                {
-                    idMascota: 2,
-                    nombre: 'Bella',
-                    especie: 'Perro',
-                    raza: 'Labrador',
-                    edad: 5,
-                    color: 'Negro',
-                    peso: 28,
-                    sexo: 'Hembra',
-                    fechaNacimiento: '2019-03-10'
-                }
-            ]
-        },
-        '28456789': {
-            idPropietario: 2,
-            documento: '28456789',
-            nombre: 'Juan',
-            apellido: 'Rodríguez',
-            celular: '(351) 789-4561',
-            mascotas: [
-                {
-                    idMascota: 3,
-                    nombre: 'Luna',
-                    especie: 'Gato',
-                    raza: 'Siamés',
-                    edad: 2,
-                    color: 'Crema',
-                    peso: 4.5,
-                    sexo: 'Hembra',
-                    fechaNacimiento: '2022-08-20'
-                }
-            ]
-        },
-        '40234567': {
-            idPropietario: 3,
-            documento: '40234567',
-            nombre: 'Ana',
-            apellido: 'Martínez',
-            celular: '(351) 234-5678',
-            mascotas: [
-                {
-                    idMascota: 4,
-                    nombre: 'Rocky',
-                    especie: 'Perro',
-                    raza: 'Bulldog Francés',
-                    edad: 4,
-                    color: 'Atigrado',
-                    peso: 12,
-                    sexo: 'Macho',
-                    fechaNacimiento: '2020-11-05'
-                },
-                {
-                    idMascota: 5,
-                    nombre: 'Coco',
-                    especie: 'Perro',
-                    raza: 'Poodle',
-                    edad: 2,
-                    color: 'Blanco',
-                    peso: 7,
-                    sexo: 'Macho',
-                    fechaNacimiento: '2022-04-12'
-                }
-            ]
-        },
-        '33890123': {
-            idPropietario: 4,
-            documento: '33890123',
-            nombre: 'Laura',
-            apellido: 'Sánchez',
-            celular: '(351) 890-1234',
-            mascotas: [
-                {
-                    idMascota: 6,
-                    nombre: 'Mimi',
-                    especie: 'Gato',
-                    raza: 'Persa',
-                    edad: 5,
-                    color: 'Blanco',
-                    peso: 3.8,
-                    sexo: 'Hembra',
-                    fechaNacimiento: '2019-07-18'
-                }
-            ]
-        },
-        '37345678': {
-            idPropietario: 5,
-            documento: '37345678',
-            nombre: 'Carlos',
-            apellido: 'Gómez',
-            celular: '(351) 345-6789',
-            mascotas: [
-                {
-                    idMascota: 7,
-                    nombre: 'Toby',
-                    especie: 'Perro',
-                    raza: 'Beagle',
-                    edad: 6,
-                    color: 'Tricolor',
-                    peso: 15,
-                    sexo: 'Macho',
-                    fechaNacimiento: '2018-09-25'
-                }
-            ]
-        }
-    };
-
-    let propietarioActual = null;
-
-    // Auto-completar fecha de solicitud con fecha/hora actual
+    // ============================================================
+    // AUTO-COMPLETAR FECHA DE SOLICITUD — ORIGINAL
+    // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
+        const year    = now.getFullYear();
+        const month   = String(now.getMonth() + 1).padStart(2, '0');
+        const day     = String(now.getDate()).padStart(2, '0');
+        const hours   = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
 
         const datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
-        document.getElementById('fechaSolicitud').value = datetimeLocal;
+        const elFecha = document.getElementById('fechaSolicitud');
+        if (elFecha) elFecha.value = datetimeLocal;
 
-        // Establecer fecha mínima para el turno (hoy)
-        document.getElementById('fecha').min = `${year}-${month}-${day}`;
-    });
+        // Establecer fecha mínima para el turno (hoy) — ORIGINAL
+        const elTurno = document.getElementById('fecha');
+        if (elTurno) elTurno.min = `${year}-${month}-${day}`;
 
-    // Buscar propietario por DNI
-    function buscarPropietario() {
-        const dni = document.getElementById('dniPropietario').value.trim();
-        const ownerInfo = document.getElementById('ownerInfo');
-        const alertError = document.getElementById('alertError');
+        // ============================================================
+        // NUEVO: construir tarjetas de mascotas desde los data- de Thymeleaf
+        // ============================================================
+        const dataSources = document.querySelectorAll('.pet-data');
+        const petsList    = document.getElementById('petsList');
 
-        if (!dni || dni.length < 7) {
-            alertError.style.display = 'flex';
-            document.getElementById('errorMessage').textContent = 'Por favor, ingrese un DNI válido (mínimo 7 dígitos)';
-            setTimeout(() => {
-                alertError.style.display = 'none';
-            }, 3000);
+        if (!petsList) return;
+
+        // Eliminar los nodos ocultos de datos para que no contaminen el grid
+        const mascotas = [];
+        dataSources.forEach(el => {
+            mascotas.push({
+                idMascota: el.dataset.id,
+                nombre:    el.dataset.nombre,
+                especie:   el.dataset.especie,
+                raza:      el.dataset.raza,
+                edad:      el.dataset.edad,
+                color:     el.dataset.color,
+                peso:      el.dataset.peso,
+                sexo:      el.dataset.sexo
+            });
+            el.remove();
+        });
+
+        if (mascotas.length === 0) {
+            petsList.innerHTML = `
+                <div class="pets-empty">
+                    <span class="empty-icon">🐾</span>
+                    <p>Este propietario no tiene mascotas registradas.</p>
+                </div>`;
             return;
         }
 
-        const propietario = propietarios[dni];
+        mascotas.forEach(m => {
+            const especieLower = (m.especie || '').toLowerCase();
+            let icon, clsAvatar;
+            if (especieLower === 'perro')      { icon = '🐕'; clsAvatar = 'perro'; }
+            else if (especieLower === 'gato')  { icon = '🐈'; clsAvatar = 'gato';  }
+            else                               { icon = '🐾'; clsAvatar = 'otro';  }
 
-        if (propietario) {
-            propietarioActual = propietario;
-            mostrarDatosPropietario(propietario);
-            ownerInfo.classList.add('show');
-        } else {
-            alertError.style.display = 'flex';
-            document.getElementById('errorMessage').textContent = '❌ No se encontró un propietario con ese DNI. Prueba con: 35123456, 28456789, 40234567, 33890123 o 37345678';
-            setTimeout(() => {
-                alertError.style.display = 'none';
-            }, 5000);
-            ownerInfo.classList.remove('show');
-            propietarioActual = null;
-        }
-    }
+            const edad = parseInt(m.edad) || 0;
 
-    // Mostrar datos del propietario y sus mascotas
-    function mostrarDatosPropietario(propietario) {
-        document.getElementById('ownerNombre').textContent = `${propietario.nombre} ${propietario.apellido}`;
-        document.getElementById('ownerDocumento').textContent = propietario.documento;
-        document.getElementById('ownerCelular').textContent = propietario.celular;
-        document.getElementById('idPropietario').value = propietario.idPropietario;
-
-        // Mostrar mascotas
-        const petsList = document.getElementById('petsList');
-        petsList.innerHTML = '';
-
-        if (propietario.mascotas.length === 0) {
-            petsList.innerHTML = '<p style="color: #8898aa; font-size: 13px;">Este propietario no tiene mascotas registradas.</p>';
-            return;
-        }
-
-        propietario.mascotas.forEach(mascota => {
-            const petCard = document.createElement('div');
-            petCard.className = 'pet-card';
-            petCard.onclick = () => seleccionarMascota(mascota.idMascota, petCard);
-
-            const icon = mascota.especie === 'Perro' ? '🐕' : '🐈';
-
-            petCard.innerHTML = `
-                <h5>${icon} ${mascota.nombre}</h5>
-                <div class="pet-details">
-                    <strong>Especie:</strong> ${mascota.especie} |
-                    <strong>Raza:</strong> ${mascota.raza}<br>
-                    <strong>Edad:</strong> ${mascota.edad} año(s) |
-                    <strong>Sexo:</strong> ${mascota.sexo} |
-                    <strong>Color:</strong> ${mascota.color}<br>
-                    <strong>Peso:</strong> ${mascota.peso} kg |
-                    <strong>Fecha Nacimiento:</strong> ${mascota.fechaNacimiento}
+            const card = document.createElement('div');
+            card.className  = 'pet-card';
+            card.dataset.id = m.idMascota;
+            card.innerHTML  = `
+                <div class="pet-check">
+                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                        <path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="pet-avatar ${clsAvatar}">${icon}</div>
+                <div class="pet-name">
+                    ${m.nombre}
+                    <span class="pet-species-badge">${m.especie}</span>
+                </div>
+                <div class="pet-meta">
+                    <div class="pet-meta-row">
+                        <span class="dot"></span>
+                        <span><strong>Raza:</strong> ${m.raza}</span>
+                    </div>
+                    <div class="pet-meta-row">
+                        <span class="dot"></span>
+                        <span><strong>Color:</strong> ${m.color} · <strong>Sexo:</strong> ${m.sexo}</span>
+                    </div>
+                </div>
+                <div class="pet-divider"></div>
+                <div class="pet-stats">
+                    <div class="pet-stat">
+                        <div class="stat-value">${edad} ${edad === 1 ? 'año' : 'años'}</div>
+                        <div class="stat-label">Edad</div>
+                    </div>
+                    <div class="pet-stat">
+                        <div class="stat-value">${m.peso} kg</div>
+                        <div class="stat-label">Peso</div>
+                    </div>
                 </div>
             `;
 
-            petsList.appendChild(petCard);
+            card.addEventListener('click', () => seleccionarMascota(m, card));
+            petsList.appendChild(card);
         });
+    });
+
+    // ============================================================
+    // SELECCIONAR MASCOTA — NUEVO
+    // ============================================================
+    function seleccionarMascota(mascota, cardEl) {
+        document.querySelectorAll('.pet-card').forEach(c => c.classList.remove('selected'));
+        cardEl.classList.add('selected');
+        document.getElementById('idMascota').value = mascota.idMascota;
+
+        const fb = document.getElementById('selectionFeedback');
+        document.getElementById('feedbackNombre').textContent  = mascota.nombre;
+        document.getElementById('feedbackDetalle').textContent =
+            `${mascota.raza} · ${mascota.peso} kg · ${mascota.sexo}`;
+        fb.classList.remove('visible');
+        void fb.offsetWidth; // reflow para reiniciar animación CSS
+        fb.classList.add('visible');
     }
 
-    // Seleccionar mascota
-    function seleccionarMascota(idMascota, cardElement) {
-        // Remover selección anterior
-        document.querySelectorAll('.pet-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-
-        // Marcar nueva selección
-        cardElement.classList.add('selected');
-        document.getElementById('idMascota').value = idMascota;
-
-        // Mostrar feedback visual
-        const mascotaSeleccionada = propietarioActual.mascotas.find(m => m.idMascota === idMascota);
-        if (mascotaSeleccionada) {
-            console.log(`✅ Mascota seleccionada: ${mascotaSeleccionada.nombre}`);
-        }
-    }
-
-    // Verificar disponibilidad (simulado)
+    // ============================================================
+    // VERIFICAR DISPONIBILIDAD — ORIGINAL
+    // ============================================================
     let timeoutId;
     function checkAvailability() {
-        const veterinario = document.getElementById('idVeterinario').value;
-        const fecha = document.getElementById('fecha').value;
-        const hora = document.getElementById('hora').value;
-        const statusDiv = document.getElementById('availabilityStatus');
+        const veterinario = document.getElementById('idVeterinario') ?
+                            document.getElementById('idVeterinario').value : '';
+        const fecha       = document.getElementById('fecha').value;
+        const hora        = document.getElementById('hora').value;
+        const statusDiv   = document.getElementById('availabilityStatus');
 
         if (!veterinario || !fecha || !hora) {
             statusDiv.style.display = 'none';
             return;
         }
 
-        // Mostrar loading
         statusDiv.style.display = 'block';
-        statusDiv.className = 'availability-check';
-        statusDiv.innerHTML = '<span class="loading"></span> Verificando disponibilidad...';
+        statusDiv.className     = 'availability-check';
+        statusDiv.innerHTML     = '<span class="loading"></span> Verificando disponibilidad...';
 
-        // Simular llamada a API con debounce
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-            // Simulación: no disponible si es hora en punto (00 minutos)
+            // Simulación: no disponible si es hora en punto (00 minutos) — ORIGINAL
             const disponible = hora.split(':')[1] !== '00';
 
             if (disponible) {
@@ -960,163 +1048,5 @@
             }
         }, 800);
     }
-
-    // Manejar envío del formulario
-    function handleSubmit(event) {
-        event.preventDefault();
-
-        // Validar que se haya seleccionado una mascota
-        const idMascota = document.getElementById('idMascota').value;
-        if (!idMascota) {
-            const alertError = document.getElementById('alertError');
-            alertError.style.display = 'flex';
-            document.getElementById('errorMessage').textContent = 'Por favor, seleccione una mascota antes de continuar.';
-            setTimeout(() => {
-                alertError.style.display = 'none';
-            }, 4000);
-            return;
-        }
-
-        const btnSubmit = document.getElementById('btnSubmit');
-        const alertSuccess = document.getElementById('alertSuccess');
-        const alertError = document.getElementById('alertError');
-
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = '<span class="loading"></span> Guardando...';
-
-        const formData = {
-            idTurno: null, // Se generará en el backend
-            idVeterinario: parseInt(document.getElementById('idVeterinario').value),
-            idMascota: parseInt(idMascota),
-            idRecepcionista: parseInt(document.getElementById('idRecepcionista').value),
-            estado: document.getElementById('estado').value,
-            fecha: document.getElementById('fecha').value,
-            hora: document.getElementById('hora').value,
-            fechaSolicitud: document.getElementById('fechaSolicitud').value,
-            motivo: document.getElementById('motivo').value
-        };
-
-        console.log('📋 Datos del turno a guardar:', formData);
-
-        setTimeout(() => {
-            // Simulación de éxito
-            const exito = true;
-
-            if (exito) {
-                alertSuccess.style.display = 'flex';
-                const mascotaSeleccionada = propietarioActual?.mascotas.find(m => m.idMascota === formData.idMascota);
-                const nombreMascota = mascotaSeleccionada ? mascotaSeleccionada.nombre : '';
-                const nombrePropietario = propietarioActual ? `${propietarioActual.nombre} ${propietarioActual.apellido}` : '';
-
-                document.getElementById('successMessage').innerHTML = `
-                    <strong>¡Turno registrado exitosamente!</strong><br>
-                    Mascota: ${nombreMascota} | Propietario: ${nombrePropietario}<br>
-                    Fecha: ${formData.fecha} a las ${formData.hora}
-                `;
-
-                console.log('✅ Turno guardado correctamente');
-
-                // Limpiar formulario después de 4 segundos
-                setTimeout(() => {
-                    alertSuccess.style.display = 'none';
-                    resetForm();
-                }, 4000);
-            } else {
-                alertError.style.display = 'flex';
-                document.getElementById('errorMessage').textContent =
-                    'Error al registrar el turno. Por favor, intente nuevamente.';
-
-                setTimeout(() => {
-                    alertError.style.display = 'none';
-                }, 5000);
-            }
-
-            // Rehabilitar botón
-            btnSubmit.disabled = false;
-            btnSubmit.innerHTML = '<span>💾</span> Crear Turno';
-        }, 1500);
-
-        /*
-        AQUÍ IRÍA LA LLAMADA REAL A TU API:
-
-        fetch('/api/turnos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
-        .then(data => {
-            alertSuccess.style.display = 'flex';
-            document.getElementById('successMessage').textContent =
-                `Turno registrado exitosamente con ID: ${data.idTurno}`;
-            console.log('✅ Turno guardado:', data);
-            setTimeout(() => {
-                resetForm();
-                alertSuccess.style.display = 'none';
-                // window.location.href = 'gestion-turnos.html';
-            }, 3000);
-        })
-        .catch(error => {
-            alertError.style.display = 'flex';
-            document.getElementById('errorMessage').textContent =
-                'Error al registrar el turno: ' + error.message;
-            console.error('❌ Error:', error);
-            setTimeout(() => {
-                alertError.style.display = 'none';
-            }, 5000);
-        })
-        .finally(() => {
-            btnSubmit.disabled = false;
-            btnSubmit.innerHTML = '<span>💾</span> Crear Turno';
-        });
-        */
-    }
-
-    // Limpiar formulario
-    function resetForm() {
-        document.getElementById('formTurno').reset();
-        document.getElementById('dniPropietario').value = '';
-        document.getElementById('ownerInfo').classList.remove('show');
-        document.getElementById('availabilityStatus').style.display = 'none';
-        document.getElementById('idPropietario').value = '';
-        document.getElementById('idMascota').value = '';
-        propietarioActual = null;
-
-        // Limpiar selección de mascotas
-        document.querySelectorAll('.pet-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-
-        // Restablecer fecha de solicitud
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-
-        document.getElementById('fechaSolicitud').value = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-        // Restablecer estado por defecto
-        document.getElementById('estado').value = 'PROGRAMADO';
-
-        console.log('🔄 Formulario reiniciado');
-    }
-
-    // Permitir buscar con Enter en el campo DNI
-    document.getElementById('dniPropietario').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            buscarPropietario();
-        }
-    });
 </script>
 </html>
-

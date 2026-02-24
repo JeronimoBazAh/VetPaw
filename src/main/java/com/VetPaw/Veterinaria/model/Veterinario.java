@@ -9,15 +9,17 @@ import java.time.LocalDate;
 @Data
 public class Veterinario {
 
-    public Veterinario(Long id, String documento, String celular, LocalDate fechaSalida, String estado, LocalDate fechaIngreso, String nombre, String apellido) {
+    public Veterinario(Long id, String documento, String celular, String estado, LocalDate fechaSalida, String password, LocalDate fechaIngreso, String nombre, String apellido) {
         this.id = id;
         this.documento = documento;
         this.celular = celular;
         this.fechaSalida = fechaSalida;
-        this.estado = estado;
         this.fechaIngreso = fechaIngreso;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.password = password;
+        this.estado = estado;
+
     }
 
     public Veterinario() {
@@ -31,6 +33,7 @@ public class Veterinario {
     private String apellido;
     private String celular;
     private LocalDate fechaIngreso;
+
     private LocalDate fechaSalida;
     private String estado;
     private String password;
@@ -41,13 +44,7 @@ public class Veterinario {
     }
 
 
-    @PreUpdate
-    public void estado(){
 
-        if(this.estado == "INACTIVO" && this.fechaSalida == null){
-            this.fechaSalida = LocalDate.now();
-        }
-    }
 
 
 }

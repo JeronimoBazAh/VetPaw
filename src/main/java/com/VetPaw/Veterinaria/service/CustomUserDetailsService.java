@@ -1,11 +1,9 @@
 package com.VetPaw.Veterinaria.service;
 
-import com.VetPaw.Veterinaria.model.Propietario;
 import com.VetPaw.Veterinaria.model.Usuario;
 import com.VetPaw.Veterinaria.model.Veterinario;
 import com.VetPaw.Veterinaria.repository.UserRepository;
 import com.VetPaw.Veterinaria.repository.veterinarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,49 +16,39 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository usuarioRepository;
-
     private final veterinarioRepository veterinarioRepository;
-
 
     public CustomUserDetailsService(UserRepository usuarioRepository, veterinarioRepository veterinarioRepository) {
         this.usuarioRepository = usuarioRepository;
         this.veterinarioRepository = veterinarioRepository;
     }
 
-
     @Override
     public UserDetails loadUserByUsername(String documento) throws UsernameNotFoundException {
 
+        // 1. Intentar buscar en la tabla de Usuarios (Recepcionistas, Admin, etc.)
         Optional<Usuario> usuario = usuarioRepository.findByDocumento(documento);
         if (usuario.isPresent()) {
+            Usuario u = usuario.get();
             return User.builder()
-                    .username(usuario.get().getDocumento())
-                    .password(usuario.get().getPassword())
-                    .roles(usuario.get().getRol())
+                    .username(u.getDocumento())
+                    .password(u.getPassword())
+                    .roles(u.getRol()) // Spring añadirá el prefijo ROLE_ automáticamente
                     .build();
         }
+
+        // 2. Si no se encuentra, intentar buscar en la tabla de Veterinarios
         Optional<Veterinario> vet = veterinarioRepository.findByDocumento(documento);
         if (vet.isPresent()) {
+            Veterinario v = vet.get();
             return User.builder()
-                    .username(vet.get().getDocumento())
-                    .password(vet.get().getPassword())
+                    .username(v.getDocumento())
+                    .password(v.getPassword())
+                    .roles("VETERINARIO") // Asignamos el rol necesario para las rutas protegidas
                     .build();
         }
 
-    throw new UsernameNotFoundException("Usuario no existe ");
+        // 3. Si no existe en ninguna de las tablas
+        throw new UsernameNotFoundException("Usuario no encontrado con documento: " + documento);
     }
-
-
-/*
-        Usuario usuario = usuarioRepository.findByDocumento(documento).orElseThrow(() -> new UsernameNotFoundException(("Usuario no encontrado")));
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(usuario.getDocumento())
-                .password(usuario.getPassword())
-                .roles(usuario.getRol())
-                .build();
-*/
-
-
- }
-
+}

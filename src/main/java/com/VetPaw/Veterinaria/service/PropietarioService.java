@@ -6,6 +6,7 @@ import com.VetPaw.Veterinaria.repository.PropietarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,5 +46,11 @@ public class PropietarioService implements com.VetPaw.Veterinaria.service.Servic
     @Override
     public void delete(Long id) {
 
+    }
+
+    public List<Propietario> listarTodos() {
+        List<Propietario> lista = new ArrayList<>();
+        propietarioRepository.findAll().forEach(lista::add);
+        return lista;
     }
 }
