@@ -1,9 +1,6 @@
 package com.VetPaw.Veterinaria.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -14,18 +11,19 @@ public class Vacunacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long Id;
 
     private Long IdPropietario;
 
-    private Long IdMascota;
+    @ManyToOne
+    @JoinColumn(name = "mascota_id")
+    private Mascota mascota;
 
     private Long IdVeterinario;
 
     private String tipo;
     private LocalDate fechaAplicacion;
-    private LocalDate fehcaProxima;
+    private LocalDate fechaProxima;
     private String lote;
     private String observacion;
 

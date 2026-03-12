@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Set;
 
+/*
 @Component
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -31,6 +32,31 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect("/admin/home");
         } else {
             // Destino por defecto
+            response.sendRedirect("/auth/inicio");
+        }
+    }
+
+
+}
+
+ */
+@Component
+public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+
+        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+
+        System.out.println("=== ROLES: " + roles + " ===");  // <-- mirá esto en la consola
+
+        if (roles.contains("ROLE_VETERINARIO")) {
+            response.sendRedirect("/auth/vetDashboard");
+        } else if (roles.contains("ROLE_RECEPCIONISTA")) {
+            response.sendRedirect("/auth/inicio");
+        } else if (roles.contains("ROLE_ADMIN")) {
+            response.sendRedirect("/admin/home");
+        } else {
             response.sendRedirect("/auth/inicio");
         }
     }

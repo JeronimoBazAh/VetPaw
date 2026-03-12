@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Vacunación - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,13 +13,13 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
             padding: 20px;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -33,6 +34,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header-left h1 {
@@ -59,6 +62,7 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s;
+            text-decoration: none;
         }
 
         .btn-back:hover {
@@ -66,40 +70,29 @@
             color: #48c774;
         }
 
-        .patient-banner {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            border-bottom: 2px solid #e1e8ed;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .patient-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #48c774 0%, #00d1b2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-        }
-
-        .patient-info {
-            flex: 1;
-        }
-
-        .patient-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-
-        .patient-details {
+        .demo-note {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
             font-size: 14px;
-            color: #8898aa;
+            color: #856404;
+        }
+
+        .demo-note strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .demo-note ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .demo-note li {
+            margin: 5px 0;
         }
 
         .form-content {
@@ -138,6 +131,16 @@
             grid-column: 1 / -1;
         }
 
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .search-row .form-group {
+            flex: 1;
+        }
+
         label {
             font-size: 14px;
             font-weight: 600;
@@ -168,6 +171,11 @@
             box-shadow: 0 0 0 3px rgba(72, 199, 116, 0.1);
         }
 
+        input:disabled, select:disabled {
+            background: #f5f7fa;
+            cursor: not-allowed;
+        }
+
         textarea {
             resize: vertical;
             min-height: 100px;
@@ -177,7 +185,7 @@
             position: relative;
         }
 
-        .input-icon input {
+        .input-icon input, .input-icon select {
             padding-left: 40px;
         }
 
@@ -189,6 +197,7 @@
             transform: translateY(-50%);
             font-size: 18px;
             pointer-events: none;
+            z-index: 1;
         }
 
         .help-text {
@@ -216,6 +225,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .btn-search {
+            background: #48c774;
+            color: white;
+            padding: 12px 24px;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background: #3ebb67;
         }
 
         .btn-secondary {
@@ -254,11 +274,302 @@
             border-left: 4px solid #4caf50;
         }
 
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 2px solid #e1e8ed;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-card h4 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            font-size: 13px;
+            color: #525f7f;
+        }
+
+        .info-card .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        /* =============================================
+           SECCIÓN MASCOTAS
+           ============================================= */
+
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .pet-card {
+            position: relative;
+            border: 2px solid #e8ecf4;
+            border-radius: 14px;
+            padding: 18px 16px 16px;
+            cursor: pointer;
+            transition: border-color 0.22s, box-shadow 0.22s, transform 0.18s;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .pet-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(72,199,116,0.05) 0%, rgba(0,209,178,0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.22s;
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .pet-card:hover {
+            border-color: #7ddba3;
+            box-shadow: 0 4px 16px rgba(72,199,116,0.15);
+            transform: translateY(-2px);
+        }
+
+        .pet-card:hover::before { opacity: 1; }
+
+        .pet-card.selected {
+            border-color: #48c774;
+            box-shadow: 0 4px 20px rgba(72,199,116,0.25);
+            background: #f2fbf6;
+        }
+
+        .pet-card.selected::before { opacity: 1; }
+
+        .pet-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #d0d7e8;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.22s;
+            flex-shrink: 0;
+        }
+
+        .pet-card.selected .pet-check {
+            background: linear-gradient(135deg, #48c774, #00d1b2);
+            border-color: transparent;
+        }
+
+        .pet-check svg {
+            opacity: 0;
+            transform: scale(0.4);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pet-card.selected .pet-check svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .pet-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 12px;
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+
+        .pet-avatar.perro { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        .pet-avatar.gato  { background: linear-gradient(135deg, #d4f4ff, #a8d8ea); }
+        .pet-avatar.otro  { background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
+
+        .pet-card:hover .pet-avatar,
+        .pet-card.selected .pet-avatar {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .pet-name {
+            font-size: 15.5px;
+            font-weight: 600;
+            color: #1e2a3a;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+            flex-wrap: wrap;
+            padding-right: 24px;
+        }
+
+        .pet-species-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: #e8f5e9;
+            color: #48c774;
+            white-space: nowrap;
+        }
+
+        .pet-meta {
+            margin-top: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pet-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #6b7a99;
+            line-height: 1.4;
+        }
+
+        .pet-meta-row .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #c8cedf;
+            flex-shrink: 0;
+        }
+
+        .pet-meta-row strong {
+            color: #3d4f6e;
+            font-weight: 600;
+        }
+
+        .pet-divider {
+            height: 1px;
+            background: #eef0f7;
+            margin: 10px 0;
+        }
+
+        .pet-stats {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pet-stat {
+            flex: 1;
+            background: #f7f8fc;
+            border-radius: 8px;
+            padding: 6px 8px;
+            text-align: center;
+            transition: background 0.22s;
+        }
+
+        .pet-card.selected .pet-stat {
+            background: rgba(72,199,116,0.08);
+        }
+
+        .pet-stat .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+
+        .pet-stat .stat-label {
+            font-size: 10px;
+            color: #9aa4bc;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1px;
+        }
+
+        .pets-empty {
+            text-align: center;
+            padding: 36px 20px;
+            color: #8898aa;
+            font-size: 13px;
+            grid-column: 1 / -1;
+        }
+
+        .pets-empty .empty-icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.45;
+        }
+
+        .selection-feedback {
+            margin-top: 14px;
+            padding: 11px 16px;
+            background: linear-gradient(135deg, rgba(72,199,116,0.07), rgba(0,209,178,0.07));
+            border: 1.5px solid rgba(72,199,116,0.3);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #525f7f;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.25s ease;
+        }
+
+        .selection-feedback.visible { display: flex; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .selection-feedback strong { color: #48c774; }
+
+        /* =============================================
+           HISTORIAL DE VACUNACIÓN
+           ============================================= */
+
         .vaccine-history {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
+            border: 2px solid #e1e8ed;
         }
 
         .vaccine-history h3 {
@@ -295,6 +606,7 @@
         .vaccine-item-name {
             font-weight: 600;
             color: #2c3e50;
+            font-size: 14px;
         }
 
         .vaccine-item-details {
@@ -306,6 +618,26 @@
             font-size: 13px;
             color: #48c774;
             font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .vaccine-empty {
+            text-align: center;
+            padding: 20px;
+            color: #8898aa;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .form-content { padding: 20px; }
+            .search-row { flex-direction: column; }
+            .btn-search { width: 100%; justify-content: center; }
+            .form-row { grid-template-columns: 1fr; }
+            .pets-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 440px) {
+            .pets-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -316,76 +648,192 @@
             <h1>💉 Registrar Vacunación</h1>
             <p>Registro de vacunas aplicadas al paciente</p>
         </div>
-        <button class="btn-back">
+        <a href="/auth/inicio" class="btn-back">
             <span>⬅️</span>
-            Volver al Historial
-        </button>
+            Volver
+        </a>
     </div>
 
-    <div class="patient-banner">
-        <div class="patient-avatar">🐕</div>
-        <div class="patient-info">
-            <div class="patient-name">Max - Golden Retriever</div>
-            <div class="patient-details">
-                Propietario: María González | Edad: 3 años | Peso actual: 32 kg
-            </div>
-        </div>
+    <div class="demo-note">
+        <strong>🎮 MODO DEMO - Prueba el sistema</strong>
+        Usa estos DNIs para probar:
+        <ul>
+            <li><strong>35123456</strong> - María González (2 perros: Max y Bella)</li>
+            <li><strong>28456789</strong> - Juan Rodríguez (1 gato: Luna)</li>
+            <li><strong>40234567</strong> - Ana Martínez (2 perros: Rocky y Coco)</li>
+            <li><strong>33890123</strong> - Laura Sánchez (1 gato: Mimi)</li>
+            <li><strong>37345678</strong> - Carlos Gómez (1 perro: Toby)</li>
+        </ul>
     </div>
 
     <div class="form-content">
-        <div class="vaccine-history">
-            <h3>📋 Historial de Vacunación</h3>
-            <div class="vaccine-list">
-                <div class="vaccine-item">
-                    <div class="vaccine-item-info">
-                        <span class="vaccine-item-name">Rabia</span>
-                        <span class="vaccine-item-details">Aplicada por: Dr. Martín Fernández</span>
-                    </div>
-                    <span class="vaccine-item-date">15/10/2024</span>
-                </div>
-                <div class="vaccine-item">
-                    <div class="vaccine-item-info">
-                        <span class="vaccine-item-name">Séxtuple (Parvovirus, Moquillo, Hepatitis)</span>
-                        <span class="vaccine-item-details">Aplicada por: Dra. Ana López</span>
-                    </div>
-                    <span class="vaccine-item-date">15/07/2024</span>
-                </div>
-                <div class="vaccine-item">
-                    <div class="vaccine-item-info">
-                        <span class="vaccine-item-name">Tos de las perreras</span>
-                        <span class="vaccine-item-details">Aplicada por: Dr. Martín Fernández</span>
-                    </div>
-                    <span class="vaccine-item-date">20/03/2024</span>
-                </div>
-            </div>
-        </div>
 
         <div class="alert alert-info">
-            <span style="font-size: 20px;">💉</span>
+            <span style="font-size: 20px;">ℹ️</span>
             <div>
-                Complete todos los datos de la vacuna aplicada. La fecha de próxima vacuna es opcional.
+                Los campos marcados con <span class="required">*</span> son obligatorios.
+                Primero busque al propietario por su DNI para seleccionar la mascota.
             </div>
         </div>
 
-        <form>
+        <!-- ===== FORMULARIO DE BÚSQUEDA DE PROPIETARIO ===== -->
+        <form id="buscarPropietario" th:action="@{/cliente/buscar}" method="post">
+            <input type="hidden" name="vistaOrigen" value="clinico/nuevoVacunacion">
+
             <div class="form-section">
                 <div class="section-title">
-                    <span>📊</span>
+                    <span>👤</span>
+                    Buscar Propietario
+                </div>
+
+                <div class="search-row">
+                    <div class="form-group">
+                        <label>DNI del Propietario <span class="required">*</span></label>
+                        <div class="input-icon" data-icon="🔍">
+                            <input name="documento" type="text" placeholder="Ej: 35123456">
+                        </div>
+                        <span class="help-text">Ingrese el DNI sin puntos ni espacios</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-search">
+                        <span>🔎</span>
+                        Buscar
+                    </button>
+                </div>
+
+                <!-- Error de búsqueda -->
+                <div th:if="${errorBusqueda}" class="alert alert-error">
+                    <span style="font-size: 20px;">❌</span>
+                    <div>
+                        <div th:text="${errorBusqueda}"></div>
+                    </div>
+                </div>
+
+                <!-- Datos del propietario encontrado -->
+                <div th:if="${mostrarDatos}" class="info-card">
+                    <h4>
+                        <span>📋</span>
+                        Datos del Propietario
+                    </h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Nombre Completo:</span>
+                            <span th:text="${encontrado.nombre} + ' ' + ${encontrado.apellido}"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">DNI:</span>
+                            <span th:text="${encontrado.documento}"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Celular:</span>
+                            <span th:text="${encontrado.celular}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Alertas de resultado -->
+        <div th:if="${errort}" class="alert alert-error">
+            <span style="font-size: 20px;">❌</span>
+            <div th:text="${errort}"></div>
+        </div>
+
+        <div th:if="${exitot}" class="alert alert-success">
+            <span style="font-size: 20px;">✅</span>
+            <div th:text="${exitot}"></div>
+        </div>
+
+        <!-- ===== FORMULARIO DE VACUNACIÓN (solo visible cuando hay propietario) ===== -->
+        <form th:if="${mostrarDatos}" id="formVacunacion" th:action="@{/mascota/nuevaVacuna}" method="post">
+            <input type="hidden" name="propietarioid" th:value="${encontrado.id}">
+
+            <!-- ===== SECCIÓN MASCOTAS ===== -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>🐾</span>
+                    Seleccionar Mascota
+                </div>
+
+                <div class="pets-grid" id="petsList">
+                    <!-- Nodos de datos Thymeleaf (ocultos, usados por JS) -->
+                    <div th:each="mascota : ${encontrado.mascotas}"
+                         class="pet-data"
+                         style="display:none"
+                         th:data-id="${mascota.id}"
+                         th:data-nombre="${mascota.nombre}"
+                         th:data-especie="${mascota.especie}"
+                         th:data-raza="${mascota.raza}"
+                         th:data-edad="${mascota.edad}"
+                         th:data-color="${mascota.color}"
+                         th:data-peso="${mascota.peso}"
+                         th:data-sexo="${mascota.sexo}">
+                    </div>
+                </div>
+
+                <!-- Feedback visual de selección -->
+                <div class="selection-feedback" id="selectionFeedback">
+                    <span style="font-size:18px;">✅</span>
+                    <span>Mascota seleccionada: <strong id="feedbackNombre"></strong> — <span id="feedbackDetalle"></span></span>
+                </div>
+
+                <!-- Campo hidden enviado al servidor -->
+                <input type="hidden" id="idMascota" name="idMascota" required>
+            </div>
+
+            <!-- ===== HISTORIAL DE VACUNACIÓN DE LA MASCOTA SELECCIONADA ===== -->
+            <div class="form-section" id="seccionHistorial" style="display:none;">
+                <div class="section-title">
+                    <span>📋</span>
+                    Historial de Vacunación — <span id="historialNombreMascota" style="color:#48c774;"></span>
+                </div>
+
+                <div class="vaccine-history">
+                    <!--
+                        Bloque de datos ocultos por mascota.
+                        JS los lee y renderiza en #vaccineHistoryList al seleccionar.
+                    -->
+                    <div th:each="mascota : ${encontrado.mascotas}"
+                         th:id="'historial-' + ${mascota.id}"
+                         style="display:none;">
+                        <div th:each="v : ${vacunasPorMascota[mascota.id]}"
+                             class="vaccine-data-item"
+                             th:data-tipo="${v.tipo}"
+                             th:data-fecha="${#temporals.format(v.fechaAplicacion, 'dd/MM/yyyy')}"
+                             th:data-veterinario="${v.IdVeterinario}"
+                             th:data-proxima="${v.fechaProxima != null ? #temporals.format(v.fechaProxima, 'dd/MM/yyyy') : ''}">
+                        </div>
+                    </div>
+
+                    <!-- Aquí el JS inyecta las cards visibles -->
+                    <div class="vaccine-list" id="vaccineHistoryList"></div>
+                </div>
+            </div>
+
+            <!-- ===== SECCIÓN DATOS DE LA VACUNA ===== -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>💉</span>
                     Información de la Vacuna
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Veterinario <span class="required">*</span></label>
-                        <select required disabled>
-                            <option>Dr. Martín Fernández</option>
-                        </select>
+                        <div class="input-icon" data-icon="👨‍⚕️">
+                            <select name="idVeterinario" required>
+                                <option value="">Seleccionar veterinario...</option>
+                                <option th:each="vet : ${vets}"
+                                        th:value="${vet.id}"
+                                        th:text="${vet.nombre} + ' ' + ${vet.apellido}">Dr. Ejemplo</option>
+                            </select>
+                        </div>
                         <span class="help-text">Veterinario que aplica la vacuna</span>
                     </div>
 
                     <div class="form-group">
                         <label>Tipo de Vacuna <span class="required">*</span></label>
-                        <select required>
+                        <select name="tipoVacuna" required>
                             <option value="">Seleccione una vacuna...</option>
                             <option value="rabia">Rabia</option>
                             <option value="sextuple">Séxtuple (Parvovirus, Moquillo, Hepatitis)</option>
@@ -406,7 +854,7 @@
                     <div class="form-group">
                         <label>Fecha de Aplicación <span class="required">*</span></label>
                         <div class="input-icon" data-icon="📅">
-                            <input type="date" required value="2025-11-07">
+                            <input type="date" name="fechaAplicacion" id="fechaAplicacion" required>
                         </div>
                         <span class="help-text">Fecha en que se aplicó la vacuna</span>
                     </div>
@@ -414,7 +862,7 @@
                     <div class="form-group">
                         <label>Fecha Próxima Vacuna</label>
                         <div class="input-icon" data-icon="📅">
-                            <input type="date">
+                            <input type="date" name="fechaProxima">
                         </div>
                         <span class="help-text">Fecha estimada para próximo refuerzo</span>
                     </div>
@@ -422,13 +870,14 @@
                     <div class="form-group">
                         <label>Lote de Vacuna</label>
                         <div class="input-icon" data-icon="🔢">
-                            <input type="text" placeholder="Ej: LOT2025-0347">
+                            <input type="text" name="lote" placeholder="Ej: LOT2025-0347">
                         </div>
                         <span class="help-text">Número de lote (opcional)</span>
                     </div>
                 </div>
             </div>
 
+            <!-- ===== SECCIÓN OBSERVACIONES ===== -->
             <div class="form-section">
                 <div class="section-title">
                     <span>📝</span>
@@ -437,23 +886,178 @@
 
                 <div class="form-group full-width">
                     <label>Observaciones Adicionales</label>
-                    <textarea placeholder="Reacciones adversas, recomendaciones post-vacunación, etc."></textarea>
+                    <textarea name="observaciones" placeholder="Reacciones adversas, recomendaciones post-vacunación, etc."></textarea>
                     <span class="help-text">Ingrese cualquier observación relevante sobre la vacunación</span>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="button" class="btn btn-secondary">
+                <button type="button" class="btn btn-secondary" onclick="window.location.reload()">
                     <span>✖️</span>
                     Cancelar
                 </button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="btnSubmit">
                     <span>💾</span>
                     Registrar Vacunación
                 </button>
             </div>
         </form>
+
     </div>
 </div>
+
+<script>
+    // ============================================================
+    // AUTO-COMPLETAR FECHA DE APLICACIÓN con hoy
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        const now   = new Date();
+        const year  = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day   = String(now.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
+
+        const elFecha = document.getElementById('fechaAplicacion');
+        if (elFecha) elFecha.value = today;
+
+        // ============================================================
+        // CONSTRUIR TARJETAS DE MASCOTAS desde los data- de Thymeleaf
+        // ============================================================
+        const dataSources = document.querySelectorAll('.pet-data');
+        const petsList    = document.getElementById('petsList');
+
+        if (!petsList) return;
+
+        const mascotas = [];
+        dataSources.forEach(el => {
+            mascotas.push({
+                idMascota: el.dataset.id,
+                nombre:    el.dataset.nombre,
+                especie:   el.dataset.especie,
+                raza:      el.dataset.raza,
+                edad:      el.dataset.edad,
+                color:     el.dataset.color,
+                peso:      el.dataset.peso,
+                sexo:      el.dataset.sexo
+            });
+            el.remove();
+        });
+
+        if (mascotas.length === 0) {
+            petsList.innerHTML = `
+                <div class="pets-empty">
+                    <span class="empty-icon">🐾</span>
+                    <p>Este propietario no tiene mascotas registradas.</p>
+                </div>`;
+            return;
+        }
+
+        mascotas.forEach(m => {
+            const especieLower = (m.especie || '').toLowerCase();
+            let icon, clsAvatar;
+            if (especieLower === 'perro')     { icon = '🐕'; clsAvatar = 'perro'; }
+            else if (especieLower === 'gato') { icon = '🐈'; clsAvatar = 'gato';  }
+            else                              { icon = '🐾'; clsAvatar = 'otro';  }
+
+            const edad = parseInt(m.edad) || 0;
+
+            const card = document.createElement('div');
+            card.className  = 'pet-card';
+            card.dataset.id = m.idMascota;
+            card.innerHTML  = `
+                <div class="pet-check">
+                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                        <path d="M1 4.5L4 7.5L10 1.5" stroke="white" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="pet-avatar ${clsAvatar}">${icon}</div>
+                <div class="pet-name">
+                    ${m.nombre}
+                    <span class="pet-species-badge">${m.especie}</span>
+                </div>
+                <div class="pet-meta">
+                    <div class="pet-meta-row">
+                        <span class="dot"></span>
+                        <span><strong>Raza:</strong> ${m.raza}</span>
+                    </div>
+                    <div class="pet-meta-row">
+                        <span class="dot"></span>
+                        <span><strong>Color:</strong> ${m.color} · <strong>Sexo:</strong> ${m.sexo}</span>
+                    </div>
+                </div>
+                <div class="pet-divider"></div>
+                <div class="pet-stats">
+                    <div class="pet-stat">
+                        <div class="stat-value">${edad} ${edad === 1 ? 'año' : 'años'}</div>
+                        <div class="stat-label">Edad</div>
+                    </div>
+                    <div class="pet-stat">
+                        <div class="stat-value">${m.peso} kg</div>
+                        <div class="stat-label">Peso</div>
+                    </div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => seleccionarMascota(m, card));
+            petsList.appendChild(card);
+        });
+    });
+
+    // ============================================================
+    // SELECCIONAR MASCOTA
+    // ============================================================
+    function seleccionarMascota(mascota, cardEl) {
+        document.querySelectorAll('.pet-card').forEach(c => c.classList.remove('selected'));
+        cardEl.classList.add('selected');
+        document.getElementById('idMascota').value = mascota.idMascota;
+
+        // Feedback de selección
+        const fb = document.getElementById('selectionFeedback');
+        document.getElementById('feedbackNombre').textContent  = mascota.nombre;
+        document.getElementById('feedbackDetalle').textContent =
+            mascota.raza + ' · ' + mascota.peso + ' kg · ' + mascota.sexo;
+        fb.classList.remove('visible');
+        void fb.offsetWidth;
+        fb.classList.add('visible');
+
+        // Mostrar sección historial y actualizar título
+        const seccionHistorial = document.getElementById('seccionHistorial');
+        if (seccionHistorial) seccionHistorial.style.display = 'block';
+        const tituloNombre = document.getElementById('historialNombreMascota');
+        if (tituloNombre) tituloNombre.textContent = mascota.nombre;
+
+        // Leer vacunas del bloque oculto de esta mascota y renderizarlas
+        const lista = document.getElementById('vaccineHistoryList');
+        lista.innerHTML = '';
+
+        const bloqueHistorial = document.getElementById('historial-' + mascota.idMascota);
+        const items = bloqueHistorial ? bloqueHistorial.querySelectorAll('.vaccine-data-item') : [];
+
+        if (items.length === 0) {
+            lista.innerHTML =
+                '<div class="vaccine-empty">' +
+                '<span style="font-size:32px;display:block;margin-bottom:8px;opacity:0.4;">💉</span>' +
+                'Sin vacunas registradas para esta mascota.</div>';
+            return;
+        }
+
+        items.forEach(function(item) {
+            var proxima = item.dataset.proxima
+                ? '<span style="font-size:11px;color:#8898aa;margin-top:2px;display:block;">Próxima: ' + item.dataset.proxima + '</span>'
+                : '';
+            var el = document.createElement('div');
+            el.className = 'vaccine-item';
+            el.innerHTML =
+                '<div class="vaccine-item-info">' +
+                    '<span class="vaccine-item-name">' + item.dataset.tipo + '</span>' +
+                    '<span class="vaccine-item-details">Aplicada por: ' + item.dataset.veterinario + '</span>' +
+                    proxima +
+                '</div>' +
+                '<span class="vaccine-item-date">' + item.dataset.fecha + '</span>';
+            lista.appendChild(el);
+        });
+    }
+</script>
 </body>
 </html>

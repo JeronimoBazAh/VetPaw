@@ -33,13 +33,13 @@ public class ApiMascotaController {
             @RequestHeader("Authorization") String token) {
         try {
             // Extraer documento del token
-            String documento = token.replace("Bearer_", "");
+            String documento = token.replace("Bearer ", "").replace("Bearer_", "").trim();
             System.out.println("=== Buscando mascotas para: " + documento + " ===");
 
             // Buscar propietario
             Optional<Propietario> propietario = propietarioRepository.findByDocumento(documento);
 
-            if (propietario == null) {
+            if (propietario.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ErrorResponse("Propietario no encontrado"));
             }
@@ -56,7 +56,7 @@ public class ApiMascotaController {
                 dto.setEspecie(m.getEspecie());
                 dto.setRaza(m.getRaza());
                 dto.setColor(m.getColor());
-                dto.setPeso(m.getPeso() != null ? m.getPeso().doubleValue() : 0.0);
+                dto.setPeso(m.getPeso() != null ? m.getPeso(): 0);
 
                 // Calcular edad
                 if (m.getFechaNacimiento() != null) {

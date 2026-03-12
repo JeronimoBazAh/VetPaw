@@ -1,5 +1,6 @@
 package com.VetPaw.Veterinaria.controller;
 
+import com.VetPaw.Veterinaria.dto.DiaCalendario;
 import com.VetPaw.Veterinaria.model.Mascota;
 import com.VetPaw.Veterinaria.model.Turno;
 import com.VetPaw.Veterinaria.model.Usuario;
@@ -7,6 +8,7 @@ import com.VetPaw.Veterinaria.model.Veterinario;
 import com.VetPaw.Veterinaria.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +20,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/administracion")
@@ -41,11 +47,38 @@ public class turnoController {
     MascotaService mascotaService;
 
     @GetMapping("/turnos")
-    public String turnos(){
+    public String turnos(Model model, @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().monthValue}") int mes,
+                         @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().year}") int anio){
+        LocalDate hoy = LocalDate.now();
+        int mesActual = (mes == 0) ? hoy.getMonthValue() : mes;
+        int anioActual = (anio == 0) ? anio : hoy.getYear();
 
+        LocalDate inicio = LocalDate.of(anioActual, mesActual, 1);
+        LocalDate fin = inicio.withDayOfMonth(inicio.lengthOfMonth());
+        List<Integer> dias = IntStream.rangeClosed(1, fin.getDayOfMonth())
+                .boxed()
+                .collect(Collectors.toList());
+
+        model.addAttribute("diasEnMes", dias);
+
+        List<Turno> turnos = turnoService.findTurnosPorMes(mesActual, anioActual);
+
+        model.addAttribute("turnos", turnos);
+        model.addAttribute("mesActual", mesActual);
+        model.addAttribute("anioActual", anioActual);
+        model.addAttribute("diasEnMes", fin.getDayOfMonth());
 
         List<Turno> listarTurnos;
         return "/turnos/agendaTurnos";
+    }
+    @GetMapping("/test/turnos-proximos")
+    public ResponseEntity<?> testTurnosProximos() {
+        LocalDate hoy = LocalDate.now();
+        LocalDate en7Dias = hoy.plusDays(7);
+
+        List<Turno> turnos = turnoService.findTurnosEntreFechas(hoy, en7Dias);
+
+        return ResponseEntity.ok("Turnos encontrados: " + turnos.size());
     }
 
 
@@ -91,7 +124,6 @@ public class turnoController {
             return "turnos/nuevoTurno";
         }
 
-        // 2. Verificar que la mascota exista
         Optional<Mascota> mascotaOpt = mascotaService.findById(idMascota);
         if (mascotaOpt.isEmpty()) {
             recargarModel(model, propietarioId);
@@ -99,7 +131,6 @@ public class turnoController {
             return "turnos/nuevoTurno";
         }
 
-        // 3. Verificar que el veterinario exista
         Optional<Veterinario> vetOpt = vetService.findById(idVeterinario);
         if (vetOpt.isEmpty()) {
             recargarModel(model, propietarioId);
@@ -107,7 +138,6 @@ public class turnoController {
             return "turnos/nuevoTurno";
         }
 
-        // 4. Verificar que el recepcionista exista
         Optional<Usuario> recepOpt = usuarioService.findById(idRecep);
         if (recepOpt.isEmpty()) {
             recargarModel(model, propietarioId);
@@ -115,9 +145,6 @@ public class turnoController {
             return "turnos/nuevoTurno";
         }
 
-        // 5. Convertir la hora recibida del input type="time" (formato HH:mm)
-        //    combinándola con la fecha del turno para armar un LocalDateTime
-        //    que mapea correctamente a la columna datetime de MySQL
         LocalDateTime hora;
         try {
             LocalTime localTime = LocalTime.parse(horaStr);

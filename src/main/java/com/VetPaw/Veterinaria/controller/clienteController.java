@@ -3,6 +3,7 @@ package com.VetPaw.Veterinaria.controller;
 import com.VetPaw.Veterinaria.model.*;
 import com.VetPaw.Veterinaria.service.PropietarioService;
 import com.VetPaw.Veterinaria.service.UserService;
+import com.VetPaw.Veterinaria.service.VacunaService;
 import com.VetPaw.Veterinaria.service.VeterinarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -28,6 +31,9 @@ public class clienteController {
 
     @Autowired
     private PropietarioService propietarioService;
+
+    @Autowired
+    private VacunaService vacunaService;
 
 
 
@@ -76,31 +82,44 @@ public class clienteController {
 
 
     @PostMapping("/buscar")
-    public String buscarCliente(@RequestParam("documento") String documento,@RequestParam String vistaOrigen ,Model model, RedirectAttributes redirect, String direccion) {
+    public String buscarCliente(@RequestParam("documento") String documento,
+                                @RequestParam String vistaOrigen,
+                                Model model) {
+
         Optional<Propietario> existe = propietarioService.findByDocumento(documento);
         List<Veterinario> vets = vetService.listarTodos();
         List<Usuario> receps = userService.findAll();
 
         model.addAttribute("recep", receps);
+        model.addAttribute("vets", vets);
         model.addAttribute("mascota", new Mascota());
         model.addAttribute("propietario", new Propietario());
         model.addAttribute("turno", new Turno());
-        model.addAttribute("vets", vets);
 
         if (existe.isEmpty()) {
-            model.addAttribute("errorBusqueda","No existe cliente con ese DNI");
-            System.out.println(vistaOrigen);
-            return vistaOrigen;
-
-
-        }else{
-            model.addAttribute("encontrado", existe.get());
-            model.addAttribute("mostrarDatos", true);
-            model.addAttribute("mascotas", existe.get().getMascotas());
-            System.out.println(vistaOrigen);
+            model.addAttribute("errorBusqueda", "No existe cliente con ese DNI");
             return vistaOrigen;
         }
 
+        Propietario propietario = existe.get();
+
+        // Construir mapa de vacunas por mascota
+        Map<Long, List<Vacunacion>> vacunasPorMascota = new HashMap<>();
+        for (Mascota m : propietario.getMascotas()) {
+            List<Vacunacion> vacunas = vacunaService.findByMascota(m);
+            System.out.println(">>> Mascota: " + m.getNombre()
+                    + " | ID: " + m.getId()
+                    + " | Vacunas: " + vacunas.size());
+            vacunasPorMascota.put(m.getId(), vacunas);
+        }
+        System.out.println(">>> Keys del mapa: " + vacunasPorMascota.keySet());
+
+        model.addAttribute("encontrado", propietario);
+        model.addAttribute("mostrarDatos", true);
+        model.addAttribute("mascotas", propietario.getMascotas());
+        model.addAttribute("vacunasPorMascota", vacunasPorMascota);
+
+        return vistaOrigen;
     }
 
 

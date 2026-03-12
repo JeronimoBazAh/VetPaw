@@ -1,5 +1,6 @@
 package com.VetPaw.Veterinaria.service;
 
+import com.VetPaw.Veterinaria.model.Mascota;
 import com.VetPaw.Veterinaria.model.Turno;
 import com.VetPaw.Veterinaria.model.Veterinario;
 import com.VetPaw.Veterinaria.repository.TurnoRepository;
@@ -39,7 +40,26 @@ public class TurnoService implements Service<Turno>{
     public void delete(Long id) {
 
     }
+    public List<Turno> findTurnosProximos(LocalDate fechaLimite, String estado) {
+        return repository.findTurnosProximos(
+                LocalDate.now(),
+                fechaLimite,
+                estado
+        );
+    }
+
     public boolean existeTurnoSolapado(Veterinario vet, LocalDate fecha, LocalDateTime hora) {
-        return repository.existeTurnoSolapado(vet, fecha, hora);
+        return repository.existsByVetAndFechaAndHora(vet, fecha, hora);
+    }
+    public List<Turno> findTurnosEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+        return repository.findByFechaBetween(fechaInicio, fechaFin);
+    }
+    public List<Turno> findTurnosPendientes(Mascota mascota) {
+        return repository.findByMascotaAndEstado(mascota, "PROGRAMADO");
+    }
+    public List<Turno> findTurnosPorMes(int mes, int año) {
+        LocalDate inicio = LocalDate.of(año, mes, 1);
+        LocalDate fin = inicio.withDayOfMonth(inicio.lengthOfMonth());
+        return repository.findByFechaBetween(inicio, fin);
     }
 }

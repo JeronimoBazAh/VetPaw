@@ -1,11 +1,14 @@
 package com.VetPaw.Veterinaria.config;
 
 import com.VetPaw.Veterinaria.service.CustomUserDetailsService;
+import com.VetPaw.Veterinaria.service.PropietarioUserDetailsService;
+import com.VetPaw.Veterinaria.service.VeterinarioUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,10 +19,14 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private VeterinarioUserDetailsService veterinarioUserDetailsService;
 
     @Autowired
     private CustomLoginSuccessHandler successHandler;
@@ -27,19 +34,33 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    // ESTE ES EL BEAN QUE FALTABA Y CAUSABA EL ERROR
+    @Autowired
+    private PropietarioUserDetailsService propietarioUserDetailsService;
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider usuarioProvider = new DaoAuthenticationProvider();
+        usuarioProvider.setUserDetailsService(customUserDetailsService);
+        usuarioProvider.setPasswordEncoder(passwordEncoder());
+
+        DaoAuthenticationProvider veterinarioProvider = new DaoAuthenticationProvider();
+        veterinarioProvider.setUserDetailsService(veterinarioUserDetailsService);
+        veterinarioProvider.setPasswordEncoder(passwordEncoder());
+
+        DaoAuthenticationProvider propietarioProvider = new DaoAuthenticationProvider();
+        propietarioProvider.setUserDetailsService(propietarioUserDetailsService);
+        propietarioProvider.setPasswordEncoder(passwordEncoder());
+
+        return new ProviderManager(List.of(usuarioProvider, veterinarioProvider, propietarioProvider));
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
@@ -48,7 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/auth/**", "/public/**", "/css/**", "/js/**", "/images/**", "/error").permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/veterinario/**").hasAnyRole("VETERINARIO", "ADMIN")
                         .requestMatchers("/recepcion/**").hasAnyRole("RECEPCIONISTA", "ADMIN")
@@ -59,7 +80,7 @@ public class SecurityConfig {
                         .usernameParameter("documento")
                         .passwordParameter("password")
                         .loginProcessingUrl("/auth/login")
-                        .successHandler(successHandler) // Redirección inteligente por rol
+                        .successHandler(successHandler)
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
@@ -84,4 +105,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 }

@@ -7,7 +7,7 @@ package com.VetPaw.Veterinaria.dto;
     private String especie;
     private String raza;
     private Integer edad;
-    private Double peso;
+    private Long peso;
     private String color;
     private String fotoUrl;
 
@@ -52,11 +52,11 @@ package com.VetPaw.Veterinaria.dto;
         this.edad = edad;
     }
 
-    public Double getPeso() {
+    public Long getPeso() {
         return peso;
     }
 
-    public void setPeso(Double peso) {
+    public void setPeso(Long peso) {
         this.peso = peso;
     }
 
