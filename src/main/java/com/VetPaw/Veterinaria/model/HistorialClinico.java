@@ -27,4 +27,6 @@ public class HistorialClinico {
     private String medicacion;
 
     private String otro;
+
+    private Long peso;
 }

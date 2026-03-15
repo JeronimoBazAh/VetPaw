@@ -164,9 +164,7 @@
             </button>
         </div>
 
-        <!-- ===================== -->
-        <!-- FORM BÚSQUEDA POR DNI -->
-        <!-- ===================== -->
+
         <form id="buscarPropietario" th:action="@{/mascota/gestion}" method="get">
             <div class="filters-actions-bar">
                 <div class="search-input-group">
@@ -183,7 +181,7 @@
                         <input type="text"
                                id="dni"
                                name="dni"
-                               th:value="${dniActual}"
+                               th:value="${dni}"
                                placeholder="Ingrese DNI del propietario...">
                     </div>
                 </div>
@@ -196,10 +194,7 @@
         <!-- ===================== -->
         <div class="metrics-grid-mascotas">
             <div class="metric-item total">
-                <!--
-                    Si traés todas las mascotas al inicio usá mascotas.size().
-                    Si buscaste por DNI, mostrá cuántas encontraste.
-                -->
+
                 <div class="value" th:text="${#lists.size(mascotas)}">0</div>
                 <div class="label">TOTAL MASCOTAS</div>
             </div>
@@ -215,17 +210,9 @@
             </div>
         </div>
 
-        <!-- ===================== -->
-        <!-- GRID DE MASCOTAS      -->
-        <!-- ===================== -->
         <div class="mascota-grid" id="mascotaGrid">
 
-            <!--
-            ╔══════════════════════════════════════════════════════════════╗
-            ║  th:each itera la lista "mascotas" que viene del Controller  ║
-            ║  Cada mascota genera una tarjeta con el diseño de Max        ║
-            ╚══════════════════════════════════════════════════════════════╝
-            -->
+
             <div class="mascota-card"
                  th:each="mascota : ${mascotas}"
                  th:attr="data-dni=${mascota.propietario != null ? mascota.propietario.documento : ''}">
@@ -233,13 +220,6 @@
                 <!-- HEADER: ícono dinámico + nombre y especie -->
                 <div class="card-header-mascota">
 
-                    <!--
-                        El círculo de color cambia según la especie:
-                          Perro  → morado (defecto)
-                          Gato   → índigo
-                          Ave    → amarillo
-                          Conejo → verde
-                    -->
                     <div th:class="${'mascota-icon ' +
                         (#strings.equalsIgnoreCase(mascota.especie, 'Gato')   ? 'gato'   :
                         (#strings.equalsIgnoreCase(mascota.especie, 'Ave')    ? 'ave'    :
@@ -271,10 +251,7 @@
                     </div>
                     <div class="detail-item">
                         <strong>EDAD:</strong>
-                        <!--
-                            Tu entidad tiene campo "edad" (Long).
-                            Si está vacío mostramos "—".
-                        -->
+
                         <span th:text="${mascota.edad != null ? mascota.edad + ' años' : '—'}">—</span>
                     </div>
                 </div>
@@ -304,10 +281,10 @@
 
                 <!-- ACCIONES: Ver y Editar con el ID real -->
                 <div class="card-actions">
-                    <a th:href="@{/mascota/detalle/{id}(id=${mascota.id})}">Ver</a>
+                    <a th:href="@{/mascota/detalle/{id}(id=${mascota.id})}" class="btn-card-action btn-editar">Ver</a>
 
-                    <a th:href="@{/mascota/editar/{id}(id=${mascota.id})}"
-                       class="btn-card-action btn-editar">Editar</a>
+                    <<a th:href="@{/mascota/editar/{id}(id=${mascota.id})}" class="btn-card-action btn-editar">Editar</a>
+
                 </div>
             </div>
 

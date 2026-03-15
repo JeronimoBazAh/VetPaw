@@ -1,10 +1,7 @@
 package com.VetPaw.Veterinaria.controller;
 
 import com.VetPaw.Veterinaria.model.*;
-import com.VetPaw.Veterinaria.service.PropietarioService;
-import com.VetPaw.Veterinaria.service.UserService;
-import com.VetPaw.Veterinaria.service.VacunaService;
-import com.VetPaw.Veterinaria.service.VeterinarioService;
+import com.VetPaw.Veterinaria.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +24,8 @@ public class clienteController {
     VeterinarioService vetService;
 
     @Autowired
+    HistorialClinicoService historialClinicoService;
+    @Autowired
     UserService userService;
 
     @Autowired
@@ -34,6 +33,9 @@ public class clienteController {
 
     @Autowired
     private VacunaService vacunaService;
+
+    @Autowired
+    private TratamientoService tratamientoService;
 
 
 
@@ -103,25 +105,26 @@ public class clienteController {
 
         Propietario propietario = existe.get();
 
-        // Construir mapa de vacunas por mascota
-        Map<Long, List<Vacunacion>> vacunasPorMascota = new HashMap<>();
-        for (Mascota m : propietario.getMascotas()) {
-            List<Vacunacion> vacunas = vacunaService.findByMascota(m);
-            System.out.println(">>> Mascota: " + m.getNombre()
-                    + " | ID: " + m.getId()
-                    + " | Vacunas: " + vacunas.size());
-            vacunasPorMascota.put(m.getId(), vacunas);
-        }
-        System.out.println(">>> Keys del mapa: " + vacunasPorMascota.keySet());
+        // ── Mascotas ──────────────────────────────────────────────
+        Map<Long, List<Vacunacion>>      vacunasPorMascota     = new HashMap<>();
+        Map<Long, List<Tratamiento>>     tratamientosPorMascota = new HashMap<>();
+        Map<Long, List<HistorialClinico>> historialPorMascota   = new HashMap<>();
 
-        model.addAttribute("encontrado", propietario);
-        model.addAttribute("mostrarDatos", true);
-        model.addAttribute("mascotas", propietario.getMascotas());
-        model.addAttribute("vacunasPorMascota", vacunasPorMascota);
+        for (Mascota m : propietario.getMascotas()) {
+            vacunasPorMascota.put(m.getId(),      vacunaService.findByMascota(m));
+            tratamientosPorMascota.put(m.getId(), tratamientoService.findByMascota(m));
+            historialPorMascota.put(m.getId(),    historialClinicoService.findByMascota(m));
+        }
+
+        model.addAttribute("encontrado",            propietario);
+        model.addAttribute("mostrarDatos",          true);
+        model.addAttribute("mascotas",              propietario.getMascotas());
+        model.addAttribute("vacunasPorMascota",     vacunasPorMascota);
+        model.addAttribute("tratamientosPorMascota", tratamientosPorMascota);
+        model.addAttribute("historialPorMascota",   historialPorMascota);
 
         return vistaOrigen;
     }
-
 
 
 

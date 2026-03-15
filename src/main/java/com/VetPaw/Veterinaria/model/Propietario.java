@@ -23,4 +23,6 @@ public class Propietario {
     private List<Mascota> mascotas;
 
 
+
+
 }

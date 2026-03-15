@@ -1,12 +1,7 @@
 package com.VetPaw.Veterinaria.controller;
 
-import com.VetPaw.Veterinaria.model.Mascota;
-import com.VetPaw.Veterinaria.model.Propietario;
-import com.VetPaw.Veterinaria.model.Vacunacion;
-import com.VetPaw.Veterinaria.service.MascotaService;
-import com.VetPaw.Veterinaria.service.PropietarioService;
-import com.VetPaw.Veterinaria.service.VacunaService;
-import com.VetPaw.Veterinaria.service.VeterinarioService;
+import com.VetPaw.Veterinaria.model.*;
+import com.VetPaw.Veterinaria.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,10 +24,16 @@ public class mascotaController {
     private MascotaService serviceMascota;
 
     @Autowired
+    private TratamientoService serviceTratamiento;
+
+    @Autowired
     private PropietarioService servicePropietario;
 
     @Autowired
     private VacunaService serviceVacuna;
+
+    @Autowired
+    private HistorialClinicoService serviceHistorial;
 
 
     @GetMapping("/crear")
@@ -151,7 +152,6 @@ public class mascotaController {
             serviceVacuna.save(vacuna);
             status.setComplete();
 
-            // ✅ Nombre correcto + recargás los datos para que el form siga visible
             model.addAttribute("exitot", "💉 Vacunación registrada exitosamente");
             model.addAttribute("mostrarDatos", true);
             recargarModelo(propietarioid, model);
@@ -168,21 +168,122 @@ public class mascotaController {
             model.addAttribute("encontrado", p);
             model.addAttribute("mostrarDatos", true);
             model.addAttribute("mascotas", p.getMascotas());
+            model.addAttribute("vets", serviceVeterinario.findAll());
 
-            Map<Long, List<Vacunacion>> vacunasPorMascota = new HashMap<>();
+            Map<Long, List<Vacunacion>>       vacunasPorMascota      = new HashMap<>();
+            Map<Long, List<Tratamiento>>      tratamientosPorMascota = new HashMap<>();
+            Map<Long, List<HistorialClinico>> historialPorMascota    = new HashMap<>();  // ← esto falta
+
             for (Mascota m : p.getMascotas()) {
-                List<Vacunacion> vacunas = serviceVacuna.findByMascota(m);
-
-                // ← agregá esto para debuggear
-                System.out.println("Mascota ID: " + m.getId() + " | Vacunas encontradas: " + vacunas.size());
-
-                vacunasPorMascota.put(m.getId(), vacunas);
+                vacunasPorMascota.put(m.getId(),      serviceVacuna.findByMascota(m));
+                tratamientosPorMascota.put(m.getId(), serviceTratamiento.findByMascota(m));
+                historialPorMascota.put(m.getId(),    serviceHistorial.findByMascota(m)); // ← esto falta
             }
 
-            System.out.println("Mapa completo: " + vacunasPorMascota.keySet());
-            model.addAttribute("vacunasPorMascota", vacunasPorMascota);
+            model.addAttribute("vacunasPorMascota",      vacunasPorMascota);
+            model.addAttribute("tratamientosPorMascota", tratamientosPorMascota);
+            model.addAttribute("historialPorMascota",    historialPorMascota);  // ← esto falta
         });
-        model.addAttribute("vets", serviceVeterinario.findAll());
+    }
+
+    //TRATAMIENTOS
+    @PostMapping("/nuevoTratamiento")
+    public String nuevoTratamiento(
+            @Valid @ModelAttribute("tratamiento") Tratamiento tratamiento,
+            BindingResult result,
+            @RequestParam("propietarioid") Long propietarioid,
+            @RequestParam("idMascota") Long idMascota,
+            Model model,
+            SessionStatus status) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("errort", "Error en los campos del formulario");
+            recargarModelo(propietarioid, model);
+            return "clinico/tratamientos";
+        }
+
+        Optional<Propietario> prop = servicePropietario.findById(propietarioid);
+
+        if (prop.isPresent()) {
+            Mascota mascota = serviceMascota.findById(idMascota).orElseThrow();
+            tratamiento.setMascota(mascota);
+            serviceTratamiento.save(tratamiento);
+            status.setComplete();
+
+            model.addAttribute("exitot", "💉 Vacunación registrada exitosamente");
+            model.addAttribute("mostrarDatos", true);
+            recargarModelo(propietarioid, model);
+            return "clinico/tratamientos";
+
+        } else {
+            model.addAttribute("errort", "Error: propietario no encontrado");
+            return "clinico/tratamientos";
+        }
+    }
+
+    //Historial Clinico
+    @PostMapping("/nuevoHistorial")
+    public String nuevoHistorial(
+            @Valid @ModelAttribute("historial") HistorialClinico historialClinico,
+            BindingResult result,
+            @RequestParam("propietarioid") Long propietarioid,
+            @RequestParam("idMascota") Long idMascota,
+            Model model,
+            SessionStatus status) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("errort", "Error en los campos del formulario");
+            recargarModelo(propietarioid, model);
+            return "clinico/nuevoHistorial";
+        }
+
+        Optional<Propietario> prop = servicePropietario.findById(propietarioid);
+
+        if (prop.isPresent()) {
+            Mascota mascota = serviceMascota.findById(idMascota).orElseThrow();
+            historialClinico.setMascota(mascota);
+            serviceHistorial.save(historialClinico);
+            status.setComplete();
+
+            model.addAttribute("exitot", "💉 Vacunación registrada exitosamente");
+            model.addAttribute("mostrarDatos", true);
+            recargarModelo(propietarioid, model);
+            return "clinico/nuevoHistorial";
+
+        } else {
+            model.addAttribute("errort", "Error: propietario no encontrado");
+            return "clinico/nuevoHistorial";
+        }
+    }
+
+    @GetMapping("/editar/{id}")   // ← cambié la URL para que coincida con el HTML
+    public String mostrarFormulario(@PathVariable Long id, Model model) {
+        Optional<Mascota> mascota = serviceMascota.findById(id);
+        if (mascota.isEmpty()) {
+            return "redirect:/mascota/gestion";
+        }
+        model.addAttribute("mascota", mascota.get()); // ← .get() para sacar el objeto del Optional
+        return "clinico/editarMascota";
+    }
+
+    @PostMapping("/editar/{id}")
+    public String guardarEdicion(@PathVariable Long id,
+                                 @ModelAttribute("mascota") Mascota mascota,
+                                 RedirectAttributes redirect) {
+
+        Optional<Mascota> original = serviceMascota.findById(id);
+        if (original.isEmpty()) {
+            redirect.addFlashAttribute("error", "Mascota no encontrada");
+            return "redirect:/mascota/gestion";
+        }
+
+        mascota.setId(id);
+        mascota.setPropietario(original.get().getPropietario());
+
+        serviceMascota.save(mascota);
+
+        redirect.addFlashAttribute("exito", "Mascota actualizada correctamente");
+        return "redirect:/mascota/gestion";
     }
 
 

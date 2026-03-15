@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Mascota - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .app-sidebar { width: 260px; background-color: #6d28d9; color: white; padding: 1.5rem 0; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 1.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; }
+        .sidebar-logo span { font-size: 1.8rem; font-weight: 700; color: white; }
+        .sidebar-logo h2 { font-size: 1.5rem; font-weight: 600; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; color: #e5e7eb; text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-nav a:hover { color: white; background-color: #7c3aed; }
+        .sidebar-nav a.active { color: white; background-color: #7c3aed; border-left-color: #f59e0b; }
+        .sidebar-nav a svg { width: 20px; height: 20px; stroke: currentColor; }
+
+        /* MAIN */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
+        .top-bar { background-color: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .top-bar h1 { font-size: 1.5rem; font-weight: 700; color: #1f2937; }
+        .top-bar-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: background-color 0.2s; }
+        .icon-btn:hover { background-color: #f3f4f6; }
+        .icon-btn svg { width: 20px; height: 20px; stroke: #6b7280; }
+        .notification-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; }
+        .container { padding: 1.5rem; max-width: 100%; overflow-y: auto; height: calc(100vh - 66px); }
+
+        /* PAGE HEADER */
+        .page-header { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-radius: 12px; padding: 2rem; color: white; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .page-header p { font-size: 1.125rem; color: rgba(255,255,255,0.9); }
+
+        /* BREADCRUMB */
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem; }
+        .breadcrumb a { color: rgba(255,255,255,0.8); text-decoration: none; }
+        .breadcrumb a:hover { color: white; text-decoration: underline; }
+        .breadcrumb span { color: rgba(255,255,255,0.5); }
+
+        /* FORM CARD */
+        .form-card { background-color: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; overflow: hidden; }
+
+        .form-section { padding: 1.5rem 2rem; border-bottom: 1px solid #f3f4f6; }
+        .form-section:last-of-type { border-bottom: none; }
+
+        .form-section-title { font-size: 0.75rem; font-weight: 700; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+        .form-section-title::after { content: ''; flex: 1; height: 1px; background-color: #e5e7eb; }
+
+        /* GRID DE CAMPOS */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label { font-size: 0.8rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.04em; }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            padding: 10px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background-color: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+        }
+        textarea { resize: vertical; min-height: 90px; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px; padding-right: 40px; }
+
+        /* PROPIETARIO INFO (readonly) */
+        .propietario-readonly { display: flex; align-items: center; gap: 12px; background-color: #f5f3ff; border: 2px solid #ede9fe; border-radius: 8px; padding: 12px 14px; }
+        .propietario-readonly .prop-icon { width: 36px; height: 36px; background-color: #7c3aed; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .propietario-readonly .prop-icon svg { width: 18px; height: 18px; stroke: white; }
+        .propietario-readonly .prop-info { flex: 1; }
+        .propietario-readonly .prop-name { font-weight: 700; color: #1f2937; font-size: 0.9375rem; }
+        .propietario-readonly .prop-dni { font-size: 0.8rem; color: #6b7280; font-weight: 500; }
+        .propietario-readonly .prop-change { font-size: 0.8rem; color: #7c3aed; font-weight: 600; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; }
+        .propietario-readonly .prop-change:hover { text-decoration: underline; }
+
+        /* ACCIONES */
+        .form-actions { padding: 1.25rem 2rem; background-color: #f9fafb; display: flex; justify-content: flex-end; gap: 12px; align-items: center; border-top: 1px solid #e5e7eb; }
+        .btn-cancelar { padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: 0.9375rem; background-color: #e5e7eb; color: #4b5563; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background-color 0.2s; }
+        .btn-cancelar:hover { background-color: #d1d5db; }
+        .btn-guardar { padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9375rem; background-color: #7c3aed; color: white; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s, transform 0.15s; }
+        .btn-guardar:hover { background-color: #5b21b6; transform: translateY(-1px); }
+        .btn-guardar svg, .btn-cancelar svg { width: 16px; height: 16px; stroke: currentColor; }
+
+        /* BADGE ESPECIE */
+        .especie-preview { display: flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+        .especie-option { display: none; }
+        .especie-label { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-size: 0.875rem; font-weight: 500; color: #6b7280; transition: all 0.2s; user-select: none; }
+        .especie-label:hover { border-color: #7c3aed; color: #7c3aed; }
+        .especie-option:checked + .especie-label { border-color: #7c3aed; background-color: #f5f3ff; color: #7c3aed; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .form-grid, .form-grid.cols-3 { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-sidebar">
+    <div class="sidebar-logo">
+        <span>🐾</span>
+        <h2>VetPaw</h2>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/auth/inicio">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.149-.439 1.59 0L21.75 12h-3.954a2 2 0 01-1.996-2v-1a2 2 0 00-2-2H8.25a2 2 0 00-2 2v1a2 2 0 01-2 2H2.25z" /></svg>
+            Inicio (Dashboard)
+        </a>
+        <a href="/cliente/gestionCliente">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.125a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 21a2.25 2.25 0 01-4.5 0 2.25 2.25 0 014.5 0zM18 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM21 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM12 18a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM9 4.875a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM6 12a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+            Gestión de Propietarios
+        </a>
+        <a href="/mascota/gestion" class="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+            Gestión de Mascotas
+        </a>
+        <a href="/administracion/turnos">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" /></svg>
+            Agenda y Turnos
+        </a>
+        <a href="/mascota/vacunacion">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" />
+            </svg>
+            Vacunacion
+        </a>
+        <a href="/mascota/tratamiento">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" />
+            </svg>
+            Tratamientos
+        </a>
+        <a href="/mascota/historial">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" />
+            </svg>
+            Historial Clínico
+        </a>
+        <a href="/administracion/reportes">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v15M3.75 3h15M6 18h12M9 15h6M9 12h6M9 9h6" /></svg>
+            Reportes y Estadísticas
+        </a>
+    </nav>
+</div>
+
+<div class="main-wrapper">
+    <div class="top-bar">
+        <h1>Editar Mascota</h1>
+        <div class="top-bar-actions">
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                <span class="notification-dot"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    <a th:href="@{/mascota/gestion}">Gestión de Mascotas</a>
+                    <span>›</span>
+                    <span>Editar</span>
+                </div>
+                <h2>✏️ Editar Mascota</h2>
+                <p>Modificá los datos de la mascota y guardá los cambios.</p>
+            </div>
+        </div>
+
+       
+        <form th:action="@{/mascota/editar/{id}(id=${mascota.id})}"
+              th:object="${mascota}"
+              method="post">
+
+            <div class="form-card">
+
+                <div class="form-section">
+                    <div class="form-section-title">Datos básicos</div>
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   placeholder="Ej: Gucci"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="raza">Raza</label>
+                            <input type="text"
+                                   id="raza"
+                                   th:field="*{raza}"
+                                   placeholder="Ej: Salchicha">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="especie">Especie</label>
+                            <select id="especie" th:field="*{especie}" required>
+                                <option value="">-- Seleccionar --</option>
+                                <option value="Perro">🐶 Perro</option>
+                                <option value="Gato">🐈 Gato</option>
+                                <option value="Ave">🐦 Ave</option>
+                                <option value="Conejo">🐇 Conejo</option>
+                                <option value="Otro">🐾 Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sexo">Sexo</label>
+                            <select id="sexo" th:field="*{sexo}">
+                                <option value="">-- Seleccionar --</option>
+                                <option value="Macho">Macho</option>
+                                <option value="Hembra">Hembra</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Datos físicos</div>
+                    <div class="form-grid cols-3">
+
+                        <div class="form-group">
+                            <label for="edad">Edad (años)</label>
+                            <input type="number"
+                                   id="edad"
+                                   th:field="*{edad}"
+                                   min="0"
+                                   max="30"
+                                   placeholder="Ej: 2">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="peso">Peso (kg)</label>
+
+                            <input type="number"
+                                   id="peso"
+                                   th:field="*{peso}"
+                                   step="0.1"
+                                   min="0"
+                                   placeholder="Ej: 5.3">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="color">Color / pelaje</label>
+                            <input type="text"
+                                   id="color"
+                                   th:field="*{color}"
+                                   placeholder="Ej: Marrón">
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ========================== -->
+                <!-- SECCIÓN 3: PROPIETARIO     -->
+                <!-- ========================== -->
+                <div class="form-section">
+                    <div class="form-section-title">Propietario</div>
+
+
+                    <div class="propietario-readonly"
+                         th:if="${mascota.propietario != null}">
+                        <div class="prop-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
+                        </div>
+                        <div class="prop-info">
+                            <div class="prop-name"
+                                 th:text="${mascota.propietario.nombre} + ' ' + ${mascota.propietario.apellido}">
+                                Nombre Apellido
+                            </div>
+                            <div class="prop-dni"
+                                 th:text="'DNI: ' + ${mascota.propietario.documento}">
+                                DNI: —
+                            </div>
+                        </div>
+                        <a th:href="@{/mascota/gestion}" class="prop-change">Cambiar</a>
+                    </div>
+
+                    <input type="hidden"
+                           name="propietarioId"
+                           th:value="${mascota.propietario != null ? mascota.propietario.id : ''}">
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/mascota/gestion}" class="btn-cancelar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        Cancelar
+                    </a>
+
+
+                    <button type="submit" class="btn-guardar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                        Guardar cambios
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>
