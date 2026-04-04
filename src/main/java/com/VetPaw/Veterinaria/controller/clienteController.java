@@ -2,6 +2,7 @@ package com.VetPaw.Veterinaria.controller;
 
 import com.VetPaw.Veterinaria.model.*;
 import com.VetPaw.Veterinaria.service.*;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,7 @@ public class clienteController {
 
         if (result.hasErrors()) {
 
-            return "/crearCliente";
+            return "clientes/crearCliente";
         }
         if (cliente.getDocumento() != null) {
             Optional<Propietario> existe = propietarioService.findByDocumento(cliente.getDocumento());
@@ -125,6 +126,18 @@ public class clienteController {
 
         return vistaOrigen;
     }
+
+
+    @GetMapping("/editarCliente/{id}")   // ← cambié la URL para que coincida con el HTML
+    public String mostrarFormulario(@PathVariable Long id, Model model) {
+        Optional<Propietario> propietario = propietarioService.findById(id);
+        if (propietario.isEmpty()) {
+            return "redirect:/cliente/gestionCliente";
+        }
+        model.addAttribute("propietario", propietario.get()); // ← .get() para sacar el objeto del Optional
+        return "/clientes/editarCliente";
+    }
+
 
 
 

@@ -225,10 +225,19 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Ocultar alertas de éxito/error por defecto */
-        .alert-success, .alert-error {
-            display: none;
-        }
+
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+}
+
+        .alert-error {
+          background: #fdecea;
+             color: #c62828;
+             border-left: 4px solid #c62828;
+}
     </style>
 </head>
 <body>
@@ -238,7 +247,7 @@
             <h1>➕ Registrar Propietario</h1>
             <p>Complete los datos del dueño de la mascota</p>
         </div>
-        <a href="javascript:void(0);" class="btn-back">
+        <a href="/auth/inicio" class="btn-back">
             <span>⬅️</span>
             Volver
         </a>
@@ -252,16 +261,20 @@
             </div>
         </div>
 
-        <div class="alert alert-success" id="alertSuccess">
+        <div class="alert alert-success"
+             th:if="${success}"
+             style="display: flex;">
             <span style="font-size: 20px;">✅</span>
             <div>
-                <strong th:text="${success}">Cliente registrado exitosamente</strong>
+                <strong th:text="${success}"></strong>
             </div>
         </div>
 
-        <div class="alert alert-error" id="alertError">
+        <div class="alert alert-error"
+             th:if="${errorMessage}"
+             style="display: flex;">
             <span style="font-size: 20px;">❌</span>
-            <div id="errorMessage">Error al guardar el propietario.</div>
+            <div th:text="${errorMessage}"></div>
         </div>
 
         <form th:action="@{/cliente/crearCliente}"  method="post"  th:object="${cliente}">

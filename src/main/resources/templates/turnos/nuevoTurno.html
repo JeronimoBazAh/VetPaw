@@ -644,17 +644,7 @@
         </a>
     </div>
 
-    <div class="demo-note">
-        <strong>🎮 MODO DEMO - Prueba el sistema</strong>
-        Usa estos DNIs para probar:
-        <ul>
-            <li><strong>35123456</strong> - María González (2 perros: Max y Bella)</li>
-            <li><strong>28456789</strong> - Juan Rodríguez (1 gato: Luna)</li>
-            <li><strong>40234567</strong> - Ana Martínez (2 perros: Rocky y Coco)</li>
-            <li><strong>33890123</strong> - Laura Sánchez (1 gato: Mimi)</li>
-            <li><strong>37345678</strong> - Carlos Gómez (1 perro: Toby)</li>
-        </ul>
-    </div>
+    
 
     <div class="form-content">
         <div class="alert alert-info">
@@ -690,7 +680,6 @@
                     </button>
                 </div>
 
-                <!-- Si no lo encontró — ORIGINAL -->
                 <div th:if="${errorBusqueda}" class="alert alert-error">
                     <span style="font-size: 20px;">❌</span>
                     <div>
@@ -737,7 +726,6 @@
             </div>
         </div>
 
-        <!-- Formulario de turno — ORIGINAL con sección mascotas reemplazada -->
         <form th:if="${mostrarDatos}" id="formTurno" th:action="@{/administracion/crear}" method="post" th:object="${turno}">
             <input type="hidden" name="propietarioid" th:value="${encontrado.id}">
 
@@ -765,7 +753,6 @@
                     </div>
                 </div>
 
-                <!-- Feedback visual de selección -->
                 <div class="selection-feedback" id="selectionFeedback">
                     <span style="font-size:18px;">✅</span>
                     <span>Mascota seleccionada: <strong id="feedbackNombre"></strong> — <span id="feedbackDetalle"></span></span>
