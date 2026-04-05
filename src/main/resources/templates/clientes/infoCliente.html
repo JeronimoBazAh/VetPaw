@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Propietario - VetPaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .app-sidebar { width: 260px; background-color: #6d28d9; color: white; padding: 1.5rem 0; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 1.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; }
+        .sidebar-logo span { font-size: 1.8rem; font-weight: 700; }
+        .sidebar-logo h2 { font-size: 1.5rem; font-weight: 600; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; color: #e5e7eb; text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-nav a:hover { color: white; background-color: #7c3aed; }
+        .sidebar-nav a.active { color: white; background-color: #7c3aed; border-left-color: #f59e0b; }
+        .sidebar-nav a svg { width: 20px; height: 20px; stroke: currentColor; }
+
+        /* MAIN */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
+        .top-bar { background-color: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .top-bar h1 { font-size: 1.5rem; font-weight: 700; color: #1f2937; }
+        .top-bar-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: background-color 0.2s; }
+        .icon-btn:hover { background-color: #f3f4f6; }
+        .icon-btn svg { width: 20px; height: 20px; stroke: #6b7280; }
+        .notification-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; }
+        .container { padding: 1.5rem; overflow-y: auto; height: calc(100vh - 66px); }
+
+        /* PAGE HEADER */
+        .page-header { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-radius: 12px; padding: 2rem; color: white; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .page-header p { font-size: 1.125rem; color: rgba(255,255,255,0.9); }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.8); margin-bottom: 0.5rem; }
+        .breadcrumb a { color: rgba(255,255,255,0.8); text-decoration: none; }
+        .breadcrumb a:hover { color: white; text-decoration: underline; }
+        .breadcrumb span { color: rgba(255,255,255,0.5); }
+
+        /* BOTÓN EDITAR EN HEADER */
+        .btn-header-editar { background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border: 2px solid rgba(255,255,255,0.6); border-radius: 8px; font-weight: 600; font-size: 0.9375rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-header-editar:hover { background: white; color: #7c3aed; }
+        .btn-header-editar svg { width: 16px; height: 16px; stroke: currentColor; }
+
+        /* CARDS */
+        .detail-card { background-color: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; overflow: hidden; margin-bottom: 1.5rem; }
+        .card-section { padding: 1.5rem 2rem; border-bottom: 1px solid #f3f4f6; }
+        .card-section:last-of-type { border-bottom: none; }
+        .section-title { font-size: 0.75rem; font-weight: 700; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background-color: #e5e7eb; }
+
+        /* GRID DE DATOS */
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .data-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .data-item { display: flex; flex-direction: column; gap: 4px; }
+        .data-label { font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+        .data-value { font-size: 0.9375rem; font-weight: 500; color: #1f2937; padding: 10px 14px; background-color: #f9fafb; border: 2px solid #e5e7eb; border-radius: 8px; }
+        .data-value.highlight { background-color: #f5f3ff; border-color: #ede9fe; color: #5b21b6; font-weight: 600; }
+
+        /* AVATAR */
+        .propietario-avatar { display: flex; align-items: center; gap: 16px; margin-bottom: 1.5rem; padding: 1.25rem; background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-radius: 10px; border: 1px solid #ddd6fe; }
+        .avatar-circle { width: 64px; height: 64px; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem; font-weight: 700; color: white; }
+        .avatar-info h3 { font-size: 1.25rem; font-weight: 700; color: #1f2937; }
+        .avatar-info p { font-size: 0.875rem; color: #6b7280; font-weight: 500; }
+        .badge { display: inline-flex; align-items: center; gap: 4px; background-color: #d1fae5; color: #065f46; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-top: 4px; }
+
+        /* MASCOTAS */
+        .mascotas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        .mascota-card { background-color: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; padding: 1rem; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s; }
+        .mascota-card:hover { border-color: #7c3aed; background-color: #f5f3ff; }
+        .mascota-card-header { display: flex; align-items: center; gap: 10px; }
+        .mascota-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .mascota-nombre { font-weight: 700; color: #1f2937; font-size: 0.9375rem; }
+        .mascota-raza { font-size: 0.8rem; color: #6b7280; }
+        .mascota-detalle { display: flex; flex-wrap: wrap; gap: 6px; }
+        .mascota-chip { font-size: 0.75rem; font-weight: 500; padding: 3px 8px; border-radius: 20px; background-color: #ede9fe; color: #5b21b6; }
+        .mascota-chip.especie { background-color: #dbeafe; color: #1d4ed8; }
+        .mascota-chip.sexo { background-color: #fce7f3; color: #9d174d; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 2rem; color: #9ca3af; }
+        .empty-state svg { width: 48px; height: 48px; stroke: #d1d5db; margin: 0 auto 1rem; display: block; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* ACCIONES */
+        .card-actions { padding: 1.25rem 2rem; background-color: #f9fafb; display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #e5e7eb; }
+        .btn-volver { padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: 0.9375rem; background-color: #e5e7eb; color: #4b5563; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background-color 0.2s; }
+        .btn-volver:hover { background-color: #d1d5db; }
+        .btn-editar { padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9375rem; background-color: #7c3aed; color: white; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s, transform 0.15s; }
+        .btn-editar:hover { background-color: #5b21b6; transform: translateY(-1px); }
+        .btn-volver svg, .btn-editar svg { width: 16px; height: 16px; stroke: currentColor; }
+
+        @media (max-width: 768px) {
+            .data-grid, .data-grid.cols-3 { grid-template-columns: 1fr; }
+            .mascotas-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-wrapper">
+    <div class="top-bar">
+        <h1>Ver Propietario</h1>
+        <div class="top-bar-actions">
+            <button class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                <span class="notification-dot"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    <a th:href="@{/cliente/gestionCliente}">Gestión de Propietarios</a>
+                    <span>›</span>
+                    <span>Detalle</span>
+                </div>
+                <h2>👤 Detalle del Propietario</h2>
+                <p th:text="${propietario.nombre} + ' ' + ${propietario.apellido}">Nombre Apellido</p>
+            </div>
+            <a th:href="@{/cliente/editar/{id}(id=${propietario.id})}" class="btn-header-editar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                </svg>
+                Editar
+            </a>
+        </div>
+
+        <div class="detail-card">
+
+            <!-- AVATAR Y RESUMEN -->
+            <div class="card-section">
+                <div class="propietario-avatar">
+                    <div class="avatar-circle"
+                         th:text="${#strings.substring(propietario.nombre, 0, 1) + #strings.substring(propietario.apellido, 0, 1)}">
+                        NA
+                    </div>
+                    <div class="avatar-info">
+                        <h3 th:text="${propietario.nombre} + ' ' + ${propietario.apellido}">Nombre Apellido</h3>
+                        <p th:text="'DNI: ' + ${propietario.documento}">DNI: —</p>
+                        <span class="badge">
+                            ✓ Propietario activo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATOS PERSONALES -->
+            <div class="card-section">
+                <div class="section-title">Datos personales</div>
+                <div class="data-grid cols-3">
+
+                    <div class="data-item">
+                        <span class="data-label">Documento</span>
+                        <span class="data-value highlight" th:text="${propietario.documento}">—</span>
+                    </div>
+
+                    <div class="data-item">
+                        <span class="data-label">Nombre</span>
+                        <span class="data-value" th:text="${propietario.nombre}">—</span>
+                    </div>
+
+                    <div class="data-item">
+                        <span class="data-label">Apellido</span>
+                        <span class="data-value" th:text="${propietario.apellido}">—</span>
+                    </div>
+
+                    <div class="data-item">
+                        <span class="data-label">Celular</span>
+                        <span class="data-value" th:text="${propietario.celular}">—</span>
+                    </div>
+
+                    <div class="data-item">
+                        <span class="data-label">Total de mascotas</span>
+                        <span class="data-value highlight"
+                              th:text="${propietario.mascotas != null ? propietario.mascotas.size() : 0} + ' mascota(s)'">
+                            0 mascota(s)
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MASCOTAS -->
+            <div class="card-section">
+                <div class="section-title">Mascotas registradas</div>
+
+                <!-- Con mascotas -->
+                <div class="mascotas-grid" th:if="${propietario.mascotas != null and !propietario.mascotas.empty}">
+                    <div class="mascota-card" th:each="m : ${propietario.mascotas}">
+                        <div class="mascota-card-header">
+                            <div class="mascota-icon">🐾</div>
+                            <div>
+                                <div class="mascota-nombre" th:text="${m.nombre}">Nombre</div>
+                                <div class="mascota-raza" th:text="${m.raza != null ? m.raza : 'Sin raza'}">Raza</div>
+                            </div>
+                        </div>
+                        <div class="mascota-detalle">
+                            <span class="mascota-chip especie" th:if="${m.especie != null}" th:text="${m.especie}">Especie</span>
+                            <span class="mascota-chip sexo" th:if="${m.sexo != null}" th:text="${m.sexo}">Sexo</span>
+                            <span class="mascota-chip" th:if="${m.edad != null}" th:text="${m.edad} + ' años'">Edad</span>
+                            <span class="mascota-chip" th:if="${m.peso != null}" th:text="${m.peso} + ' kg'">Peso</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sin mascotas -->
+                <div class="empty-state" th:if="${propietario.mascotas == null or propietario.mascotas.empty}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    <p>Este propietario no tiene mascotas registradas</p>
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="card-actions">
+                <a th:href="@{/cliente/gestionCliente}" class="btn-volver">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    Volver
+                </a>
+                <a th:href="@{/cliente/editar/{id}(id=${propietario.id})}" class="btn-editar">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                    </svg>
+                    Editar propietario
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

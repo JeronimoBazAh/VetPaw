@@ -13,6 +13,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 @Controller
 @RequestMapping("/auth")
 public class loginController {
@@ -115,8 +119,9 @@ public class loginController {
     }
 
     @GetMapping("/vetDashboard")
-    public String principalVet(){
-
+    public String principalVet(Model model){
+        model.addAttribute("fechaHoy", LocalDate.now()
+                .format(DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es"))));
 
         return "/clinico/principalVet";
     }

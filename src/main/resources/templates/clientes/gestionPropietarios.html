@@ -589,7 +589,9 @@
                         <td th:text="${propietario.celular}"></td>
                         <td th:text="${propietario.mascotas != null ? propietario.mascotas.size() : 0} + ' mascotas'"></td>
                         <td>
-                            <button class="btn-table-action btn-ver" th:onclick="'viewPropietario(' + ${propietario.id} + ')'">● Ver</button>
+                            <a th:href="@{/cliente/ver/{id}(id=${propietario.id})}"
+                               class="btn-table-action btn-ver"
+                               style="text-decoration: none;">● Ver</a>
 
                             <a th:href="@{/cliente/editarCliente/{id}(id=${propietario.id})}"
                                class="btn-table-action btn-editar"

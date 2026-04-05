@@ -411,7 +411,7 @@
     <div class="welcome-banner">
       <div>
         <h2>👋 Bienvenido/a, Dr. Felix Ahumada.</h2>
-        <p>Hoy es Martes, 13 de Febrero de 2024. Estamos listos para comenzar.</p>
+        <p>Hoy es <span th:text="${fechaHoy}">fecha</span>. Estamos listos para comenzar.</p>
       </div>
       <div class="quick-info">
         <p>Turnos del día: 12</p>
@@ -513,18 +513,26 @@
 
         <div class="quick-actions-card card">
           <div class="card-header">⚡ Acciones Rápidas</div>
-          <button class="quick-btn" onclick="quickAction('new_client')">
+          <a href="/mascota/crear">
+          <button class="quick-btn" >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20" style="stroke:#7c3aed;"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v1.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V7.5m18 0a2.25 2.25 0 00-2.25-2.25H4.5A2.25 2.25 0 002.25 7.5m18 0a2.25 2.25 0 01-2.25 2.25H4.5m18-1.5v4.5m-18 0v4.5m18-4.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25m18 0h-2.25m-15 0H2.25" /></svg>
-            Registrar Nuevo Cliente/Mascota
+            Registrar Nueva Mascota
           </button>
-          <button class="quick-btn" onclick="quickAction('search_record')">
+          </a>
+
+          <a href="/clinica/historial">
+          <button class="quick-btn" >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20" style="stroke:#7c3aed;"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25m0 0v-2.25m0 2.25h-2.25m2.25 0h2.25m-2.25-4.5h2.25m-2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25m-4.5 4.5h-2.25m2.25 0v-2.25m0 2.25v2.25m-2.25 0h-2.25m2.25 0h-2.25M6 6.75h12M6 17.25h12" /></svg>
             Buscar Historial Clínico
           </button>
-          <button class="quick-btn" onclick="quickAction('new_appointment')">
+          </a>
+
+          <a href="/administracion/crearTurno">
+          <button class="quick-btn" >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20" style="stroke:#7c3aed;"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5" /></svg>
             Agendar Nuevo Turno
           </button>
+          </a>
         </div>
       </div>
 
@@ -550,5 +558,7 @@
       }
   }
 </script>
+
+
 </body>
 </html>

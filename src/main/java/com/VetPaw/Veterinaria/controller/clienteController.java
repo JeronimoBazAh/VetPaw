@@ -138,6 +138,16 @@ public class clienteController {
         return "/clientes/editarCliente";
     }
 
+    @GetMapping("/ver/{id}")
+    public String verPropietario(@PathVariable Long id, Model model) {
+        Optional<Propietario> propietario = propietarioService.findById(id);
+        if (propietario.isEmpty()) {
+            return "redirect:/cliente/gestionCliente";
+        }
+        model.addAttribute("propietario", propietario.get());
+        return "clientes/infoCliente";
+    }
+
 
 
 
