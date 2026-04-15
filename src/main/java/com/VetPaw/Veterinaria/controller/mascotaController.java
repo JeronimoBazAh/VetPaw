@@ -176,17 +176,17 @@ public class mascotaController {
 
             Map<Long, List<Vacunacion>>       vacunasPorMascota      = new HashMap<>();
             Map<Long, List<Tratamiento>>      tratamientosPorMascota = new HashMap<>();
-            Map<Long, List<HistorialClinico>> historialPorMascota    = new HashMap<>();  // ← esto falta
+            Map<Long, List<HistorialClinico>> historialPorMascota    = new HashMap<>();
 
             for (Mascota m : p.getMascotas()) {
                 vacunasPorMascota.put(m.getId(),      serviceVacuna.findByMascota(m));
                 tratamientosPorMascota.put(m.getId(), serviceTratamiento.findByMascota(m));
-                historialPorMascota.put(m.getId(),    serviceHistorial.findByMascota(m)); // ← esto falta
+                historialPorMascota.put(m.getId(),    serviceHistorial.findByMascota(m));
             }
 
             model.addAttribute("vacunasPorMascota",      vacunasPorMascota);
             model.addAttribute("tratamientosPorMascota", tratamientosPorMascota);
-            model.addAttribute("historialPorMascota",    historialPorMascota);  // ← esto falta
+            model.addAttribute("historialPorMascota",    historialPorMascota);
         });
     }
 
@@ -260,13 +260,13 @@ public class mascotaController {
         }
     }
 
-    @GetMapping("/editar/{id}")   // ← cambié la URL para que coincida con el HTML
+    @GetMapping("/editar/{id}")
     public String mostrarFormulario(@PathVariable Long id, Model model) {
         Optional<Mascota> mascota = serviceMascota.findById(id);
         if (mascota.isEmpty()) {
             return "redirect:/mascota/gestion";
         }
-        model.addAttribute("mascota", mascota.get()); // ← .get() para sacar el objeto del Optional
+        model.addAttribute("mascota", mascota.get());
         return "clinico/editarMascota";
     }
 

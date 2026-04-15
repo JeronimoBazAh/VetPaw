@@ -155,8 +155,7 @@ public class turnoController {
             return "turnos/nuevoTurno";
         }
 
-        // 6. Verificar que no haya un turno solapado para ese veterinario
-        //    en la misma fecha y hora exacta
+
         boolean turnoExistente = turnoService.existeTurnoSolapado(vetOpt.get(), turno.getFecha(), hora);
         if (turnoExistente) {
             recargarModel(model, propietarioId);
@@ -164,7 +163,6 @@ public class turnoController {
             return "turnos/nuevoTurno";
         }
 
-        // 7. Armar el turno completo y guardar
         turno.setMascota(mascotaOpt.get());
         turno.setVet(vetOpt.get());
         turno.setRecep(recepOpt.get());

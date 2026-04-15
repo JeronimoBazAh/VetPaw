@@ -49,10 +49,8 @@ public class MascotaService implements Service<Mascota>{
         Iterable<Mascota> mascotasIterable = mascotaRepository.findAll();
         List<Mascota> listaCompleta = new ArrayList<>();
 
-        // Esto asegura que CADA elemento del iterable se guarde en la lista
         mascotasIterable.forEach(listaCompleta::add);
 
-        // Agrega este log para ver cuántas trae realmente la base de datos
         System.out.println("DEBUG: Mascotas encontradas en BD: " + listaCompleta.size());
 
         return listaCompleta;

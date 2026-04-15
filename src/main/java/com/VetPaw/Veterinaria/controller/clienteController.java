@@ -131,13 +131,13 @@ public class clienteController {
     }
 
 
-    @GetMapping("/editarCliente/{id}")   // ← cambié la URL para que coincida con el HTML
+    @GetMapping("/editarCliente/{id}")
     public String mostrarFormulario(@PathVariable Long id, Model model) {
         Optional<Propietario> propietario = propietarioService.findById(id);
         if (propietario.isEmpty()) {
             return "redirect:/cliente/gestionCliente";
         }
-        model.addAttribute("propietario", propietario.get()); // ← .get() para sacar el objeto del Optional
+        model.addAttribute("propietario", propietario.get());
         return "/clientes/editarCliente";
     }
 

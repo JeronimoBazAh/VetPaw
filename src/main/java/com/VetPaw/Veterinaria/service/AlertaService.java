@@ -94,8 +94,6 @@ public class AlertaService {
     }
 
     private void verificarTratamientosAtrasados() {
-        // Implementar lógica según tus tratamientos
-        // Por ejemplo, detectar medicaciones que debían completarse
     }
 
     private void actualizarAlertasVencidas() {
@@ -129,11 +127,9 @@ public class AlertaService {
 
         alertaRepository.save(alerta);
 
-        // TODO: Enviar notificación push
     }
 
     private LocalDate obtenerFechaUltimaVacuna(Mascota mascota) {
-        // Implementar según tu modelo de vacunas/historial
         return null; // Por ahora
     }
 
