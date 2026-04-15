@@ -27,7 +27,6 @@ public class ApiAlertaController {
     @Autowired
     private PropietarioRepository propietarioRepository;
 
-    // Obtener todas las alertas del propietario
     @GetMapping("/mis-alertas")
     public ResponseEntity<?> getMisAlertas(@RequestHeader("Authorization") String token) {
         try {
@@ -58,7 +57,6 @@ public class ApiAlertaController {
         }
     }
 
-    // Contar alertas pendientes
     @GetMapping("/count-pendientes")
     public ResponseEntity<?> countAlertasPendientes(
             @RequestHeader("Authorization") String token) {
@@ -81,7 +79,6 @@ public class ApiAlertaController {
         }
     }
 
-    // Marcar alerta como vista
     @PutMapping("/{id}/marcar-vista")
     public ResponseEntity<?> marcarComoVista(@PathVariable Long id) {
         try {
@@ -93,7 +90,6 @@ public class ApiAlertaController {
         }
     }
 
-    // Marcar alerta como completada
     @PutMapping("/{id}/marcar-completada")
     public ResponseEntity<?> marcarComoCompletada(@PathVariable Long id) {
         try {
@@ -105,7 +101,6 @@ public class ApiAlertaController {
         }
     }
 
-    // Método auxiliar para convertir a DTO
     private AlertaDTO convertirADTO(Alerta alerta) {
         AlertaDTO dto = new AlertaDTO();
         dto.setId(alerta.getId());

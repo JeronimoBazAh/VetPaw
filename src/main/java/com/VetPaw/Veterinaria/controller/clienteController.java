@@ -92,6 +92,9 @@ public class clienteController {
         Optional<Propietario> existe = propietarioService.findByDocumento(documento);
         List<Veterinario> vets = vetService.listarTodos();
         List<Usuario> receps = userService.findAll();
+        if (!model.containsAttribute("vacuna")) {
+            model.addAttribute("vacuna", new Vacunacion());
+        }
 
         model.addAttribute("recep", receps);
         model.addAttribute("vets", vets);

@@ -32,7 +32,6 @@ public class ApiMascotaController {
     public ResponseEntity<?> getMisMascotas(
             @RequestHeader("Authorization") String token) {
         try {
-            // Extraer documento del token
             String documento = token.replace("Bearer ", "").replace("Bearer_", "").trim();
             System.out.println("=== Buscando mascotas para: " + documento + " ===");
 
@@ -44,10 +43,8 @@ public class ApiMascotaController {
                         .body(new ErrorResponse("Propietario no encontrado"));
             }
 
-            // Obtener mascotas
             List<Mascota> mascotas = mascotaRepository.findByPropietario(propietario.get());
 
-            // Convertir a DTO
             List<MascotaDTO> mascotasDTO = new ArrayList<>();
             for (Mascota m : mascotas) {
                 MascotaDTO dto = new MascotaDTO();

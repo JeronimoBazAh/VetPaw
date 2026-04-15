@@ -19,14 +19,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        // Obtenemos los roles del usuario logueado
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
         if (roles.contains("ROLE_VETERINARIO")) {
-            // Redirige al HTML del Veterinario
             response.sendRedirect("/auth/vetDashboard");
         } else if (roles.contains("ROLE_RECEPCIONISTA")) {
-            // Redirige al HTML del Recepcionista/Usuario común
             response.sendRedirect("/auth/inicio");
         } else if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/home");

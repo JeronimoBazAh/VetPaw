@@ -64,8 +64,7 @@ public class ApiAuthController {
         }
     }
 
-    // ===== ENDPOINT TEMPORAL PARA ENCRIPTAR CONTRASEÑAS =====
-    // ⚠️ BORRAR DESPUÉS DE USARLO EN PRODUCCIÓN
+
     @GetMapping("/encriptar-password")
     public ResponseEntity<?> encriptarPassword(
             @RequestParam String documento,
@@ -102,7 +101,6 @@ public class ApiAuthController {
     }
 }
 
-// Clase auxiliar para respuesta exitosa
 class SuccessResponse {
     private String message;
 

@@ -94,8 +94,8 @@ public class mascotaController {
     }
 
     @GetMapping("/vacunacion")
-    public String vecunacion(){
-
+    public String vecunacion(Model model){
+        model.addAttribute("vets", serviceVeterinario.findAll());
 
         return "clinico/nuevoVacunacion";
     }
@@ -148,6 +148,7 @@ public class mascotaController {
 
         if (prop.isPresent()) {
             Mascota mascota = serviceMascota.findById(idMascota).orElseThrow();
+
             vacuna.setMascota(mascota);
             serviceVacuna.save(vacuna);
             status.setComplete();
@@ -155,6 +156,9 @@ public class mascotaController {
             model.addAttribute("exitot", "💉 Vacunación registrada exitosamente");
             model.addAttribute("mostrarDatos", true);
             recargarModelo(propietarioid, model);
+            if (!model.containsAttribute("vacuna")) {
+                model.addAttribute("vacuna", new Vacunacion());
+            }
             return "clinico/nuevoVacunacion";
 
         } else {

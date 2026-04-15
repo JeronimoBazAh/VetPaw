@@ -3,18 +3,23 @@ package com.VetPaw.Veterinaria.controller.api;
 
 import com.VetPaw.Veterinaria.dto.ErrorResponse;
 import com.VetPaw.Veterinaria.dto.TurnoDTO;
+import com.VetPaw.Veterinaria.dto.VacunaDTO;
 import com.VetPaw.Veterinaria.model.Mascota;
 import com.VetPaw.Veterinaria.model.Propietario;
 import com.VetPaw.Veterinaria.model.Turno;
+import com.VetPaw.Veterinaria.model.Vacunacion;
 import com.VetPaw.Veterinaria.repository.MascotaRepository;
 import com.VetPaw.Veterinaria.repository.PropietarioRepository;
 import com.VetPaw.Veterinaria.repository.TurnoRepository;
+import com.VetPaw.Veterinaria.repository.VacunaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +37,9 @@ public class ApiTurnoController {
     @Autowired
     private MascotaRepository mascotaRepository;
 
-    // Obtener todos los turnos del propietario (todas sus mascotas)
+    @Autowired
+    private VacunaRepository vacunacionRepository;
+
     @GetMapping("/mis-turnos")
     public ResponseEntity<?> getMisTurnos(@RequestHeader("Authorization") String token) {
         try {
@@ -68,7 +75,7 @@ public class ApiTurnoController {
         }
     }
 
-    // Obtener turnos de una mascota específica
+
     @GetMapping("/mascota/{idMascota}")
     public ResponseEntity<?> getTurnosPorMascota(
             @PathVariable Long idMascota,
@@ -110,6 +117,48 @@ public class ApiTurnoController {
                     .body(new ErrorResponse("Error: " + e.getMessage()));
         }
     }
+    @GetMapping("/proximos")
+    public ResponseEntity<?> getTurnosProximos(@RequestHeader("Authorization") String token) {
+        try {
+            String documento = token.replace("Bearer_", "");
+            Optional<Propietario> propietario = propietarioRepository.findByDocumento(documento);
+
+            if (propietario.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ErrorResponse("Propietario no encontrado"));
+            }
+
+            LocalDate hoy = LocalDate.now();
+            LocalDate limite = hoy.plusDays(30);
+
+            List<Mascota> mascotas = mascotaRepository.findByPropietario(propietario.get());
+            List<TurnoDTO> turnosDTO = new ArrayList<>();
+
+            for (Mascota mascota : mascotas) {
+                List<Turno> turnos = turnoRepository.findByMascota(mascota);
+                for (Turno turno : turnos) {
+                    // Solo turnos desde hoy hasta 30 días, con estado PROGRAMADO
+                    if (turno.getFecha() != null
+                            && !turno.getFecha().isBefore(hoy)
+                            && !turno.getFecha().isAfter(limite)
+                            && "PROGRAMADO".equalsIgnoreCase(turno.getEstado())) {
+                        turnosDTO.add(convertirADTO(turno));
+                    }
+                }
+            }
+
+            turnosDTO.sort(Comparator.comparing(TurnoDTO::getFecha));
+
+            System.out.println("✓ Próximos turnos encontrados: " + turnosDTO.size());
+            return ResponseEntity.ok(turnosDTO);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Error: " + e.getMessage()));
+        }
+    }
+
 
     // Método auxiliar para convertir Turno a DTO
     private TurnoDTO convertirADTO(Turno turno) {
